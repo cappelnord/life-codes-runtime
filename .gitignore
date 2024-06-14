@@ -1,1 +1,3 @@
-Example/samples/
+Example/samples/**/*.wav
+Example/samples/**/*.aif
+Example/samples/**/*.aiff

@@ -1,8 +1,11 @@
 (
 var basePath = thisProcess.nowExecutingPath.dirname;
 l = LifeCodes(
-	scriptsPath: basePath +/+ "blocks",
-	samplesPath: basePath +/+ "samples"
+	scriptsPath: basePath +/+ "scripts",
+	samplesPath: basePath +/+ "samples",
+	options: (
+		\dryRun: true
+	)
 )
 )
 
@@ -24,3 +27,12 @@ l.bufferLists[\water_bowl].choose.play;
 // sample folder can be reloaded to include new samples (or change samples)
 // all loaded samples will first be unloaded not to accumulate memory over time
 l.reloadSamples;
+
+
+
+
+
+// *** Playground for LCSpec ***
+
+LCSpec(\ok)
+l.dump

@@ -5,6 +5,7 @@ LifeCodes {
 	var <options;
 
 	var <server;
+	var <specs;
 
 	// keeping track of things that are loaded
 	var <scriptFiles;
@@ -119,7 +120,7 @@ LifeCodes {
 		// ... and bin them
 		scriptFiles = (
 			\ignored: [],
-			\specs: []
+			\spec: []
 		);
 
 		scriptExecutionPhases.do {|phase| scriptFiles[phase.asSymbol] = [];};
@@ -134,7 +135,7 @@ LifeCodes {
 				fileName.beginsWith("_").if ({
 					addScriptFile.value(\ignored, file);
 				}, {
-					addScriptFile.value(\specs, file);
+					addScriptFile.value(\spec, file);
 				});
 			});
 		};
@@ -251,6 +252,7 @@ LifeCodes {
 	init {
 		buffers = ();
 		bufferLists = ();
+		specs = ();
 
 		loadingTask = {
 
@@ -276,11 +278,23 @@ LifeCodes {
 			^true; // nothing to do
 		};
 
-		"\n*** % ***".format(phase.asString.toUpper).postln;
+		"\n*** EXECUTING % SCRIPT FILES ***".format(phase.asString.toUpper).postln;
 		result = this.prExecuteScripts(scriptFiles[phase], this.prFatalScriptExecutionError);
 		result.not.if {LifeCodes.clear};
 		"".postln;
 		^result;
+	}
+
+	prCompileAllSpecs {
+		"\n*** COMPILING SPECS ***".postln;
+
+		specs.keys.asArray.sort.do {|key|
+			specs[key].compileDomainFunctions;
+		};
+	}
+
+	prBuildSpecIndex {
+		// well, this needs some thought
 	}
 
 	prLoad {
@@ -296,8 +310,10 @@ LifeCodes {
 			this.prExecuteScriptsForLoadPhase(\on_load);
 		};
 
-		// BUILD SPECS
-
+		this.prExecuteScriptsForLoadPhase(\spec);
+		this.prCompileAllSpecs;
+		this.prBuildSpecIndex;
+		// do load phase for specs
 		this.prExecuteScriptsForLoadPhase(\on_postload);
 	}
 

@@ -10,10 +10,6 @@ LCSpec(\dump, \meta, {|spec|
 			"on_init meta".postln;
 		},
 
-		\on_preload: {|spec|
-			"on_preload meta".postln;
-		},
-
 		\on_load: {|spec|
 			"on_load meta".postln;
 		},

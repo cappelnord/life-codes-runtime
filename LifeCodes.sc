@@ -1,3 +1,13 @@
+/*
+Temporal Roles:
+\sequential
+\paralell
+\paralell but not stopped when scope is
+// (do we need more actually? TemporalFunction should maybe also have the ability to as well store a non-temporal function
+
+--> maybe it is actually not so hard!
+*/
+
 LifeCodes {
 	// keep these 3 at the beginning
 	var <scriptsPath;
@@ -5,7 +15,7 @@ LifeCodes {
 	var <options;
 
 	var <server;
-	var <specs;
+	var <runtime;
 
 	// keeping track of things that are loaded
 	var <scriptFiles;
@@ -85,7 +95,7 @@ LifeCodes {
 	clear {
 		loadingTask.stop;
 		loadingTask = nil;
-		this.prExecuteScriptsForLoadPhase(\on_unload);
+		this.prExecuteScriptsForLifecyclePhase(\on_unload);
 		this.prFreeBuffers;
 		^nil;
 	}
@@ -249,10 +259,14 @@ LifeCodes {
 		"... % samples loaded.".format(samplesLoaded).postln;
 	}
 
-	init {
+	prInitData {
+		runtime = LCRuntime(this);
 		buffers = ();
 		bufferLists = ();
-		specs = ();
+	}
+
+	init {
+		this.prInitData;
 
 		loadingTask = {
 
@@ -271,7 +285,7 @@ LifeCodes {
 		}.fork;
 	}
 
-	prExecuteScriptsForLoadPhase {|phase|
+	prExecuteScriptsForLifecyclePhase {|phase|
 		var result;
 
 		(scriptFiles[phase].size == 0).if {
@@ -285,36 +299,28 @@ LifeCodes {
 		^result;
 	}
 
-	prCompileAllSpecs {
-		"\n*** COMPILING SPECS ***".postln;
-
-		specs.keys.asArray.sort.do {|key|
-			specs[key].compileDomainFunctions;
-		};
-	}
-
-	prBuildSpecIndex {
-		// well, this needs some thought
-	}
-
 	prLoad {
 
 		this.prGetScriptFileList;
 
-		this.prExecuteScriptsForLoadPhase(\on_init);
+		this.prExecuteScriptsForLifecyclePhase(\on_init);
 
 		options.dryRun.not.if {
 			this.prBootServer;
-			this.prExecuteScriptsForLoadPhase(\on_preload);
+			this.prExecuteScriptsForLifecyclePhase(\on_preload);
 			this.prLoadSamples;
-			this.prExecuteScriptsForLoadPhase(\on_load);
+			this.prExecuteScriptsForLifecyclePhase(\on_load);
 		};
 
-		this.prExecuteScriptsForLoadPhase(\spec);
-		this.prCompileAllSpecs;
-		this.prBuildSpecIndex;
-		// do load phase for specs
-		this.prExecuteScriptsForLoadPhase(\on_postload);
+		this.prExecuteScriptsForLifecyclePhase(\spec);
+
+		this.runtime.compile;
+
+		this.runtime.executeSpecLifecyclePhase(\on_init, \loader);
+
+		this.runtime.buildIndex;
+
+		this.prExecuteScriptsForLifecyclePhase(\on_postload);
 	}
 
 	prBootServer {

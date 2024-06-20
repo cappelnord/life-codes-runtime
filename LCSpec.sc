@@ -1,41 +1,45 @@
 LCSpec {
-
 	var <family;
 	var <table;
 	var domainFunctions;
 
 	var currentLoadDomain = nil;
 
+	var runtime;
+
 	*new {|family, domain=nil, function=nil|
+		var runtime;
+
 		LifeCodes.instance.isNil.if {
 			"LifeCodes is not initialized - cannot use LCSpec things ...".warn;
 			^nil;
 		};
 
-		LifeCodes.instance.specs[family].isNil.if {
-			LifeCodes.instance.specs[family] = super.new.init(family);
+		runtime = LifeCodes.instance.runtime;
+
+		runtime.specs[family].isNil.if {
+			runtime.specs[family] = super.new.init(family);
 		};
 
 		domain.isNil.if {
-		   	LifeCodes.instance.specs[family];
+		   	runtime.specs[family];
 		};
 
-		LifeCodes.instance.specs[family].addDomainFunction(domain, function);
-		^LifeCodes.instance.specs[family];
+		runtime.specs[family].addDomainFunction(domain, function);
+		^runtime.specs[family];
 	}
 
 	init {|id|
-
 		family = id;
-
 		domainFunctions = ();
+		runtime = LifeCodes.instance.runtime;
 
 		// "Created LCSpec with ID: %".format(id).postln;
 		^this;
 	}
 
 	prMergeTable {|src, dst|
-		var allKeys = src.keys.reject {|key| key == \blocks};
+		var allKeys = src.keys.reject {|key| [\blocks, \data].includes(key) };
 
 		allKeys.do {|key|
 			key.asString.beginsWith("on_").if({
@@ -43,7 +47,7 @@ LCSpec {
 				dst[key].isNil.if {
 					dst[key] = List();
 				};
-				dst[key].add(src[key]);
+				dst[key].add(LCBlockFunctionReference(src[key], currentLoadDomain, this));
 			}, {
 				// check if we override something to warn
 				dst[key].isNil.not.if {
@@ -58,6 +62,10 @@ LCSpec {
 
 	define {|def|
 		this.prMergeTable(def, table);
+
+		def[\data].isNil.not.if {
+			this.prMergeTable(def[\data], table[\data]);
+		};
 
 		def[\blocks].isNil.not {
 			def[\blocks].keys.do {|blockId|
@@ -80,11 +88,20 @@ LCSpec {
 		domainFunctions[domain] = function;
 	}
 
+	getLifecycleFunctions {|phase|
+		var ret = nil;
+		table[phase].isNil.not.if({
+			ret = table[phase].collect({|ref| ref.bind(this, LifeCodes.instance)});
+		});
+		^ret;
+	}
+
 	compileDomainFunctions {
 		var domainKeys = domainFunctions.keys.asArray.sort;
 		table = (
 			\family: family,
-			\blocks: ()
+			\blocks: (),
+			\data: ()
 		);
 
 		domainKeys.do {|domainKey|
@@ -95,5 +112,48 @@ LCSpec {
 			table.postln;
 			currentLoadDomain = nil;
 		};
+	}
+
+	asString {
+		^"LCSpec(\%)".format(family);
+	}
+}
+
+/*
+Somehow this seems a bit too much structure .. let's see if it is really needed.
+*/
+
+LCBlockFunctionReference {
+	var <function;
+	var <domain;
+	var <spec;
+
+	*new {|function, domain, spec|
+		^super.newCopyArgs(function, domain, spec).init;
+	}
+
+	init {
+
+	}
+
+	bind {|...args|
+		^LCExecutionUnit(this, args);
+	}
+}
+
+LCExecutionUnit {
+	var <ref;
+	var <args;
+
+	*new {|ref, args|
+		^super.newCopyArgs(ref, args).init;
+	}
+
+	init {
+
+	}
+
+	execute {
+		^ref.function.value(*args);
 	}
 }

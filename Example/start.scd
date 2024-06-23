@@ -4,7 +4,8 @@ l = LifeCodes(
 	scriptsPath: basePath +/+ "scripts",
 	samplesPath: basePath +/+ "samples",
 	options: (
-		\dryRun: true
+		\runDry: true,
+		\ignoreDomains: []
 	)
 )
 )
@@ -32,7 +33,10 @@ l.reloadSamples;
 
 
 
-// *** Playground for LCSpec ***
+// *** Playground for LCdef ***
 
-LCSpec(\ok)
-l.dump
+LCdef(\ok, \dump)
+
+LCdef(\ok)
+
+l.runtime.contexts[\ok]

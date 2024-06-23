@@ -1,8 +1,10 @@
 LCSpec {
 	var <family;
 	var <table;
-	var domainFunctions;
 
+	var <hasSubject = true;
+
+	var domainFunctions;
 	var currentLoadDomain = nil;
 
 	var runtime;
@@ -12,6 +14,11 @@ LCSpec {
 
 		LifeCodes.instance.isNil.if {
 			"LifeCodes is not initialized - cannot use LCSpec things ...".warn;
+			^nil;
+		};
+
+		LifeCodes.instance.options[\ignoreDomains].includes(domain).if {
+			"Ignored domain '%'for '%' ...".format(domain, family).postln;
 			^nil;
 		};
 
@@ -116,6 +123,14 @@ LCSpec {
 
 	asString {
 		^"LCSpec(\%)".format(family);
+	}
+
+	// here is where we look our own table and copy things into members
+	buildIndex {
+		// check if any of the blocks is a subject
+		table.blocks.do {|block|
+			hasSubject = hasSubject || (block[\type] == \subject);
+		};
 	}
 }
 

@@ -6,6 +6,18 @@ Temporal Roles:
 // (do we need more actually? TemporalFunction should maybe also have the ability to as well store a non-temporal function
 
 --> maybe it is actually not so hard!
+--> Maybe we could have a seperate object which represents the runtime queue
+
+
+Command sequences (and lookup rules)
+
+[subject] <- always also controls the family - subjects cannot inherit
+[action]
+[modifiers]
+
+[block arg1 arg2 arg3] arguments are always positional, if not present default values will be taken (or loaded from block instance data block)
+
+[block:id arg1 arg2 arg3] id allows to reference specific blocks (so that blocks can be discerned or specific data can be attached to a block)
 */
 
 LifeCodes {
@@ -44,7 +56,7 @@ LifeCodes {
 
 		var defaultOptions = (
 			\server: Server.default,
-			\dryRun: false,
+			\runDry: false,
 			\numAudioChannels: 4,
 			\audioMixMode: \passThrough,
 			\port: 57150,
@@ -52,7 +64,8 @@ LifeCodes {
 			\outDevice: nil,
 			\sampleRate: 48000,
 			\action: {},
-			\quitOnFatalError: false
+			\quitOnFatalError: false,
+			\ignoreDomains: []
 		);
 
 		instance.isNil.not.if {
@@ -139,7 +152,20 @@ LifeCodes {
 			var fileName = file.fileName;
 			fileName.beginsWith("on").if ({
 				scriptExecutionPhases.do {|phase|
-					fileName.beginsWith(phase).if {addScriptFile.value(phase.asSymbol, file);};
+					fileName.beginsWith(phase).if {
+						var tokens = fileName.split($_);
+						(tokens.size > 2).if({
+							// take off file extension if needed
+							options[\ignoreDomains].includes(tokens[2].split($.)[0].asSymbol).not.if ({
+								addScriptFile.value(phase.asSymbol, file);
+							}, {
+								addScriptFile.value(\ignored, file);
+							});
+						}, {
+							// always add - bit a fringe case
+							addScriptFile.value(phase.asSymbol, file);
+						});
+					};
 				};
 			}, {
 				fileName.beginsWith("_").if ({
@@ -270,7 +296,7 @@ LifeCodes {
 
 		loadingTask = {
 
-			options.dryRun.if {
+			options[\runDry].if {
 				"\n\nDry run: Skipping booting server as well as on_preload and on_load scripts.".postln;
 			};
 
@@ -305,7 +331,7 @@ LifeCodes {
 
 		this.prExecuteScriptsForLifecyclePhase(\on_init);
 
-		options.dryRun.not.if {
+		options[\runDry].not.if {
 			this.prBootServer;
 			this.prExecuteScriptsForLifecyclePhase(\on_preload);
 			this.prLoadSamples;

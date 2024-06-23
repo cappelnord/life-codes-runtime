@@ -5,6 +5,8 @@ LCRuntime {
 	var <contexts;
 	var index;
 
+	var specKeys;
+
 
 	*new {|lc|
 		^super.newCopyArgs(lc).init;
@@ -17,7 +19,9 @@ LCRuntime {
 	compile {
 		"\n*** COMPILING SPECS ***".postln;
 
-		specs.keys.asArray.sort.do {|key|
+		specKeys = specs.keys.asArray.sort;
+
+		specKeys.do {|key|
 			specs[key].compileDomainFunctions;
 		};
 	}
@@ -25,11 +29,13 @@ LCRuntime {
 	buildIndex {
 		"\n*** BUILD INDEX ***".postln;
 
+
+
 		// the index is a lookup of all code blocks with a reference
 		// to all specs that have definitions of the codeblock - this will
 		// be the basis to retrieve functions to execute for each block/command
 
-		specs.keys.asArray.sort.do {|key|
+		specKeys.do {|key|
 			var spec = specs[key];
 			spec.table[\blocks].keys.asArray.sort.do {|blockKey|
 				index[blockKey].isNil.if {
@@ -39,7 +45,10 @@ LCRuntime {
 			};
 		};
 
-		index.postln;
+		// let all specs index themselves in order to copy data from the table into member variables
+		specKeys.do {|key|
+			specs[key].buildIndex;
+		};
 	}
 
 	executeSpecLifecyclePhase {|phase, queue=\runtime|
@@ -66,6 +75,7 @@ LCRuntime {
 
 	prInitData {
 		specs = ();
+		contexts = ();
 		index = ();
 	}
 }

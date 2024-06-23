@@ -1,5 +1,5 @@
 LCSpec {
-	var <family;
+	var <id;
 	var <table;
 
 	var <hasSubject = true;
@@ -9,7 +9,9 @@ LCSpec {
 
 	var runtime;
 
-	*new {|family, domain=nil, function=nil|
+	var isLoaded = false;
+
+	*new {|familyId, domain=nil, function=nil|
 		var runtime;
 
 		LifeCodes.instance.isNil.if {
@@ -18,26 +20,26 @@ LCSpec {
 		};
 
 		LifeCodes.instance.options[\ignoreDomains].includes(domain).if {
-			"Ignored domain '%'for '%' ...".format(domain, family).postln;
+			"Ignored domain '%'for '%' ...".format(domain, familyId).postln;
 			^nil;
 		};
 
 		runtime = LifeCodes.instance.runtime;
 
-		runtime.specs[family].isNil.if {
-			runtime.specs[family] = super.new.init(family);
+		runtime.specs[familyId].isNil.if {
+			runtime.specs[familyId] = super.new.init(familyId);
 		};
 
 		domain.isNil.if {
-		   	runtime.specs[family];
+		   	runtime.specs[familyId];
 		};
 
-		runtime.specs[family].addDomainFunction(domain, function);
-		^runtime.specs[family];
+		runtime.specs[familyId].addDomainFunction(domain, function);
+		^runtime.specs[familyId];
 	}
 
-	init {|id|
-		family = id;
+	init {|familyId|
+		id = familyId;
 		domainFunctions = ();
 		runtime = LifeCodes.instance.runtime;
 
@@ -95,7 +97,7 @@ LCSpec {
 		domainFunctions[domain] = function;
 	}
 
-	getLifecycleFunctions {|phase|
+	getLifecycleExecutionUnits {|phase|
 		var ret = nil;
 		table[phase].isNil.not.if({
 			ret = table[phase].collect({|ref| ref.bind(this, LifeCodes.instance)});
@@ -103,17 +105,22 @@ LCSpec {
 		^ret;
 	}
 
+	executeLifecyclePhase {|phase, queue=\runtime|
+		"Execute Spec Lifecycle Phase: %/%".format(id, phase).postln;
+		runtime.executeList(this.getLifecycleExecutionUnits(phase), queue);
+	}
+
 	compileDomainFunctions {
 		var domainKeys = domainFunctions.keys.asArray.sort;
 		table = (
-			\family: family,
+			\family: id,
 			\blocks: (),
 			\data: ()
 		);
 
 		domainKeys.do {|domainKey|
 			var ret;
-			"%/% ...".format(family, domainKey).postln;
+			"%/% ...".format(id, domainKey).postln;
 			currentLoadDomain = domainKey;
 			ret = domainFunctions[domainKey].value(this, LifeCodes.instance);
 			table.postln;
@@ -122,7 +129,7 @@ LCSpec {
 	}
 
 	asString {
-		^"LCSpec(\%)".format(family);
+		^"LCSpec(\%)".format(id);
 	}
 
 	// here is where we look our own table and copy things into members
@@ -130,6 +137,20 @@ LCSpec {
 		// check if any of the blocks is a subject
 		table.blocks.do {|block|
 			hasSubject = hasSubject || (block[\type] == \subject);
+		};
+	}
+
+	load {
+		isLoaded.not.if {
+			this.executeLifecyclePhase(\on_load);
+			isLoaded = true;
+		};
+	}
+
+	unload {
+		isLoaded.if {
+			this.executeLifecyclePhase(\on_unload);
+			isLoaded = false;
 		};
 	}
 }

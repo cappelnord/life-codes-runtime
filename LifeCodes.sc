@@ -340,13 +340,22 @@ LifeCodes {
 
 		this.prExecuteScriptsForLifecyclePhase(\spec);
 
-		this.runtime.compile;
+		runtime.compile;
 
-		this.runtime.executeSpecLifecyclePhase(\on_init, \loader);
+		this.prExecuteAllSpecsInit;
 
-		this.runtime.buildIndex;
+		runtime.buildIndex;
 
 		this.prExecuteScriptsForLifecyclePhase(\on_postload);
+	}
+
+	prExecuteAllSpecsInit {
+		"\n*** EXECUTE ALL SPECS ON_INIT ***".postln;
+
+		runtime.specs.keys.asArray.sort.do {|key|
+			var spec = runtime.specs[key];
+			spec.executeLifecyclePhase(\on_init, \loader);
+		};
 	}
 
 	prBootServer {

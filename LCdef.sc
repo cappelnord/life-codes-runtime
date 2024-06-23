@@ -35,7 +35,7 @@ LCdef {
 			};
 
 			runtime.contexts[contextId].isNil.if {
-				runtime.contexts[contextId] = LCContext(contextId, family);
+				runtime.addContext(LCContext(contextId, family));
 			};
 
 			context = runtime.contexts[contextId];
@@ -57,24 +57,19 @@ LCContext {
 	var <id;
 	var <family;
 
-	var <isLoaded = false;
+	var runtime;
 
 	*new {|id, family|
 		^super.newCopyArgs(id, family).init;
 	}
 
 	init {
-
+		runtime = LifeCodes.instance.runtime;
 	}
 
+	// called by execute or manually
 	load {
-
-		isLoaded = true;
-	}
-
-	unload {
-
-		isLoaded = false;
+		family.load;
 	}
 
 	updateData {|data|
@@ -82,6 +77,10 @@ LCContext {
 	}
 
 	executeCommand {|command|
+		this.load;
+	}
 
+	clear {|unloadFamily=true|
+		runtime.removeContext(this, unloadFamily);
 	}
 }

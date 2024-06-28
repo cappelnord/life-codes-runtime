@@ -3,9 +3,11 @@ LCRuntime {
 
 	var <specs;
 	var <contexts;
-	var index;
 
+	var index;
 	var specKeys;
+
+	var <typesDict;
 
 
 	*new {|lc|
@@ -43,6 +45,12 @@ LCRuntime {
 				};
 				index[blockKey].add(spec);
 			};
+
+			// at the same time we keep an index of all specs per type
+			spec.table[\type].isNil.not.if {
+			    typesDict[spec.table[\type]].isNil.if {typesDict[spec.table[\type]] = List()};
+			    typesDict[spec.table[\type]].add(spec.id);
+		    };
 		};
 
 		// let all specs index themselves in order to copy data from the table into member variables
@@ -62,6 +70,7 @@ LCRuntime {
 		specs = ();
 		contexts = ();
 		index = ();
+		typesDict = ();
 	}
 
 	addContext {|context|
@@ -73,12 +82,15 @@ LCRuntime {
 		contexts.removeAt(context.id);
 
 		unloadFamily.if {
-			var requiresUnload = true;
+			var contextsWithSameFamily = 0;
+
 			contexts.do {|other|
-				requiresUnload = requiresUnload && (other.family != context.family);
+				(other.family == family).if {
+					contextsWithSameFamily = contextsWithSameFamily + 1;
+				}
 			};
 
-			requiresUnload.do {
+			(contextsWithSameFamily == 0).if {
 				family.unload;
 			};
 		};

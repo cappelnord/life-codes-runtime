@@ -42,7 +42,7 @@ LCdef {
 		};
 
 		data.isNil.not.if {
-			context.updateData(data);
+			context.updateData(data, false);
 		};
 
 		contentIsCommand.if {
@@ -56,6 +56,10 @@ LCdef {
 LCContext {
 	var <id;
 	var <family;
+	var <data;
+
+	var <cmd = nil;
+	var <lastCmd = nil;
 
 	var runtime;
 
@@ -64,7 +68,18 @@ LCContext {
 	}
 
 	init {
+		data = ();
 		runtime = LifeCodes.instance.runtime;
+		this.executeLifecyclePhase(\on_ctx_create);
+	}
+
+	executeLifecyclePhase {|phase|
+		"Execute Context Lifecycle Phase: %/%/%".format(id, family.id, phase).postln;
+		runtime.executeList(
+			family.getLifecycleFunctionReferences(phase)
+			.collect {|f| f.bind(this, family, LifeCodes.instance)},
+			\runtime
+		);
 	}
 
 	// called by execute or manually
@@ -72,15 +87,23 @@ LCContext {
 		family.load;
 	}
 
-	updateData {|data|
+	updateData {|data, executeFunctions=true|
+		// TODO: Merge Data
 
+		executeFunctions.if {
+			this.executeLifecyclePhase(\on_ctx_create);
+			// TODO: send up to command (to notify blocks)
+		};
 	}
 
 	executeCommand {|command|
+
+		// this is just to ensure that the family is loaded
 		this.load;
 	}
 
 	clear {|unloadFamily=true|
 		runtime.removeContext(this, unloadFamily);
+		this.executeLifecyclePhase(\on_ctx_clear);
 	}
 }

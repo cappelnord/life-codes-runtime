@@ -5,7 +5,8 @@ l = LifeCodes(
 	samplesPath: basePath +/+ "samples",
 	options: (
 		\runDry: true,
-		\ignoreDomains: []
+		\ignoreDomains: [],
+		\exportPath: basePath +/+ "specs.json"
 	)
 )
 )
@@ -35,8 +36,18 @@ l.reloadSamples;
 
 // *** Playground for LCdef ***
 
-LCdef(\ok, \dump)
+LCdef(\ok, \universal_pattern)
+LCdef(\bra, \dump)
 
-LCdef(\ok)
+LCdef(\bra).family == LCdef(\ok).family
 
-l.runtime.contexts[\ok]
+LCdef(\ok).load
+LCdef(\ok).clear
+LCdef(\bra).clear
+
+
+l.runtime.specs[\universal_pattern].table.blocks
+
+l.runtime.typesDict
+
+l.options[\exportPath]

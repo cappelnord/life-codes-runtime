@@ -18,6 +18,14 @@ Command sequences (and lookup rules)
 [block arg1 arg2 arg3] arguments are always positional, if not present default values will be taken (or loaded from block instance data block)
 
 [block:id arg1 arg2 arg3] id allows to reference specific blocks (so that blocks can be discerned or specific data can be attached to a block)
+
+
+We also might need to mark blocks to belong to a specific family - otherwise we create too much ambiguity. Only these blocks are then actually exported. While executing this does not apply - we go after everything that maches.
+
+We basically need a keyword here or smth - here parameters, display_name, etc. should also be declared.
+
+Alternive is that a keyword is used to declare that a family extends the definition of a block; but that can also create ambiguity.
+
 */
 
 LifeCodes {
@@ -65,7 +73,8 @@ LifeCodes {
 			\sampleRate: 48000,
 			\action: {},
 			\quitOnFatalError: false,
-			\ignoreDomains: []
+			\ignoreDomains: [],
+			\exportPath: nil
 		);
 
 		instance.isNil.not.if {
@@ -347,6 +356,12 @@ LifeCodes {
 		runtime.buildIndex;
 
 		this.prExecuteScriptsForLifecyclePhase(\on_postload);
+
+		options[\exportPath].postln;
+
+		options[\exportPath].isNil.not.if {
+			LCJSONExport.write(options.exportPath, runtime);
+		};
 	}
 
 	prExecuteAllSpecsInit {

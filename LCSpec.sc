@@ -2,7 +2,8 @@ LCSpec {
 	var <id;
 	var <table;
 
-	var <hasSubject = true;
+	var <hasSubject = false;
+	var <matches;
 
 	var domainFunctions;
 	var currentLoadDomain = nil;
@@ -38,9 +39,15 @@ LCSpec {
 		^runtime.specs[familyId];
 	}
 
+	prInitData {
+		domainFunctions = ();
+		matches = [];
+    }
+
 	init {|familyId|
 		id = familyId;
-		domainFunctions = ();
+        this.prInitData;
+
 		runtime = LifeCodes.instance.runtime;
 
 		// "Created LCSpec with ID: %".format(id).postln;
@@ -97,12 +104,14 @@ LCSpec {
 		domainFunctions[domain] = function;
 	}
 
+	getLifecycleFunctionReferences {|phase|
+		^table[phase];
+	}
+
 	getLifecycleExecutionUnits {|phase|
-		var ret = nil;
-		table[phase].isNil.not.if({
-			ret = table[phase].collect({|ref| ref.bind(this, LifeCodes.instance)});
+		^this.getLifecycleFunctionReferences(phase).collect({|ref|
+			ref.bind(this, LifeCodes.instance)
 		});
-		^ret;
 	}
 
 	executeLifecyclePhase {|phase, queue=\runtime|
@@ -135,9 +144,39 @@ LCSpec {
 	// here is where we look our own table and copy things into members
 	buildIndex {
 		// check if any of the blocks is a subject
-		table.blocks.do {|block|
+		table[\blocks].do {|block|
 			hasSubject = hasSubject || (block[\type] == \subject);
 		};
+
+		// create a list of all compatible families
+
+		matches = IdentitySet();
+
+		// let's first add our own matches
+		table[\compatibility].do {|match|
+			(match == \_all).if ({
+				matches.addAll(runtime.specs.keys);
+			}, {
+				match.asString.beginsWith("type_").if({
+					matches.addAll(runtime.typesDict[match.asString[5..].asSymbol]);
+				}, {
+					matches.add(match);
+				});
+		    });
+		};
+
+		// let's see if we are compatible with any other spec
+		runtime.specs.do {|spec|
+			spec.table[\compatibility].isNil.not.if {
+				var cands = [\_all, id, ("type_" ++ table[\type]).asSymbol];
+				spec.table[\compatibility].includesAny(cands).if {
+					matches.add(spec.id);
+				};
+			};
+		};
+
+		matches.remove(id);
+		matches = matches.asList.sort;
 	}
 
 	load {

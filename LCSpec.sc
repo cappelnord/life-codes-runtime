@@ -27,16 +27,16 @@ LCSpec {
 
 		runtime = LifeCodes.instance.runtime;
 
-		runtime.specs[familyId].isNil.if {
-			runtime.specs[familyId] = super.new.init(familyId);
+		runtime.families[familyId].isNil.if {
+			runtime.families[familyId] = super.new.init(familyId);
 		};
 
 		domain.isNil.if {
-		   	runtime.specs[familyId];
+		   	runtime.families[familyId];
 		};
 
-		runtime.specs[familyId].addDomainFunction(domain, function);
-		^runtime.specs[familyId];
+		runtime.families[familyId].addDomainFunction(domain, function);
+		^runtime.families[familyId];
 	}
 
 	prInitData {
@@ -104,6 +104,7 @@ LCSpec {
 		domainFunctions[domain] = function;
 	}
 
+	// TODO: This should likely also aggregate from all related families
 	getLifecycleFunctionReferences {|phase|
 		^table[phase];
 	}
@@ -115,7 +116,7 @@ LCSpec {
 	}
 
 	executeLifecyclePhase {|phase, queue=\runtime|
-		"Execute Spec Lifecycle Phase: %/%".format(id, phase).postln;
+		"Execute Family Lifecycle Phase: %/%".format(id, phase).postln;
 		runtime.executeList(this.getLifecycleExecutionUnits(phase), queue);
 	}
 
@@ -141,6 +142,8 @@ LCSpec {
 		^"LCSpec(\%)".format(id);
 	}
 
+	// TODO THIS MUST BE REWORKED
+
 	// here is where we look our own table and copy things into members
 	buildIndex {
 		// check if any of the blocks is a subject
@@ -165,12 +168,12 @@ LCSpec {
 		    });
 		};
 
-		// let's see if we are compatible with any other spec
-		runtime.specs.do {|spec|
-			spec.table[\compatibility].isNil.not.if {
+		// let's see if we are compatible with any other family
+		runtime.families.do {|family|
+			family.table[\compatibility].isNil.not.if {
 				var cands = [\_all, id, ("type_" ++ table[\type]).asSymbol];
-				spec.table[\compatibility].includesAny(cands).if {
-					matches.add(spec.id);
+				family.table[\compatibility].includesAny(cands).if {
+					matches.add(family.id);
 				};
 			};
 		};
@@ -201,10 +204,10 @@ Somehow this seems a bit too much structure .. let's see if it is really needed.
 LCBlockFunctionReference {
 	var <function;
 	var <domain;
-	var <spec;
+	var <family;
 
-	*new {|function, domain, spec|
-		^super.newCopyArgs(function, domain, spec).init;
+	*new {|function, domain, family|
+		^super.newCopyArgs(function, domain, family).init;
 	}
 
 	init {

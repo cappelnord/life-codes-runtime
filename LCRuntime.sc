@@ -1,11 +1,11 @@
 LCRuntime {
 	var lc;
 
-	var <specs;
+	var <families;
 	var <contexts;
 
 	var index;
-	var specKeys;
+	var familyKeys;
 
 	var <typesDict;
 
@@ -19,12 +19,12 @@ LCRuntime {
 	}
 
 	compile {
-		"\n*** COMPILING SPECS ***".postln;
+		"\n*** COMPILING SPECS/FAMILIES ***".postln;
 
-		specKeys = specs.keys.asArray.sort;
+		familyKeys = families.keys.asArray.sort;
 
-		specKeys.do {|key|
-			specs[key].compileDomainFunctions;
+		familyKeys.do {|key|
+			families[key].compileDomainFunctions;
 		};
 	}
 
@@ -34,28 +34,28 @@ LCRuntime {
 
 
 		// the index is a lookup of all code blocks with a reference
-		// to all specs that have definitions of the codeblock - this will
-		// be the basis to retrieve functions to execute for each block/command
+		// to all families that have definitions of the codeblock - this will
+		// potentially be obselete, now that "inheritance" is redesigned
 
-		specKeys.do {|key|
-			var spec = specs[key];
-			spec.table[\blocks].keys.asArray.sort.do {|blockKey|
+		familyKeys.do {|key|
+			var family = families[key];
+			family.table[\blocks].keys.asArray.sort.do {|blockKey|
 				index[blockKey].isNil.if {
 					index[blockKey] = List();
 				};
-				index[blockKey].add(spec);
+				index[blockKey].add(family);
 			};
 
-			// at the same time we keep an index of all specs per type
-			spec.table[\type].isNil.not.if {
-			    typesDict[spec.table[\type]].isNil.if {typesDict[spec.table[\type]] = List()};
-			    typesDict[spec.table[\type]].add(spec.id);
+			// at the same time we keep an index of all families per type
+			family.table[\type].isNil.not.if {
+			    typesDict[family.table[\type]].isNil.if {typesDict[family.table[\type]] = List()};
+			    typesDict[family.table[\type]].add(family.id);
 		    };
 		};
 
-		// let all specs index themselves in order to copy data from the table into member variables
-		specKeys.do {|key|
-			specs[key].buildIndex;
+		// let all families index themselves in order to copy data from the table into member variables
+		familyKeys.do {|key|
+			families[key].buildIndex;
 		};
 	}
 
@@ -67,7 +67,7 @@ LCRuntime {
 	}
 
 	prInitData {
-		specs = ();
+		families = ();
 		contexts = ();
 		index = ();
 		typesDict = ();

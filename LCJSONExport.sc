@@ -17,8 +17,8 @@ LCJSONExport {
 
 	*generateFamilySpecs {|runtime|
 		var ret = ();
-		runtime.specs.do {|spec|
-			ret[spec.id] = LCJSONExport.specContent(spec);
+		runtime.families.do {|family|
+			ret[family.id] = LCJSONExport.familyContent(family);
 		};
 		^ret;
 	}
@@ -27,16 +27,17 @@ LCJSONExport {
 		^();
 	}
 
-	*specContent {|spec|
+	*familyContent {|family|
 		var color = Color.white;
 
-		spec.table.color.isNil.not.if {
-			color = spec.table.color;
+		family.table.color.isNil.not.if {
+			color = family.table.color;
 		};
 
 		^(
-			\id: spec.id,
-			\color: (\red: color.red, \green: color.green, \blue: color.blue)
+			\id: family.id,
+			\color: (\red: color.red, \green: color.green, \blue: color.blue),
+			\matches: family.matches
 		)
 	}
 }

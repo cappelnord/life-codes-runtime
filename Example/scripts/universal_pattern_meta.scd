@@ -7,7 +7,7 @@ LCSpec(\universal_pattern, \meta, {|spec|
 	spec.defineBlock(\mute, (
 		\type: \action,
 
-		\on_execute: {|block, cmd, ctx, spec|
+		\on_execute: {|block, cmd, ctx, family, spec|
 			"universal_pattern mute".postln;
 		}
 	));

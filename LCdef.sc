@@ -22,7 +22,7 @@ LCdef {
 				family = command[0][0].asSymbol;
 			});
 
-			family = runtime.specs[family];
+			family = runtime.families[family];
 
 			family.isNil.if {
 				"Could not initialize context with family '%' ...".format(command).warn;

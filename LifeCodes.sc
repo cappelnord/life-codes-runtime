@@ -26,6 +26,52 @@ We basically need a keyword here or smth - here parameters, display_name, etc. s
 
 Alternive is that a keyword is used to declare that a family extends the definition of a block; but that can also create ambiguity.
 
+--> let's call it: primary: true
+
+Well, we will also need something like a BlockSpec which houses all the primary Blocks (and links all the families that relate to it) (?) But at least some data structure that houses parameters and such.
+
+Do we not create a mess here? There will be many action blocks called "play" but the functionality will almost always be only relevant to their own family. If matching is solely done via "matches" then it might be fine, as it then would create kind of a tree structure.
+
+universal
+a: matches [universal]
+b: matches [universal, a]
+
+--> if the block belongs to a then it should not execute functions that are defined in b. But is it like this? Maybe one must revisit the compatibility thingie and see how this can be structured sensibly.
+
+currentlly there is the global index which contains references to all families that defined the block; but maybe when walking the spec we can still check how things are compatible.
+
+Or are we overthinking things and it is actually kind of fine to be that messy in this live coding language?
+
+it is a bit of a kuddelmuddel ...
+
+In a way the matches are too naive as they go both ways and what actually is needed is to have a clear understanding which family can inherit from which.
+
+Maybe families must just explicitly declare which families they want to inherit from (+ then we go recursively down).
+
+We might want/need to inherit/extend upwards though - but this would then be more the exception?
+
+--> so, what about:
+
+inherits: (use a different term here)
+extends: (can also include a type_)
+
+--> Every cmd anyways belongs to a family (is it actually a class)?
+
+How does matches differ from a lookup table? It seems to be the inverted data structure:
+
+universal matches universal, a and b
+a matches a and b
+b matches b
+
+extends wäre dann in beide Richtungen?
+
+lookupSequence würde dann am anfang gebaut werden: [this, depthFirst, extenders] ...
+
+now a question is: do all lifecycle functions get inherited? probably! This would require a bit of a rewrite .. but OK
+
+Is the exedcution order then actually up the class tree + then extenders?
+
+
 */
 
 LifeCodes {
@@ -367,9 +413,9 @@ LifeCodes {
 	prExecuteAllSpecsInit {
 		"\n*** EXECUTE ALL SPECS ON_INIT ***".postln;
 
-		runtime.specs.keys.asArray.sort.do {|key|
-			var spec = runtime.specs[key];
-			spec.executeLifecyclePhase(\on_init, \loader);
+		runtime.families.keys.asArray.sort.do {|key|
+			var family = runtime.families[key];
+			family.executeLifecyclePhase(\on_init, \loader);
 		};
 	}
 

@@ -7,7 +7,7 @@ LCRuntime {
 	var index;
 	var familyKeys;
 
-	var <typesDict;
+	var <typesLookup;
 
 
 	*new {|lc|
@@ -31,8 +31,6 @@ LCRuntime {
 	buildIndex {
 		"\n*** BUILD INDEX ***".postln;
 
-
-
 		// the index is a lookup of all code blocks with a reference
 		// to all families that have definitions of the codeblock - this will
 		// potentially be obselete, now that "inheritance" is redesigned
@@ -48,14 +46,37 @@ LCRuntime {
 
 			// at the same time we keep an index of all families per type
 			family.table[\type].isNil.not.if {
-			    typesDict[family.table[\type]].isNil.if {typesDict[family.table[\type]] = List()};
-			    typesDict[family.table[\type]].add(family.id);
+			    typesLookup[family.table[\type]].isNil.if {typesLookup[family.table[\type]] = List()};
+			    typesLookup[family.table[\type]].add(family);
 		    };
 		};
 
+		// let's add all the extension - we have the type index by now
+		familyKeys.do {|key|
+			var family = families[key];
+			family.table[\extends].do {|key|
+				key.asString.beginsWith("type_").if ({
+					var type = key.asString[5..].asSymbol;
+					typesLookup[type].do {|other|
+						other.addExtensionFamily(family);
+					};
+				}, {
+					families[key].addExtensionFamily(family);
+				})
+			};
+		};
+
 		// let all families index themselves in order to copy data from the table into member variables
+		// and recursively build the inheritance tree
+
 		familyKeys.do {|key|
 			families[key].buildIndex;
+		};
+
+		// from the inheritance tree we deduct which families match to which family
+
+		familyKeys.do {|key|
+			families[key].buildMatches;
 		};
 	}
 
@@ -70,7 +91,7 @@ LCRuntime {
 		families = ();
 		contexts = ();
 		index = ();
-		typesDict = ();
+		typesLookup = ();
 	}
 
 	addContext {|context|

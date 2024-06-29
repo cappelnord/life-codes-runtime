@@ -20,14 +20,6 @@ Command sequences (and lookup rules)
 [block:id arg1 arg2 arg3] id allows to reference specific blocks (so that blocks can be discerned or specific data can be attached to a block)
 
 
-We also might need to mark blocks to belong to a specific family - otherwise we create too much ambiguity. Only these blocks are then actually exported. While executing this does not apply - we go after everything that maches.
-
-We basically need a keyword here or smth - here parameters, display_name, etc. should also be declared.
-
-Alternive is that a keyword is used to declare that a family extends the definition of a block; but that can also create ambiguity.
-
---> let's call it: primary: true
-
 Well, we will also need something like a BlockSpec which houses all the primary Blocks (and links all the families that relate to it) (?) But at least some data structure that houses parameters and such.
 
 Do we not create a mess here? There will be many action blocks called "play" but the functionality will almost always be only relevant to their own family. If matching is solely done via "matches" then it might be fine, as it then would create kind of a tree structure.

@@ -1,6 +1,6 @@
 LCSpec(\universal_pattern, \meta, {|spec|
 	spec.define((
-		\compatibility: [\type_pattern],
+		\extends: [\type_pattern],
 		\color: Color.white,
 	));
 

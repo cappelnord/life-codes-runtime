@@ -4,8 +4,6 @@ LCSpec(\dump, \meta, {|spec|
 		\color: Color.green,
 		\quant: 2,
 
-		// TODO: how to express compatibility
-
 		\on_init: {|spec|
 			"on_init meta".postln;
 		},

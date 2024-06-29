@@ -1,17 +1,4 @@
 LCSpec {
-	var <id;
-	var <table;
-
-	var <hasSubject = false;
-	var <matches;
-
-	var domainFunctions;
-	var currentLoadDomain = nil;
-
-	var runtime;
-
-	var isLoaded = false;
-
 	*new {|familyId, domain=nil, function=nil|
 		var runtime;
 
@@ -28,7 +15,7 @@ LCSpec {
 		runtime = LifeCodes.instance.runtime;
 
 		runtime.families[familyId].isNil.if {
-			runtime.families[familyId] = super.new.init(familyId);
+			runtime.families[familyId] = LCFamily.new.init(familyId);
 		};
 
 		domain.isNil.if {
@@ -38,10 +25,34 @@ LCSpec {
 		runtime.families[familyId].addDomainFunction(domain, function);
 		^runtime.families[familyId];
 	}
+}
+
+LCFamily {
+	var <id;
+	var <table;
+
+	var <hasSubject = false;
+
+	// which families does this block match to?
+	var <matches;
+
+	// which families are looked through for code functions?
+	var <lookup;
+
+	var extensionFamilies;
+
+	var domainFunctions;
+	var currentLoadDomain = nil;
+
+	var runtime;
+
+	var isLoaded = false;
 
 	prInitData {
 		domainFunctions = ();
-		matches = [];
+		matches = List();
+		lookup = List();
+		extensionFamilies = List();
     }
 
 	init {|familyId|
@@ -142,44 +153,59 @@ LCSpec {
 		^"LCSpec(\%)".format(id);
 	}
 
+	addExtensionFamily {|extension|
+		"Extension".postln;
+		extension.id.postln;
+		extensionFamilies.add(extension);
+	}
+
 	// TODO THIS MUST BE REWORKED
 
 	// here is where we look our own table and copy things into members
 	buildIndex {
+
 		// check if any of the blocks is a subject
+		// TODO: maybe also only if it is marked as primary
 		table[\blocks].do {|block|
 			hasSubject = hasSubject || (block[\type] == \subject);
 		};
 
 		// create a list of all compatible families
+		lookup = OrderedIdentitySet();
+		lookup.add(this);
+		this.traverseLookupTree(lookup, 1);
 
-		matches = IdentitySet();
+		lookup = lookup.asList;
+		id.postln;
+		lookup.collect({|x| x.id}).postln;
+	}
 
-		// let's first add our own matches
-		table[\compatibility].do {|match|
-			(match == \_all).if ({
-				matches.addAll(runtime.specs.keys);
-			}, {
-				match.asString.beginsWith("type_").if({
-					matches.addAll(runtime.typesDict[match.asString[5..].asSymbol]);
-				}, {
-					matches.add(match);
-				});
-		    });
-		};
-
-		// let's see if we are compatible with any other family
+	buildMatches {
+		matches = Set();
+		// matches.addAll(lookup.collect(_.id));
 		runtime.families.do {|family|
-			family.table[\compatibility].isNil.not.if {
-				var cands = [\_all, id, ("type_" ++ table[\type]).asSymbol];
-				family.table[\compatibility].includesAny(cands).if {
-					matches.add(family.id);
-				};
+			family.lookup.includes(this).if {
+				matches.add(family.id);
 			};
 		};
+		matches = matches.asList();
+	}
 
-		matches.remove(id);
-		matches = matches.asList.sort;
+	traverseLookupTree {|set, depth|
+		var candidates = List();
+
+		table[\inheritsFrom].do {|key|
+			candidates.add(runtime.families[key]);
+		};
+
+		candidates.addAll(extensionFamilies);
+
+		candidates.do {|family|
+			set.findMatch(family).isNil.if {
+				set.add(family);
+				family.traverseLookupTree(set, depth+1);
+			};
+		};
 	}
 
 	load {

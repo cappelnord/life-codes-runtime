@@ -159,15 +159,21 @@ LCFamily {
 		extensionFamilies.add(extension);
 	}
 
-	// TODO THIS MUST BE REWORKED
 
 	// here is where we look our own table and copy things into members
 	buildIndex {
 
 		// check if any of the blocks is a subject
-		// TODO: maybe also only if it is marked as primary
 		table[\blocks].do {|block|
 			hasSubject = hasSubject || (block[\type] == \subject);
+		};
+
+		// create block specs for each block that is a primary block
+
+		table[\blocks].keys.do {|key|
+			(table[\blocks][key][\primary] == true).if {
+				runtime.blockSpecs[LCBlockSpec.identifier(key, id)] = LCBlockSpec(key, id, table[\blocks][key]);
+			};
 		};
 
 		// create a list of all compatible families

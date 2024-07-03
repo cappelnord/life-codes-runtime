@@ -59,9 +59,9 @@ extends wäre dann in beide Richtungen?
 
 lookupSequence würde dann am anfang gebaut werden: [this, depthFirst, extenders] ...
 
-now a question is: do all lifecycle functions get inherited? probably! This would require a bit of a rewrite .. but OK
-
 Is the exedcution order then actually up the class tree + then extenders?
+
+b inheritsFrom a
 
 
 */

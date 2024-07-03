@@ -3,8 +3,8 @@ LCRuntime {
 
 	var <families;
 	var <contexts;
+	var <blockSpecs;
 
-	var index;
 	var familyKeys;
 
 	var <typesLookup;
@@ -31,20 +31,11 @@ LCRuntime {
 	buildIndex {
 		"\n*** BUILD INDEX ***".postln;
 
-		// the index is a lookup of all code blocks with a reference
-		// to all families that have definitions of the codeblock - this will
-		// potentially be obselete, now that "inheritance" is redesigned
+		// at the same time we keep an index of all families per type
 
 		familyKeys.do {|key|
 			var family = families[key];
-			family.table[\blocks].keys.asArray.sort.do {|blockKey|
-				index[blockKey].isNil.if {
-					index[blockKey] = List();
-				};
-				index[blockKey].add(family);
-			};
 
-			// at the same time we keep an index of all families per type
 			family.table[\type].isNil.not.if {
 			    typesLookup[family.table[\type]].isNil.if {typesLookup[family.table[\type]] = List()};
 			    typesLookup[family.table[\type]].add(family);
@@ -90,8 +81,8 @@ LCRuntime {
 	prInitData {
 		families = ();
 		contexts = ();
-		index = ();
 		typesLookup = ();
+		blockSpecs = ();
 	}
 
 	addContext {|context|

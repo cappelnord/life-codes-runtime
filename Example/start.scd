@@ -31,7 +31,7 @@ l.bufferLists[\water_bowl].choose.play;
 l.reloadSamples;
 
 
-
+l.runtime.blockSpecs
 
 
 // *** Playground for LCdef ***

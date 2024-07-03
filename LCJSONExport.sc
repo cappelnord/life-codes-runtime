@@ -10,7 +10,7 @@ LCJSONExport {
 	*generate {|runtime|
 		var ret = (
 			\familySpecs: LCJSONExport.generateFamilySpecs(runtime),
-			\blockSpecs: ()
+			\blockSpecs: LCJSONExport.generateBlockSpecs(runtime)
 		);
 		^ret;
 	}
@@ -24,7 +24,11 @@ LCJSONExport {
 	}
 
 	*generateBlockSpecs {|runtime|
-		^();
+		var ret = ();
+		runtime.blockSpecs.do {|blockSpec|
+			ret[blockSpec.id] = LCJSONExport.blockSpecContent(blockSpec);
+		};
+		^ret;
 	}
 
 	*familyContent {|family|
@@ -40,6 +44,17 @@ LCJSONExport {
 			\matches: family.matches
 		)
 	}
+
+	*blockSpecContent {|blockSpec|
+		^(
+			\id: blockSpec.id,
+			\type: blockSpec.type,
+			\name: blockSpec.name,
+			\family: blockSpec.family,
+			\display: blockSpec.display
+		)
+	}
+
 }
 
 + Boolean {

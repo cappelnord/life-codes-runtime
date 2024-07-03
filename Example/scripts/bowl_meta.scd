@@ -6,7 +6,7 @@ LCSpec(\bowl, \meta, {|spec|
 
 	spec.defineBlock(\bowl, (
 		\type: \subject,
-		\primary: \true,
+		\primary: true,
 		\on_execute: {|block, cmd, ctx, family, spec|
 			"bowl subject".postln;
 		}
@@ -14,7 +14,7 @@ LCSpec(\bowl, \meta, {|spec|
 
 	spec.defineBlock(\play, (
 		\type: \action,
-		\primary: \true,
+		\primary: true,
 		\on_execute: {|block, cmd, ctx, family, spec|
 			"bowl play".postln;
 		}

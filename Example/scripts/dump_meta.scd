@@ -97,7 +97,7 @@ LCSpec(\dump, \meta, {|spec|
 
 	spec.defineBlock(\print, (
 		\type: \action,
-		\primary: \true,
+		\primary: true,
 
 		\on_execute: {|block, cmd, ctx, family, spec|
 			"print on_execute".postln;

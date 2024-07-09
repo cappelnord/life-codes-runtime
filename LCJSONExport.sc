@@ -46,12 +46,23 @@ LCJSONExport {
 	}
 
 	*blockSpecContent {|blockSpec|
+		var parameters = List();
+
+		blockSpec.parameters.do {|parameter|
+			parameters.add((
+				\id: parameter.id,
+				\type: parameter.type,
+				\default: parameter.default
+			));
+		}
+
 		^(
 			\id: blockSpec.id,
 			\type: blockSpec.type,
 			\name: blockSpec.name,
 			\family: blockSpec.family,
-			\display: blockSpec.display
+			\display: blockSpec.display,
+			\parameters: parameters
 		)
 	}
 

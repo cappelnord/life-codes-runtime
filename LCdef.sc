@@ -166,17 +166,16 @@ LCCommand {
 		appendModifiers.do {|appendBlockSource|
 			blockInstanceList.add(LCBlockInstance(appendBlockSource, this));
 		};
+		blockInstanceList.postln;
 	}
 }
 
-// houses data and arguments, references block spec, construct from the items in the list
-// data: either take an event/dictionary that initializes data or use argument sequence to construct
-// --> there is a bit of redundancy concerning if the interaction layer will need to deal with the name of arguments or not - let's see!
 LCBlockInstance {
 	var <source;
 	var <cmd;
 
 	var <cleanSource;
+	var <args;
 	var <data;
 	var <spec;
 
@@ -186,6 +185,9 @@ LCBlockInstance {
 
 	init {
 		this.prCleanSource;
+		args = cleanSource[\args];
+		data = cleanSource[\data];
+		// something more to do here?
 	}
 
 	prCleanSource {
@@ -202,13 +204,27 @@ LCBlockInstance {
 		cleanSource.isSequenceableCollection.if {
 			cleanSource = (
 				\name: cleanSource[0],
-				\positionalArguments: cleanSource[1..]
+				\positionalArgs: cleanSource[1..]
 			);
 		};
 
 		// we must find/assign the spec here to resolve positional arguments
 		spec = cmd.ctx.family.findBlockSpec(cleanSource[\name]);
 
-		cleanSource.postln;
+		cleanSource[\args] = cleanSource[\args] ? ();
+
+		spec.parameters.do {|parameter, i|
+			cleanSource[\args][parameter.id].isNil.if {
+				(cleanSource[\positionalArgs].size > i).if ({
+					cleanSource[\args][parameter.id] = parameter.convert(cleanSource[\positionalArgs][i]);
+			    }, {
+					cleanSource[\args][parameter.id] = parameter.default;
+				});
+			};
+		};
+
+		cleanSource[\data] = cleanSource[\data] ? ();
+
+		cleanSource.removeAt(\positionalArgs);
 	}
 }

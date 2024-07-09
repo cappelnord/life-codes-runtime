@@ -38,7 +38,7 @@ l.runtime.blockSpecs
 
 LCdef(\ok, \universal_pattern)
 LCdef(\bra, \dump)
-LCdef(\bra, [[\bla], [\ok]])
+LCdef(\bra, [[\dump, 123], "print"])
 
 LCdef(\bra).family == LCdef(\ok).family
 
@@ -47,7 +47,7 @@ LCdef(\ok).clear
 LCdef(\bra).clear
 
 
-l.runtime.specs[\universal_pattern].table.blocks
+l.runtime.blockSpecs['dump:dump'].parameters.
 
 l.runtime.typesDict
 

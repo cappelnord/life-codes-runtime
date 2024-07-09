@@ -50,9 +50,14 @@ LCSpec(\dump, \meta, {|spec|
 	));
 
 	spec.defineBlock(\dump, (
-		\type: \subject,
 		\primary: true,
+		\type: \subject,
 		\display: "DumpsterDump",
+		\parameters: [
+			(\id: \times, \type: \integer, \default: 2),
+			(\id: \prefix, \type: \string, \default: "JO"),
+			(\id: \chance, \type: \number, \default: 1.0)
+		],
 
 		\on_rush: {|block, cmd, ctx, family, spec|
 			"dump on_rush".postln;

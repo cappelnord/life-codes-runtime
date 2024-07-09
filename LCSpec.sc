@@ -182,8 +182,8 @@ LCFamily {
 		this.traverseLookupTree(lookup, 1);
 
 		lookup = lookup.asList;
-		id.postln;
-		lookup.collect({|x| x.id}).postln;
+		// id.postln;
+		// lookup.collect({|x| x.id}).postln;
 	}
 
 	buildMatches {
@@ -212,6 +212,17 @@ LCFamily {
 				family.traverseLookupTree(set, depth+1);
 			};
 		};
+	}
+
+	findBlockSpec {|name|
+		lookup.do {|candidate|
+			var blockFullId = LCBlockSpec.identifier(name, candidate.id);
+			var specCandidate = runtime.blockSpecs[blockFullId];
+			blockFullId.postln;
+			specCandidate.isNil.not.if {
+				^specCandidate;
+			};
+		}
 	}
 
 	load {

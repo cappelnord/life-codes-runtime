@@ -17,7 +17,6 @@ Command sequences (and lookup rules)
 
 [block arg1 arg2 arg3] arguments are always positional, if not present default values will be taken (or loaded from block instance data block)
 
-[block:id arg1 arg2 arg3] id allows to reference specific blocks (so that blocks can be discerned or specific data can be attached to a block)
 
 
 Well, we will also need something like a BlockSpec which houses all the primary Blocks (and links all the families that relate to it) (?) But at least some data structure that houses parameters and such.
@@ -423,5 +422,9 @@ LifeCodes {
 			LifeCodes.fatal("Could not start audio server!");
 			this.clear;
 		};
+	}
+
+	*randomId {
+		^((2**31).rand.asInteger.asHexString ++ (2**31).rand.asInteger.asHexString).asSymbol;
 	}
 }

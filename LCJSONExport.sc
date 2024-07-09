@@ -87,16 +87,14 @@ LCJSONExport {
 		var i = 0;
 		this.do {|item|
 			(i > 0).if {
-				ret = ret ++ ", ";
+				ret = ret ++ ",";
 			};
-			ret = ret ++ "\n";
-			indent.do {ret = ret + "\t";};
+			ret = ret;
+			indent.do {ret = ret;};
 			ret = ret ++ item.jsonString(indent + 1);
 			i = i + 1;
 		};
-		ret = ret ++ "\n";
-		(indent-1).do {ret = ret + "\t";};
-		^(ret ++ "]\n");
+		^(ret ++ "]");
 	}
 }
 
@@ -108,13 +106,11 @@ LCJSONExport {
 			(i > 0).if {
 				ret = ret ++ ",";
 			};
-			ret = ret ++ "\n";
-			indent.do {ret = ret + "\t";};
-			ret = ret ++ ("\"%\": %").format(key, this[key].jsonString(indent + 1));
+			ret = ret;
+			indent.do {ret = ret;};
+			ret = ret ++ ("\"%\":%").format(key, this[key].jsonString(indent + 1));
 			i = i + 1;
 		};
-		ret = ret ++ "\n";
-		(indent-1).do {ret = ret + "\t";};
 		^(ret ++ "}");
 	}
 }

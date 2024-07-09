@@ -8,7 +8,7 @@ LCBlockSpec {
 	var <display;
 
 	*identifier {|name, family|
-		^(family ++ ":" ++ name).asString;
+		^(family ++ ":" ++ name).asSymbol;
 	}
 
 	*new {|name, family, entry|

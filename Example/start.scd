@@ -38,6 +38,7 @@ l.runtime.blockSpecs
 
 LCdef(\ok, \universal_pattern)
 LCdef(\bra, \dump)
+LCdef(\bra, [[\bla], [\ok]])
 
 LCdef(\bra).family == LCdef(\ok).family
 

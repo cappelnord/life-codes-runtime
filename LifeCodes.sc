@@ -112,7 +112,9 @@ LifeCodes {
 			\action: {},
 			\quitOnFatalError: false,
 			\ignoreDomains: [],
-			\exportPath: nil
+			\exportPath: nil,
+			\traceExecutionQueues: false,
+			\clock: TempoClock.default
 		);
 
 		instance.isNil.not.if {
@@ -407,7 +409,7 @@ LifeCodes {
 
 		runtime.families.keys.asArray.sort.do {|key|
 			var family = runtime.families[key];
-			family.executeLifecyclePhase(\on_init, \loader);
+			family.executeLifecyclePhase(\on_init);
 		};
 	}
 

@@ -7,7 +7,7 @@
 		^Dictionary.newFrom(this.patternpairs)[key];
 	}
 
-	combine {|source|
+	extend {|source|
 
 		var destinationDict = Dictionary.newFrom(this.patternpairs);
 		var sourceDict = Dictionary.newFrom(source.patternpairs);

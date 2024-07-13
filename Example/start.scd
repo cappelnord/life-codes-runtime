@@ -6,7 +6,8 @@ l = LifeCodes(
 	options: (
 		\runDry: true,
 		\ignoreDomains: [],
-		\exportPath: basePath +/+ "specs.json"
+		\exportPath: basePath +/+ "specs.json",
+		\traceExecutionQueues: true
 	)
 )
 )
@@ -37,7 +38,7 @@ l.runtime.blockSpecs
 // *** Playground for LCdef ***
 
 LCdef(\ok, \universal_pattern)
-LCdef(\bra, \dump)
+LCdef(\bra, [[\dump]])
 LCdef(\bra, [[\dump, 123], "print"])
 
 LCdef(\bra).family == LCdef(\ok).family

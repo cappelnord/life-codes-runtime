@@ -60,36 +60,48 @@ LCContext {
 
 	var <cmd = nil;
 	var <lastCmd = nil;
+	var <executionQueue;
+	var <>clock;
+	var <>quant;
 
 	var <>prependModifiers;
 	var <>appendModifiers;
 
 	var runtime;
 
+	var executedBlocksSet;
+	var quantExecutedBlocksSet;
+
 	*new {|id, family|
 		^super.newCopyArgs(id, family).init;
 	}
 
 	init {
+		executedBlocksSet = Set();
+		quantExecutedBlocksSet = Set();
+
+		executionQueue = LCExecutionQueue("CTX:%".format(id));
 		data = ();
 		prependModifiers = [];
 		appendModifiers = [];
 		runtime = LifeCodes.instance.runtime;
+		quant = family.quant;
+		clock = LifeCodes.instance.options[\clock] ? TempoClock.default;
+
 		this.executeLifecyclePhase(\on_ctx_create);
 	}
 
 	executeLifecyclePhase {|phase|
 		"Execute Context Lifecycle Phase: %/%/%".format(id, family.id, phase).postln;
-		runtime.executeList(
+		executionQueue.executeList(
 			family.getLifecycleFunctionReferences(phase)
-			.collect {|f| f.bind(this, family, LifeCodes.instance)},
-			\runtime
+			.collect {|f| f.bind(this, family, LifeCodes.instance)}
 		);
 	}
 
 	// called by execute or manually
 	load {
-		family.load;
+		family.load(executionQueue);
 	}
 
 	updateData {|data, executeFunctions=true|
@@ -119,15 +131,35 @@ LCContext {
 			// TODO: class on_cmd_leave and on_leave on all blocks of the last command
 		};
 
-		// execute all the stuff of the new cmd
+		cmd = newCmd;
 
-		// 'perform' the command
-
+		lastCmd.isNil.not.if {
+			cmd.executeLeave;
+		};
+		cmd.execute;
 	}
 
 	clear {|unloadFamily=true|
 		runtime.removeContext(this, unloadFamily);
 		this.executeLifecyclePhase(\on_ctx_clear);
+	}
+
+	resetBlockSets {
+		executedBlocksSet.clear;
+		quantExecutedBlocksSet.clear;
+	}
+
+	getOnceCandidates {|blockInstances, quant=false|
+		var set = executedBlocksSet;
+		var ret = List();
+		quant.if { set = quantExecutedBlocksSet };
+		blockInstances.do {|blockInstance|
+			set.includes(blockInstance.name).not.if {
+				ret.add(blockInstance);
+				set.add(blockInstance.name);
+			};
+		};
+		^ret;
 	}
 }
 
@@ -141,16 +173,20 @@ LCCommand {
 
 	var <blockInstanceList;
 
+	var <pattern;
+
+	var <>doPerform = false;
+
+	var executionQueue;
+
+	var active = true;
+
 	*new {|id, ctx, blockList, cmdData, prependModifiers, appendModifiers|
 		^super.newCopyArgs(id, ctx, blockList, cmdData, prependModifiers, appendModifiers).init;
 	}
 
 	init {
 		var didPrependModifiers = false;
-
-		blockList.dump;
-		// we should probably work through this list here to unify everything - strings to symbols, arguments, etc.
-		// this is where we now create the block instances that can also be used to store info (arguments will be merged with data)
 
 		blockInstanceList = List();
 		blockList.do {|blockSource|
@@ -166,7 +202,86 @@ LCCommand {
 		appendModifiers.do {|appendBlockSource|
 			blockInstanceList.add(LCBlockInstance(appendBlockSource, this));
 		};
-		blockInstanceList.postln;
+
+		executionQueue = LCExecutionQueue("CMD:%".format(id));
+	}
+
+	prPrepare {
+		(ctx.family.type == \pattern).if {
+			pattern = Pbind(
+				\clock, ctx.clock
+			);
+		}
+	}
+
+	prFinalize {
+
+	}
+
+	prPerform {
+		// this is quite temporary so that we can see that things are actually working ...
+		(ctx.family.type == \pattern).if {
+			var key = this.prPdefKey;
+			doPerform.not.if ({
+				Pdef(key, nil);
+			}, {
+				Pdef(key).quant = ctx.family.quant;
+				Pdef(key, pattern).play;
+				// todo: queue up quant stuff
+		    });
+		};
+	}
+
+	prPdefKey {
+		^("lc_" + ctx.id).asSymbol;
+	}
+
+	execute {
+		var quantFunc = {
+			active.if {
+				// TODO
+				// ALSO ADD FEEDBACK
+			};
+		};
+
+		this.prPrepare;
+
+		executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_pre_execute));
+		executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_once, ctx.getOnceCandidates(blockInstanceList, false)));
+		executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_execute));
+		executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_post_execute));
+
+		this.prFinalize;
+
+		(ctx.family.type == \pattern).if {
+			// build an aggregated finish func and extend the pattern
+	    };
+
+		// 'perform' the command
+		doPerform.if {
+			this.prPerform;
+		};
+
+		// see that all quant stuff is set and done
+		ctx.family.quant.isNil.not.if ({
+			ctx.clock.schedAbs(ctx.quant.asQuant.nextTimeOnGrid(ctx.clock), quantFunc);
+		}, {
+			quantFunc.value;
+		});
+	}
+
+	executeLeave {
+		active = false;
+	}
+
+	prGetBlockLifecycleExecutionUnits {|phase, instanceList|
+		var ret = List();
+		instanceList = instanceList ? blockInstanceList;
+		instanceList.do {|blockInstance|
+			var functionReferences = ctx.family.getBlockFunctionReferences(blockInstance.name, phase);
+			ret.addAll(functionReferences.collect {|ref| ref.bind(blockInstance, this, this.ctx, this.ctx.family, ref.family)});
+		};
+		^ret;
 	}
 }
 
@@ -175,6 +290,7 @@ LCBlockInstance {
 	var <cmd;
 
 	var <cleanSource;
+	var <name;
 	var <args;
 	var <data;
 	var <spec;
@@ -187,7 +303,7 @@ LCBlockInstance {
 		this.prCleanSource;
 		args = cleanSource[\args];
 		data = cleanSource[\data];
-		// something more to do here?
+		name = cleanSource[\name];
 	}
 
 	prCleanSource {

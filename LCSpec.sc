@@ -39,6 +39,11 @@ LCFamily {
 	// which families are looked through for code functions?
 	var <lookup;
 
+
+	var <type;
+	var <quant;
+
+
 	var extensionFamilies;
 
 	var domainFunctions;
@@ -74,7 +79,7 @@ LCFamily {
 				dst[key].isNil.if {
 					dst[key] = List();
 				};
-				dst[key].add(LCBlockFunctionReference(src[key], currentLoadDomain, this));
+				dst[key].add(LCBlockFunctionReference(src[key], key, currentLoadDomain, this));
 			}, {
 				// check if we override something to warn
 				dst[key].isNil.not.if {
@@ -120,15 +125,30 @@ LCFamily {
 		^table[phase];
 	}
 
+	getBlockFunctionReferences {|name, phase|
+		var ret = List();
+
+		// TODO: Here we can add a way for blocks to break inheritance
+
+		lookup.reverse.do {|family|
+			var blockTable = family.table[\blocks][name];
+			blockTable.isNil.not.if {
+				ret.addAll(blockTable[phase]);
+			};
+		};
+		^ret;
+	}
+
 	getLifecycleExecutionUnits {|phase|
 		^this.getLifecycleFunctionReferences(phase).collect({|ref|
 			ref.bind(this, LifeCodes.instance)
 		});
 	}
 
-	executeLifecyclePhase {|phase, queue=\runtime|
+	executeLifecyclePhase {|phase, executionQueue|
 		"Execute Family Lifecycle Phase: %/%".format(id, phase).postln;
-		runtime.executeList(this.getLifecycleExecutionUnits(phase), queue);
+		executionQueue = executionQueue ? runtime.executionQueue;
+		executionQueue.executeList(this.getLifecycleExecutionUnits(phase));
 	}
 
 	compileDomainFunctions {
@@ -184,6 +204,9 @@ LCFamily {
 		lookup = lookup.asList;
 		// id.postln;
 		// lookup.collect({|x| x.id}).postln;
+
+		type = table[\type];
+		quant = table[\quant];
 	}
 
 	buildMatches {
@@ -225,56 +248,17 @@ LCFamily {
 		}
 	}
 
-	load {
+	load {|executionQueue|
 		isLoaded.not.if {
-			this.executeLifecyclePhase(\on_load);
+			this.executeLifecyclePhase(\on_load, executionQueue);
 			isLoaded = true;
 		};
 	}
 
-	unload {
+	unload {|executionQueue|
 		isLoaded.if {
-			this.executeLifecyclePhase(\on_unload);
+			this.executeLifecyclePhase(\on_unload, executionQueue);
 			isLoaded = false;
 		};
-	}
-}
-
-/*
-Somehow this seems a bit too much structure .. let's see if it is really needed.
-*/
-
-LCBlockFunctionReference {
-	var <function;
-	var <domain;
-	var <family;
-
-	*new {|function, domain, family|
-		^super.newCopyArgs(function, domain, family).init;
-	}
-
-	init {
-
-	}
-
-	bind {|...args|
-		^LCExecutionUnit(this, args);
-	}
-}
-
-LCExecutionUnit {
-	var <ref;
-	var <args;
-
-	*new {|ref, args|
-		^super.newCopyArgs(ref, args).init;
-	}
-
-	init {
-
-	}
-
-	execute {
-		^ref.function.value(*args);
 	}
 }

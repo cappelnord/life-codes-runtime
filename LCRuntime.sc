@@ -9,12 +9,15 @@ LCRuntime {
 
 	var <typesLookup;
 
+	var <executionQueue;
+
 
 	*new {|lc|
 		^super.newCopyArgs(lc).init;
 	}
 
 	init {
+		executionQueue = LCExecutionQueue("RUN");
 		this.prInitData;
 	}
 
@@ -68,13 +71,6 @@ LCRuntime {
 
 		familyKeys.do {|key|
 			families[key].buildMatches;
-		};
-	}
-
-	executeList {|list, queue=\runtime|
-		// TODO: Deal with temporal things and the actual execution queue - this is super tricky business in the end ...
-		list.do {|unit|
-			unit.execute;
 		};
 	}
 

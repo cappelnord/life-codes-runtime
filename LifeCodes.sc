@@ -75,6 +75,7 @@ LifeCodes {
 	var <server;
 	var <runtime;
 	var <interaction;
+	var <mixer;
 
 	// keeping track of things that are loaded
 	var <scriptFiles;
@@ -105,7 +106,7 @@ LifeCodes {
 			\server: Server.default,
 			\runDry: false,
 			\numAudioChannels: 4,
-			\audioMixMode: \passThrough,
+			\audioOutputMode: \direct,
 			\assignGlobalVariables: true,
 			\outDevice: nil,
 			\sampleRate: 48000,
@@ -355,6 +356,11 @@ LifeCodes {
 
 			this.prLoad;
 
+			options[\runDry].not.if {
+				"\n\nStarting audio mixer".postln;
+				mixer = LCAudioMixer();
+			};
+
 			options[\interactionHost].isNil.not.if {
 				"\n\nStarting interaction layer on % - listening on port %".format(options[\interactionHost], options[\interactionReceivePort]).postln;
 				interaction = LCInteractionLayer(this);
@@ -391,6 +397,7 @@ LifeCodes {
 			this.prExecuteScriptsForLifecyclePhase(\on_preload);
 			this.prLoadSamples;
 			this.prExecuteScriptsForLifecyclePhase(\on_load);
+			LCAudioMixer.buildSynthDefs;
 		};
 
 		this.prExecuteScriptsForLifecyclePhase(\spec);

@@ -261,4 +261,9 @@ LCFamily {
 			isLoaded = false;
 		};
 	}
+
+	// TODO
+	hasAudio {
+		^true;
+	}
 }

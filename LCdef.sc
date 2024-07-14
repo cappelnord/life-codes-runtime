@@ -70,6 +70,8 @@ LCContext {
 	var <>clock;
 	var <>quant;
 
+	var <audioChain;
+
 	var <>prependModifiers;
 	var <>appendModifiers;
 
@@ -93,6 +95,10 @@ LCContext {
 		runtime = LifeCodes.instance.runtime;
 		quant = family.quant;
 		clock = LifeCodes.instance.options[\clock] ? TempoClock.default;
+
+		family.hasAudio.if {
+			audioChain = LifeCodes.instance.mixer.getContextChain(id);
+		};
 
 		this.executeLifecyclePhase(\on_ctx_create);
 	}
@@ -148,6 +154,9 @@ LCContext {
 	clear {|unloadFamily=true|
 		runtime.removeContext(this, unloadFamily);
 		this.executeLifecyclePhase(\on_ctx_clear);
+		audioChain.isNil.not.if {
+			LifeCodes.instance.mixer.clearContextChain(id);
+		}
 	}
 
 	resetBlockSets {
@@ -180,6 +189,7 @@ LCCommand {
 	var <blockInstanceList;
 
 	var <pattern;
+	var <audioChain;
 
 	var <>doPerform = false;
 
@@ -218,21 +228,30 @@ LCCommand {
 				\clock, ctx.clock,
 				\channel, 0
 			);
-		}
+		};
+
+		ctx.family.hasAudio.if {
+			audioChain = ctx.audioChain.mixer.getCommandChain(id, ctx.id);
+		};
 	}
 
 	prFinalize {
-		// if it is a pattern then let's set group and out channel here
 
-		// add the finish func
 		(ctx.family.type == \pattern).if {
+			// add the finish func
 			var functionReferences = ctx.family.getLifecycleFunctionReferences(\on_pattern_finish);
 			var patternFinishFunc = {|event|
 				functionReferences.do {|ref|
 					ref.function.value(event, this, ctx, ctx.family, ctx.family)
 				};
 			};
-			pattern.extend(Pbind(\finish, patternFinishFunc));
+
+			pattern.extend(Pbind(
+				\finish, patternFinishFunc,
+				\group, audioChain.group,
+				\out, pattern[\channel] + audioChain.bus.index
+			));
+
 		};
 	}
 
@@ -287,6 +306,9 @@ LCCommand {
 
 	executeLeave {
 		active = false;
+		audioChain.isNil.not.if {
+			audioChain.dismiss;
+		};
 	}
 
 	prGetBlockLifecycleExecutionUnits {|phase, instanceList|

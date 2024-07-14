@@ -4,10 +4,11 @@ l = LifeCodes(
 	scriptsPath: basePath +/+ "scripts",
 	samplesPath: basePath +/+ "samples",
 	options: (
-		\runDry: true,
+//		\runDry: true,
 		\ignoreDomains: [],
 		\exportPath: basePath +/+ "specs.json",
 		\traceExecutionQueues: true,
+		\audioOutputMode: \splay,
 		\interactionHost: NetAddr("127.0.0.1", 57140)
 	)
 )

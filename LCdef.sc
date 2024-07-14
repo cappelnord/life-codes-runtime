@@ -140,7 +140,7 @@ LCContext {
 		cmd = newCmd;
 
 		lastCmd.isNil.not.if {
-			cmd.executeLeave;
+			lastCmd.executeLeave;
 		};
 		cmd.execute;
 	}

@@ -70,7 +70,7 @@ LCFamily {
 		^this;
 	}
 
-	prMergeTable {|src, dst|
+	prMergeTable {|src, dst, blockId|
 		var allKeys = src.keys.reject {|key| [\blocks, \data].includes(key) };
 
 		allKeys.do {|key|
@@ -79,7 +79,7 @@ LCFamily {
 				dst[key].isNil.if {
 					dst[key] = List();
 				};
-				dst[key].add(LCBlockFunctionReference(src[key], key, currentLoadDomain, this));
+				dst[key].add(LCBlockFunctionReference(src[key], key, currentLoadDomain, this, blockId));
 			}, {
 				// check if we override something to warn
 				dst[key].isNil.not.if {
@@ -113,7 +113,7 @@ LCFamily {
 			table[\blocks][blockId] = ();
 		};
 
-		this.prMergeTable(def, table[\blocks][blockId]);
+		this.prMergeTable(def, table[\blocks][blockId], blockId);
 	}
 
 	addDomainFunction {|domain, function|

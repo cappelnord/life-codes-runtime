@@ -74,6 +74,7 @@ LifeCodes {
 
 	var <server;
 	var <runtime;
+	var <interaction;
 
 	// keeping track of things that are loaded
 	var <scriptFiles;
@@ -105,7 +106,6 @@ LifeCodes {
 			\runDry: false,
 			\numAudioChannels: 4,
 			\audioMixMode: \passThrough,
-			\port: 57150,
 			\assignGlobalVariables: true,
 			\outDevice: nil,
 			\sampleRate: 48000,
@@ -114,7 +114,9 @@ LifeCodes {
 			\ignoreDomains: [],
 			\exportPath: nil,
 			\traceExecutionQueues: false,
-			\clock: TempoClock.default
+			\clock: TempoClock.default,
+			\interactionHost: nil,
+			\interactionReceivePort: 57150,
 		);
 
 		instance.isNil.not.if {
@@ -353,7 +355,11 @@ LifeCodes {
 
 			this.prLoad;
 
-			// START OSC
+			options[\interactionHost].isNil.not.if {
+				"\n\nStarting interaction layer on % - listening on port %".format(options[\interactionHost], options[\interactionReceivePort]).postln;
+				interaction = LCInteractionLayer(this);
+			};
+
 			"\nLifeCodes Runtime loaded and running!".postln;
 
 			options.action.value(this);

@@ -14,12 +14,18 @@ LCdef {
 
 		context = runtime.contexts[contextId];
 
+		// This is a bit a shmoo here but hopefully catches all cases
+		// ...
+		(blockList.class == String).if { blockList = blockList.asSymbol};
+
 		(blockList.isNil || (blockList.class == Symbol)).if({
 			family = blockList;
 		}, {
 			contentIsBlockList = true;
-			family = blockList[0][0].asSymbol;
+			family = LCBlockInstance.cleanSource(blockList[0])[\name];
 		});
+		// ...
+
 
 		family = runtime.families[family];
 
@@ -209,13 +215,25 @@ LCCommand {
 	prPrepare {
 		(ctx.family.type == \pattern).if {
 			pattern = Pbind(
-				\clock, ctx.clock
+				\clock, ctx.clock,
+				\channel, 0
 			);
 		}
 	}
 
 	prFinalize {
+		// if it is a pattern then let's set group and out channel here
 
+		// add the finish func
+		(ctx.family.type == \pattern).if {
+			var functionReferences = ctx.family.getLifecycleFunctionReferences(\on_pattern_finish);
+			var patternFinishFunc = {|event|
+				functionReferences.do {|ref|
+					ref.function.value(event, this, ctx, ctx.family, ctx.family)
+				};
+			};
+			pattern.extend(Pbind(\finish, patternFinishFunc));
+		};
 	}
 
 	prPerform {
@@ -228,7 +246,7 @@ LCCommand {
 				Pdef(key).quant = ctx.family.quant;
 				Pdef(key, pattern).play;
 				// todo: queue up quant stuff
-		    });
+			});
 		};
 	}
 
@@ -239,8 +257,9 @@ LCCommand {
 	execute {
 		var quantFunc = {
 			active.if {
-				// TODO
-				// ALSO ADD FEEDBACK
+				LifeCodes.instance.interaction.sendCommandFeedback(this);
+				executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_quant_once, ctx.getOnceCandidates(blockInstanceList, true)));
+				executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_quant));
 			};
 		};
 
@@ -252,10 +271,6 @@ LCCommand {
 		executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_post_execute));
 
 		this.prFinalize;
-
-		(ctx.family.type == \pattern).if {
-			// build an aggregated finish func and extend the pattern
-	    };
 
 		// 'perform' the command
 		doPerform.if {
@@ -300,14 +315,38 @@ LCBlockInstance {
 	}
 
 	init {
-		this.prCleanSource;
+		cleanSource = LCBlockInstance.cleanSource(source);
+		this.prProcessParameters;
 		args = cleanSource[\args];
 		data = cleanSource[\data];
 		name = cleanSource[\name];
 	}
 
-	prCleanSource {
-		cleanSource = source;
+	prProcessParameters {
+		// we must find/assign the spec here to resolve positional arguments
+		spec = cmd.ctx.family.findBlockSpec(cleanSource[\name]);
+
+		cleanSource[\args] = cleanSource[\args] ? ();
+
+		spec.parameters.do {|parameter, i|
+			cleanSource[\args][parameter.id].isNil.if {
+				(cleanSource[\positionalArgs].size > i).if ({
+					cleanSource[\args][parameter.id] = parameter.convert(cleanSource[\positionalArgs][i]);
+				}, {
+					cleanSource[\args][parameter.id] = parameter.default;
+				});
+			};
+		};
+
+		cleanSource[\data] = cleanSource[\data] ? ();
+
+		cleanSource.removeAt(\positionalArgs);
+	}
+
+
+	*cleanSource {|source|
+		var cleanSource = source.deepCopy;
+
 		(cleanSource.class == String).if {
 			cleanSource = cleanSource.asSymbol;
 		};
@@ -324,23 +363,6 @@ LCBlockInstance {
 			);
 		};
 
-		// we must find/assign the spec here to resolve positional arguments
-		spec = cmd.ctx.family.findBlockSpec(cleanSource[\name]);
-
-		cleanSource[\args] = cleanSource[\args] ? ();
-
-		spec.parameters.do {|parameter, i|
-			cleanSource[\args][parameter.id].isNil.if {
-				(cleanSource[\positionalArgs].size > i).if ({
-					cleanSource[\args][parameter.id] = parameter.convert(cleanSource[\positionalArgs][i]);
-			    }, {
-					cleanSource[\args][parameter.id] = parameter.default;
-				});
-			};
-		};
-
-		cleanSource[\data] = cleanSource[\data] ? ();
-
-		cleanSource.removeAt(\positionalArgs);
+		^cleanSource;
 	}
 }

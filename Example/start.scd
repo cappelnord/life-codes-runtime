@@ -7,7 +7,8 @@ l = LifeCodes(
 		\runDry: true,
 		\ignoreDomains: [],
 		\exportPath: basePath +/+ "specs.json",
-		\traceExecutionQueues: true
+		\traceExecutionQueues: true,
+		\interactionHost: NetAddr("127.0.0.1", 57140)
 	)
 )
 )
@@ -37,9 +38,9 @@ l.runtime.blockSpecs
 
 // *** Playground for LCdef ***
 
-LCdef(\ok, \universal_pattern)
+LCdef(\ok, \dump)
 LCdef(\bra, [[\dump]])
-LCdef(\bra, [[\dump, 123], "print"])
+LCdef(\bra, [[\dump, 123], "print", "print"])
 
 LCdef(\bra).family == LCdef(\ok).family
 
@@ -47,6 +48,7 @@ LCdef(\ok).load
 LCdef(\ok).clear
 LCdef(\bra).clear
 
+LCdef(\ok).family.lookup[1].id
 
 l.runtime.blockSpecs['dump:dump'].parameters.
 

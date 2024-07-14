@@ -40,7 +40,11 @@ LCExecutionUnit {
 	}
 
 	asString {
-		^"% - %/%".format(ref.key, ref.family.id, ref.domain);
+		ref.blockId.isNil.if({
+			^"% - %/%".format(ref.key, ref.family.id, ref.domain);
+		}, {
+			^"% - % - %/%".format(ref.key, ref.blockId, ref.family.id, ref.domain);
+		});
 	}
 }
 
@@ -49,9 +53,10 @@ LCBlockFunctionReference {
 	var <key;
 	var <domain;
 	var <family;
+	var <blockId;
 
-	*new {|function, key, domain, family|
-		^super.newCopyArgs(function, key, domain, family).init;
+	*new {|function, key, domain, family, blockId|
+		^super.newCopyArgs(function, key, domain, family, blockId).init;
 	}
 
 	init {

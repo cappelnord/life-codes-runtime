@@ -91,8 +91,8 @@ LCSpec(\dump, \meta, {|spec|
 			"dump on_quant_once".postln;
 		},
 
-		\on_quant_execute: {|block, cmd, ctx, family, spec|
-			"on_quant_execute".postln;
+		\on_quant: {|block, cmd, ctx, family, spec|
+			"on_quant".postln;
 		},
 
 		\on_post_execute: {|block, cmd, ctx, family, spec|

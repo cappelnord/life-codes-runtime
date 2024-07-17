@@ -56,7 +56,7 @@ LCdef(\bra).clear
 
 LCdef(\ok).family.lookup[1].id
 
-l.runtime.blockSpecs['dump:dump'].parameters.
+l.runtime.blockSpecs['universal_pattern:play'].parameters
 
 l.runtime.typesDict
 
@@ -73,6 +73,10 @@ l.options[\exportPath]
 // potentially a different family
 // potentially parameters
 // potentially a respawn rule (TODO)
+
+// Terminal blocks - how do they work?
+// Difference: Respawn or that they also kill the slot itself.
+// They should probably have a fuse time (or something) that dictates on how long they will be there.
 
 // --> Maybe the spawning can return a reference so that we can collect references to spawned blocks and
 // clean them up more easily, probably the scene manager and the scene itself can somehow be used to

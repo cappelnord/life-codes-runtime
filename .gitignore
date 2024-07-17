@@ -1,3 +1,4 @@
 Example/samples/**/*.wav
 Example/samples/**/*.aif
 Example/samples/**/*.aiff
+Example/_specs.json

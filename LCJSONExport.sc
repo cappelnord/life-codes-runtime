@@ -42,7 +42,8 @@ LCJSONExport {
 		^(
 			\id: family.id,
 			\color: (\red: color.red, \green: color.green, \blue: color.blue),
-			\matches: family.matches
+			\matches: family.matches,
+			\quant: family.quant != nil
 		)
 	}
 
@@ -59,14 +60,20 @@ LCJSONExport {
 
 		^(
 			\id: blockSpec.id,
+			\code_string: blockSpec.name,
+			\display_string: blockSpec.display,
 			\type: blockSpec.type,
-			\name: blockSpec.name,
 			\family: blockSpec.family,
-			\display: blockSpec.display,
 			\parameters: parameters
 		)
 	}
 
+}
+
++ Nil {
+	jsonString {
+		^"null"
+	}
 }
 
 + Boolean {

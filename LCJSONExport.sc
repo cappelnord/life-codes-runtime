@@ -100,6 +100,12 @@ LCJSONExport {
 	}
 }
 
++ Point {
+	jsonString {
+		^(\x: this.x, \y: this.y).jsonString;
+	}
+}
+
 + SequenceableCollection {
 	jsonString {|indent=1|
 		var ret = "[";

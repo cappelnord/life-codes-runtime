@@ -16,6 +16,8 @@ l = LifeCodes(
 
 LifeCodes.clear
 
+l.interaction.addBlockSlot('play', 0.5@0.5)
+
 // *** ACCESSING LOADED BUFFERS ***
 
 // Buffers can be accessed either by a dictionary structure that mimics

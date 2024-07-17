@@ -16,6 +16,16 @@ LCRuntime {
 		^super.newCopyArgs(lc).init;
 	}
 
+	blockSpecsForName {|name|
+		var ret = List();
+		blockSpecs.do {|spec|
+			(spec.name == name).if {
+				ret.add(spec);
+			};
+		};
+		^ret;
+	}
+
 	init {
 		executionQueue = LCExecutionQueue("RUN");
 		this.prInitData;

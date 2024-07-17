@@ -253,7 +253,6 @@ LCCommand {
 	}
 
 	prFinalize {
-
 		(ctx.family.type == \pattern).if {
 			// add the finish func
 			var functionReferences = ctx.family.getLifecycleFunctionReferences(\on_pattern_finish);
@@ -263,6 +262,7 @@ LCCommand {
 				};
 			};
 
+			// we route into the right group and output channel and append the finish func
 			pattern.extend(Pbind(
 				\finish, patternFinishFunc,
 				\group, audioChain.group,
@@ -281,7 +281,6 @@ LCCommand {
 			}, {
 				Pdef(key).quant = ctx.family.quant;
 				Pdef(key, pattern).play;
-				// todo: queue up quant stuff
 			});
 		};
 	}
@@ -361,7 +360,7 @@ LCBlockInstance {
 		cmd.ctx.family.matchesBlock(name).if ({
 			this.prProcessParameters;
 		}, {
-			"There is no block '%' that matches the family '%'".format(name, cmd.ctx.family.id).postln;
+			"There is no 'primary' block '%' that matches the family '%'".format(name, cmd.ctx.family.id).postln;
 			cmd.valid = false;
 			valid = false;
 		});

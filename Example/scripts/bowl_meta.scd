@@ -18,6 +18,4 @@ LCSpec(\bowl, \meta, {|spec|
 			"bowl play".postln;
 		}
 	));
-
-	nil;
 });

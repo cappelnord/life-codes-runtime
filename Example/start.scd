@@ -4,9 +4,9 @@ l = LifeCodes(
 	scriptsPath: basePath +/+ "scripts",
 	samplesPath: basePath +/+ "samples",
 	options: (
-//		\runDry: true,
+		// \runDry: true,
 		\ignoreDomains: [],
-		\exportPath: basePath +/+ "specs.json",
+		\exportPath: basePath +/+ "_specs.json",
 		\traceExecutionQueues: true,
 		\audioOutputMode: \splay,
 		\interactionHost: NetAddr("127.0.0.1", 57140)
@@ -36,7 +36,6 @@ l.reloadSamples;
 
 l.runtime.blockSpecs
 
-
 // *** Playground for LCdef ***
 
 LCdef(\ok, \dump)
@@ -45,7 +44,11 @@ LCdef(\bra, [[\dump, 123], "print", "print"])
 
 LCdef(\bra).family == LCdef(\ok).family
 
-LCdef(\ok, [\pling, \play])
+LCdef(\ok, [\pling, \play, \cycleSpeakers])
+LCdef(\okk, [\pling, \play, \cycleSpeakers])
+
+
+LCdef(\mega, [\mega_dump, \print])
 
 LCdef(\ok).load
 LCdef(\ok).clear
@@ -59,4 +62,23 @@ l.runtime.typesDict
 
 l.options[\exportPath]
 
-s.plotTree
+
+// OK - we want to spawn blocks; what do we need to know?
+
+// the block slot id
+// the full block spec ID
+// a position and a behaviour key
+// At least for subjects the context the block belongs to --> this will also trigger to send position info over
+// potentially a different displayName
+// potentially a different family
+// potentially parameters
+// potentially a respawn rule (TODO)
+
+// --> Maybe the spawning can return a reference so that we can collect references to spawned blocks and
+// clean them up more easily, probably the scene manager and the scene itself can somehow be used to
+// store these references.
+
+// maybe a scene should be a chain of functions with a delay inbetween (to allow for fast-forward)
+// + setup func
+// + leave func
+

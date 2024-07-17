@@ -21,6 +21,4 @@ LCSpec(\universal_pattern, \meta, {|spec|
 			cmd.pattern.extend(Pbind(\amp, 0.0));
 		}
 	));
-
-	nil;
 });

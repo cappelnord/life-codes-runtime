@@ -1,6 +1,5 @@
 LCSpec(\dump, \meta, {|spec|
 	spec.define((
-		\type: \pattern,
 		\color: Color.green,
 		\quant: 2,
 
@@ -42,11 +41,7 @@ LCSpec(\dump, \meta, {|spec|
 
 		\on_unload: {|ctx, family, spec|
 			"on_unload".postln;
-		},
-
-		\on_pattern_finish: {|event, cmd, ctx, family, spec|
-			"on_pattern_finish".postln;
-		},
+		}
 	));
 
 	spec.defineBlock(\dump, (
@@ -108,6 +103,4 @@ LCSpec(\dump, \meta, {|spec|
 			"print on_execute".postln;
 		}
 	));
-
-	nil;
 });

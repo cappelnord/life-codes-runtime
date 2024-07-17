@@ -5,9 +5,11 @@ LCAudioMixer {
 
 	var <gainNode;
 	var <duckNode;
+	var <delayNode;
 	var <outputNode;
 
 	var <gain = 1.0;
+	var <delay = 0.0;
 
 	var <numChannels;
 	var <server;
@@ -24,6 +26,7 @@ LCAudioMixer {
 		numChannels = LifeCodes.instance.options[\numAudioChannels];
 		server = LifeCodes.instance.options[\server];
 		outputMode = LifeCodes.instance.options[\audioOutputMode];
+		delay = LifeCodes.instance.options[\audioDelay];
 		ctxChains = ();
 		cmdChains = ();
 		this.prInstantiateNodes;
@@ -37,6 +40,7 @@ LCAudioMixer {
 		fxGroup = Group(group, \addToHead);
 		gainNode = Synth(\lcam_gain, [\bus, bus, \gain, gain], group, \addToTail);
 		duckNode = Synth(\lcam_gain, [\bus, bus, \gain, 1.0, \lag, 3], group, \addToTail);
+		delayNode = Synth(\lcam_delay, [\bus, bus, \delay, delay], group, \addToTail);
 
 		(outputMode == \splay).if {
 			outputNode = Synth(\lcam_splay, [\bus, bus, \out, 0], group, \addToTail);
@@ -65,6 +69,11 @@ LCAudioMixer {
 		SynthDef(\lcam_splay, {|bus=0, out=0|
 			var sig = In.ar(bus, numChannels);
 			Out.ar(out, Splay.ar(sig));
+		}).add;
+
+		SynthDef(\lcam_delay, {|bus=0, delay=0|
+			var sig = In.ar(bus, numChannels);
+			Out.ar(bus, DelayC.ar(sig, 2.0, delay));
 		}).add;
 	}
 

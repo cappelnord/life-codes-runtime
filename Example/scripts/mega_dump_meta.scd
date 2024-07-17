@@ -4,6 +4,11 @@ LCSpec(\mega_dump, \meta, {|spec|
 		\color: Color.red,
 	));
 
+	spec.defineBlock(\mega_dump, (
+		\type: \subject,
+		\primary: true
+	));
+
 	spec.defineBlock(\print, (
 		\type: \action,
 		\on_execute: {|block, cmd, ctx, family, spec|
@@ -19,6 +24,4 @@ LCSpec(\mega_dump, \meta, {|spec|
 			"mega modifier".postln;
 		}
 	));
-
-	nil;
 });

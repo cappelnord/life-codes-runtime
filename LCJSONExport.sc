@@ -2,9 +2,10 @@ LCJSONExport {
 	*write {|path, runtime|
 		var jsonObject = LCJSONExport.generate(runtime);
 		var jsonString = jsonObject.jsonString;
+		var file = File.open(path, "w");
+		file.write(jsonString);
+		file.close;
 		"\n*** EXPORTED SPECS TO % ***".format(path).postln;
-
-		jsonString.postln;
 	}
 
 	*generate {|runtime|

@@ -1,6 +1,3 @@
-// TODO: Get rid of the weird ambiguity of return values in specs. Maybe do a type check to see if
-// a function is entered or just a table
-
 LCSpec {
 	*new {|familyId, domain=nil, function=nil|
 		var runtime;
@@ -130,6 +127,15 @@ LCFamily {
 	}
 
 	addDomainFunction {|domain, function|
+
+		// allow for events to be given instead of functions
+		(function.class == Event).if {
+			var event = function;
+			function = {|spec|
+				spec.define(event);
+			};
+		};
+
 		domainFunctions[domain] = function;
 	}
 
@@ -166,6 +172,7 @@ LCFamily {
 
 	compileDomainFunctions {
 		var domainKeys = domainFunctions.keys.asArray.sort;
+
 		table = (
 			\family: id,
 			\blocks: (),
@@ -173,13 +180,13 @@ LCFamily {
 		);
 
 		domainKeys.do {|domainKey|
-			var ret;
 			"%/% ...".format(id, domainKey).postln;
 			currentLoadDomain = domainKey;
-			ret = domainFunctions[domainKey].value(this, LifeCodes.instance);
-			table.postln;
+			domainFunctions[domainKey].value(this, LifeCodes.instance);
 			currentLoadDomain = nil;
 		};
+
+		table.postln;
 	}
 
 	asString {
@@ -282,6 +289,6 @@ LCFamily {
 
 	// TODO
 	hasAudio {
-		^true;
+		^(type == \pattern);
 	}
 }

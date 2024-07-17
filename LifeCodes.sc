@@ -84,6 +84,8 @@ LifeCodes {
 
 	var loadingTask = nil;
 
+	var <steadyClock;
+
 	classvar <instance = nil;
 
 	// will be used to notify the watchdog and/or terminate sclang
@@ -344,6 +346,7 @@ LifeCodes {
 	}
 
 	init {
+		steadyClock = TempoClock(1);
 		this.prInitData;
 
 		loadingTask = {

@@ -4,11 +4,21 @@ LCSpec(\universal_pattern, \meta, {|spec|
 		\color: Color.white,
 	));
 
-	spec.defineBlock(\mute, (
+	spec.defineBlock(\play, (
 		\type: \action,
+		\primary: true,
 
 		\on_execute: {|block, cmd, ctx, family, spec|
-			"universal_pattern mute".postln;
+			cmd.doPerform = true;
+		}
+	));
+
+	spec.defineBlock(\mute, (
+		\type: \modifier,
+		\primary: true,
+
+		\on_execute: {|block, cmd, ctx, family, spec|
+			cmd.pattern.extend(Pbind(\amp, 0.0));
 		}
 	));
 

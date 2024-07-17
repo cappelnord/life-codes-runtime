@@ -181,8 +181,7 @@ LCCommandAudioChain {
 
 	dismiss {
 		dismissed.not.if {
-			// use SystemClock to keep in seconds
-			SystemClock.play(Routine({
+			LifeCodes.instance.steadyClock.play(Routine({
 				audioTail.wait;
 				// TODO: FADE OUT
 				fadeOutTime.wait;

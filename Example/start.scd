@@ -45,6 +45,8 @@ LCdef(\bra, [[\dump, 123], "print", "print"])
 
 LCdef(\bra).family == LCdef(\ok).family
 
+LCdef(\ok, [\pling, \play])
+
 LCdef(\ok).load
 LCdef(\ok).clear
 LCdef(\bra).clear
@@ -56,3 +58,5 @@ l.runtime.blockSpecs['dump:dump'].parameters.
 l.runtime.typesDict
 
 l.options[\exportPath]
+
+s.plotTree

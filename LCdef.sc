@@ -133,8 +133,11 @@ LCContext {
 		// create a new command from the block list
 		newCmd = LCCommand(commandId ? LifeCodes.randomId, this, blockList, cmdData ? (), prependModifiers, appendModifiers);
 
-		// TODO: Check if it is all valid
-		this.prExecuteCommand(newCmd);
+		newCmd.valid.if({
+			this.prExecuteCommand(newCmd);
+		}, {
+			"Received invalid command: % - did not execute".format(blockList.cs).error;
+		});
 	}
 
 	prExecuteCommand {|newCmd|
@@ -193,6 +196,9 @@ LCCommand {
 
 	var <>doPerform = false;
 
+	// should only be modified by blockinstances on generation
+	var <>valid = true;
+
 	var executionQueue;
 
 	var active = true;
@@ -202,24 +208,35 @@ LCCommand {
 	}
 
 	init {
+		try({
+			this.prBuildBlockInstanceList;
+		}, {|exception|
+			valid = false;
+			exception.reportError;
+		});
+
+		executionQueue = LCExecutionQueue("CMD:%".format(id));
+	}
+
+	prBuildBlockInstanceList {
 		var didPrependModifiers = false;
 
 		blockInstanceList = List();
 		blockList.do {|blockSource|
 			var blockInstance = LCBlockInstance(blockSource, this);
-			blockInstanceList.add(blockInstance);
-			((blockInstance.spec.type == \modifier) && didPrependModifiers.not).if {
-				prependModifiers.do {|prependBlockSource|
-					blockInstanceList.add(LCBlockInstance(prependBlockSource, this));
-					didPrependModifiers = true;
+			blockInstance.valid.if {
+				blockInstanceList.add(blockInstance);
+				((blockInstance.spec.type == \modifier) && didPrependModifiers.not).if {
+					prependModifiers.do {|prependBlockSource|
+						blockInstanceList.add(LCBlockInstance(prependBlockSource, this));
+						didPrependModifiers = true;
+					};
 				};
-			};
+			}
 		};
 		appendModifiers.do {|appendBlockSource|
 			blockInstanceList.add(LCBlockInstance(appendBlockSource, this));
 		};
-
-		executionQueue = LCExecutionQueue("CMD:%".format(id));
 	}
 
 	prPrepare {
@@ -255,12 +272,12 @@ LCCommand {
 		};
 	}
 
-	prPerform {
+	prTryPerform {
 		// this is quite temporary so that we can see that things are actually working ...
 		(ctx.family.type == \pattern).if {
 			var key = this.prPdefKey;
 			doPerform.not.if ({
-				Pdef(key, nil);
+				Pdef(key).stop;
 			}, {
 				Pdef(key).quant = ctx.family.quant;
 				Pdef(key, pattern).play;
@@ -292,9 +309,7 @@ LCCommand {
 		this.prFinalize;
 
 		// 'perform' the command
-		doPerform.if {
-			this.prPerform;
-		};
+		this.prTryPerform;
 
 		// see that all quant stuff is set and done
 		ctx.family.quant.isNil.not.if ({
@@ -331,6 +346,7 @@ LCBlockInstance {
 	var <args;
 	var <data;
 	var <spec;
+	var <valid = true;
 
 	*new {|source, cmd|
 		^super.newCopyArgs(source, cmd).init;
@@ -338,10 +354,20 @@ LCBlockInstance {
 
 	init {
 		cleanSource = LCBlockInstance.cleanSource(source);
-		this.prProcessParameters;
+
+		name = cleanSource[\name];
+
+		// let's see if this block is defined at all in the family hierarchy
+		cmd.ctx.family.matchesBlock(name).if ({
+			this.prProcessParameters;
+		}, {
+			"There is no block '%' that matches the family '%'".format(name, cmd.ctx.family.id).postln;
+			cmd.valid = false;
+			valid = false;
+		});
+
 		args = cleanSource[\args];
 		data = cleanSource[\data];
-		name = cleanSource[\name];
 	}
 
 	prProcessParameters {

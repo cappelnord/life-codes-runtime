@@ -1,3 +1,6 @@
+// TODO: Get rid of the weird ambiguity of return values in specs. Maybe do a type check to see if
+// a function is entered or just a table
+
 LCSpec {
 	*new {|familyId, domain=nil, function=nil|
 		var runtime;
@@ -111,6 +114,16 @@ LCFamily {
 	defineBlock {|blockId, def|
 		table[\blocks][blockId].isNil.if {
 			table[\blocks][blockId] = ();
+		};
+
+		// shortcut to allow pbinds to solely define a block
+		(def.class == Pbind).if {
+			var pbind = def;
+			def = (
+				\on_execute: {|block, cmd, ctx, family|
+					cmd.pattern.extend(pbind);
+				}
+			)
 		};
 
 		this.prMergeTable(def, table[\blocks][blockId], blockId);
@@ -241,11 +254,16 @@ LCFamily {
 		lookup.do {|candidate|
 			var blockFullId = LCBlockSpec.identifier(name, candidate.id);
 			var specCandidate = runtime.blockSpecs[blockFullId];
-			blockFullId.postln;
+			// blockFullId.postln;
 			specCandidate.isNil.not.if {
 				^specCandidate;
 			};
 		}
+		^nil;
+	}
+
+	matchesBlock {|name|
+		^this.findBlockSpec(name).isNil.not;
 	}
 
 	load {|executionQueue|

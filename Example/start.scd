@@ -6,7 +6,7 @@ l = LifeCodes(
 	options: (
 		// \runDry: true,
 		\ignoreDomains: [],
-		\exportPath: basePath +/+ "_specs.json",
+		\specsExportPath: basePath +/+ "_specs.json",
 		\traceExecutionQueues: true,
 		\audioOutputMode: \splay,
 		\interactionHost: NetAddr("127.0.0.1", 57140)

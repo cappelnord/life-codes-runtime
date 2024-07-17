@@ -324,7 +324,11 @@ LifeCodes {
 
 			options[\interactionHost].isNil.not.if {
 				"\n\nStarting interaction layer on % - listening on port %".format(options[\interactionHost], options[\interactionReceivePort]).postln;
-				interaction = LCInteractionLayer(this);
+				options[\specsExportPath].isNil.if({
+					"Cannot initialize interaction layer without 'specsExportPath' set!".error;
+				}, {
+					interaction = LCInteractionLayer(this);
+			    })
 			};
 
 			"\nLifeCodes Runtime loaded and running!".postln;
@@ -371,10 +375,9 @@ LifeCodes {
 
 		this.prExecuteScriptsForLifecyclePhase(\on_postload);
 
-		options[\exportPath].postln;
 
-		options[\exportPath].isNil.not.if {
-			LCJSONExport.write(options.exportPath, runtime);
+		options[\specsExportPath].isNil.not.if {
+			LCJSONExport.write(options[\specsExportPath], runtime);
 		};
 	}
 

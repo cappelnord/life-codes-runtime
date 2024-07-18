@@ -1,5 +1,6 @@
 (
 var basePath = thisProcess.nowExecutingPath.dirname;
+LifeCodes.clear;
 l = LifeCodes(
 	scriptsPath: basePath +/+ "scripts",
 	samplesPath: basePath +/+ "samples",
@@ -14,9 +15,15 @@ l = LifeCodes(
 )
 )
 
-LifeCodes.clear
 
-l.interaction.addBlockSlot('play', 0.5@0.5)
+(
+o = List();
+o.add(l.interaction.addBlockSlot('pling', 0.3@0.5));
+o.add(l.interaction.addBlockSlot('cycleSpeakers', 0.4@0.5));
+o.add(l.interaction.addBlockSlot('play', 0.5@0.5));
+o.add(l.interaction.addBlockSlot('mute', 0.6@0.5));
+o.add(l.interaction.addBlockSlot('faster', 0.7@0.5, options: (args: [4])));
+)
 
 // *** ACCESSING LOADED BUFFERS ***
 

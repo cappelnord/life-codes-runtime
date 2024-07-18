@@ -125,13 +125,13 @@ LCContext {
 		};
 	}
 
-	execute {|blockList, cmdData, commandId|
+	execute {|blockList, cmdData, headId, commandId|
 		var newCmd;
 		// this is just to ensure that the family is loaded
 		this.load;
 
 		// create a new command from the block list
-		newCmd = LCCommand(commandId ? LifeCodes.randomId, this, blockList, cmdData ? (), prependModifiers, appendModifiers);
+		newCmd = LCCommand(commandId ? LifeCodes.randomId, headId, this, blockList, cmdData ? (), prependModifiers, appendModifiers);
 
 		newCmd.valid.if({
 			this.prExecuteCommand(newCmd);
@@ -183,6 +183,9 @@ LCContext {
 
 LCCommand {
 	var <id;
+	// this is the block id of the head(subject) of a group used for feedback; it seems a bit redudant to have so many different ids (command, head, ctx, ...)
+	// but it is currently easiest to retrieve the block by its (internal?) id than to see which context a group belongs to
+	var <headId;
 	var <ctx;
 	var <blockList;
 	var <data;
@@ -203,8 +206,8 @@ LCCommand {
 
 	var active = true;
 
-	*new {|id, ctx, blockList, cmdData, prependModifiers, appendModifiers|
-		^super.newCopyArgs(id, ctx, blockList, cmdData, prependModifiers, appendModifiers).init;
+	*new {|id, headId, ctx, blockList, cmdData, prependModifiers, appendModifiers|
+		^super.newCopyArgs(id, headId, ctx, blockList, cmdData, prependModifiers, appendModifiers).init;
 	}
 
 	init {
@@ -292,7 +295,9 @@ LCCommand {
 	execute {
 		var quantFunc = {
 			active.if {
-				LifeCodes.instance.interaction.sendCommandFeedback(this);
+				headId.isNil.not.if {
+					LifeCodes.instance.interaction.sendCommandFeedback(this);
+				};
 				executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_quant_once, ctx.getOnceCandidates(blockInstanceList, true)));
 				executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_quant));
 			};

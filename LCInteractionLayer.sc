@@ -12,7 +12,8 @@ LCInteractionLayer {
 	}
 
 	sendCommandFeedback {|cmd|
-		"command feedback".postln;
+		["/lc/blocks/commandFeedback", cmd.headId, cmd.id].postln;
+		net.sndMsg("/lc/blocks/commandFeedback", cmd.headId, cmd.id);
 	}
 
 	addBlockSlot {|spec, startPosition, id, options|
@@ -31,7 +32,7 @@ LCInteractionLayer {
 
 		object = (
 			\spec: spec,
-			\startPosition: startPosition,
+			\pos: startPosition,
 			\id: id ? LifeCodes.randomId,
 			\options: options ? ()
 		);

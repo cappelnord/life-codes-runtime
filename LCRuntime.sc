@@ -113,4 +113,10 @@ LCRuntime {
 			};
 		};
 	}
+
+	clear {
+		contexts.do {|ctx|
+			ctx.clear;
+		};
+	}
 }

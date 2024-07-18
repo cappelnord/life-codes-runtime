@@ -18,12 +18,17 @@ l = LifeCodes(
 
 (
 o = List();
-o.add(l.interaction.addBlockSlot('pling', 0.3@0.5));
+LCdef(\robin, \pling);
+o.add(l.interaction.addBlockSlot('pling', 0.3@0.5, options: (context: \robin)));
 o.add(l.interaction.addBlockSlot('cycleSpeakers', 0.4@0.5));
 o.add(l.interaction.addBlockSlot('play', 0.5@0.5));
 o.add(l.interaction.addBlockSlot('mute', 0.6@0.5));
 o.add(l.interaction.addBlockSlot('faster', 0.7@0.5, options: (args: [4])));
 )
+
+s.plotTree
+
+LCdef(\robin).clear
 
 // *** ACCESSING LOADED BUFFERS ***
 
@@ -47,7 +52,7 @@ l.runtime.blockSpecs
 
 // *** Playground for LCdef ***
 
-LCdef(\ok, \dump)
+LCdef(\ok, ["ok,f4"])
 LCdef(\bra, [[\dump]])
 LCdef(\bra, [[\dump, 123], "print", "print"])
 

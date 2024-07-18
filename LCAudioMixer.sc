@@ -109,6 +109,10 @@ LCAudioMixer {
 			cmdChains.removeAt(id);
 		};
 	}
+
+	clear {
+		group.free;
+	}
 }
 
 LCContextAudioChain {

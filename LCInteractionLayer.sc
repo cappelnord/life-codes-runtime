@@ -2,18 +2,34 @@ LCInteractionLayer {
 	var lc;
 	var net;
 
+	var receivePort;
+
 	*new {|lc|
 		^super.newCopyArgs(lc).init;
 	}
 
 	init {
+		receivePort = lc.options[\interactionReceivePort];
+
 		net = lc.options[\interactionHost];
 		net.sendMsg("/lc/blocks/loadSpecs", lc.options[\specsExportPath]);
+
+		OSCdef(\lcExecuteCommand, {|msg, time, addr, recvPort|
+			this.prOnExecuteCommand(msg[1].asSymbol, msg[2].asString, msg[3].asString, msg[4].asString);
+		}, '/lc/executeCommand', recvPort: receivePort);
+	}
+
+	prOnExecuteCommand {|contextId, blockListString, headId, cmdId|
+		(lc.runtime.contexts.includesKey(contextId).not && lc.options[\interactionExecuteOnlyInitializedContexts]).if {
+			"Received command for uninitialized context: %".format(contextId).warn;
+			^nil;
+		};
+		lc.runtime.contexts[contextId].execute(blockListString.split($;), headId: headId, cmdId: cmdId);
 	}
 
 	sendCommandFeedback {|cmd|
 		["/lc/blocks/commandFeedback", cmd.headId, cmd.id].postln;
-		net.sndMsg("/lc/blocks/commandFeedback", cmd.headId, cmd.id);
+		net.sendMsg("/lc/blocks/commandFeedback", cmd.headId, cmd.id);
 	}
 
 	addBlockSlot {|spec, startPosition, id, options|

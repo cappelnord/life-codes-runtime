@@ -31,7 +31,7 @@ LCSpec(\universal_pattern, \meta, {|spec|
 		],
 
 		on_execute: {|block, cmd, ctx, family, spec|
-			cmd.pattern.extend(Pbind(\dur, cmd.pattern[\dur] * block.args[\speed]));
+			cmd.pattern.extend(Pbind(\dur, cmd.pattern[\dur] / block.args[\speed]));
 		}
 	));
 });

@@ -125,13 +125,13 @@ LCContext {
 		};
 	}
 
-	execute {|blockList, cmdData, headId, commandId|
+	execute {|blockList, cmdData, headId, cmdId|
 		var newCmd;
 		// this is just to ensure that the family is loaded
 		this.load;
 
 		// create a new command from the block list
-		newCmd = LCCommand(commandId ? LifeCodes.randomId, headId, this, blockList, cmdData ? (), prependModifiers, appendModifiers);
+		newCmd = LCCommand(cmdId ? LifeCodes.randomId, headId, this, blockList, cmdData ? (), prependModifiers, appendModifiers);
 
 		newCmd.valid.if({
 			this.prExecuteCommand(newCmd);
@@ -157,7 +157,16 @@ LCContext {
 	clear {|unloadFamily=true|
 		runtime.removeContext(this, unloadFamily);
 		this.executeLifecyclePhase(\on_ctx_clear);
+
+		lastCmd.isNil.not.if {
+			lastCmd.clear;
+		};
+		cmd.isNil.not.if {
+			cmd.clear;
+		};
+
 		audioChain.isNil.not.if {
+			// maybe this could be more graceful (to dismiss the chain, not to clear)
 			LifeCodes.instance.mixer.clearContextChain(id);
 		}
 	}
@@ -339,6 +348,15 @@ LCCommand {
 		};
 		^ret;
 	}
+
+	clear {
+		active.if {
+			this.executeLeave;
+			(ctx.family.type == \pattern).if {
+				Pdef(this.prPdefKey).clear;
+			};
+		};
+	}
 }
 
 LCBlockInstance {
@@ -399,8 +417,26 @@ LCBlockInstance {
 	*cleanSource {|source|
 		var cleanSource = source.deepCopy;
 
+		// decode (bit weird) syntax to send arguments alongside codeblocks from interaction layer
 		(cleanSource.class == String).if {
-			cleanSource = cleanSource.asSymbol;
+			var x = cleanSource.split($,);
+			x[0] = x[0].asSymbol;
+			(x.size > 1).if {
+				(1..(x.size-1)).do {|i|
+					var type = x[i][0];
+					(type == $f).if {
+						x[i] = x[i][1..].asFloat;
+					};
+					(type == $i).if {
+						x[i] = x[i][1..].asInteger;
+					};
+					(type == $s).if {
+						x[i] = x[i][1..]
+					};
+				};
+			};
+			x.postln;
+			cleanSource = x;
 		};
 
 		(cleanSource.class == Symbol).if {

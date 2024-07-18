@@ -78,6 +78,7 @@ LifeCodes {
 			\clock: TempoClock.default,
 			\interactionHost: nil,
 			\interactionReceivePort: 57150,
+			\interactionExecuteOnlyInitializedContexts: true
 		);
 
 		instance.isNil.not.if {
@@ -122,6 +123,9 @@ LifeCodes {
 		loadingTask = nil;
 		this.prExecuteScriptsForLifecyclePhase(\on_unload);
 		this.prFreeBuffers;
+		runtime.clear;
+		mixer.clear;
+		// TODO: also clear other objects
 		^nil;
 	}
 

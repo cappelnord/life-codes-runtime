@@ -28,16 +28,21 @@ LCInteractionLayer {
 	}
 
 	sendCommandFeedback {|cmd|
-		["/lc/blocks/commandFeedback", cmd.headId, cmd.id].postln;
 		net.sendMsg("/lc/blocks/commandFeedback", cmd.headId, cmd.id);
 	}
 
 	setBlockSlotProperties {|slotId, options|
-		var object = (
-			\slotId: slotId,
-			\options: options
-		);
-		net.sendMsg("/lc/blocks/setSlotProperties", object.jsonString);
+		options = options ? ();
+		net.sendMsg("/lc/blocks/setSlotProperties", slotId, options.jsonString);
+	}
+
+	clearAllBlockSlots {
+		net.sendMsg("/lc/blocks/clearAllSlots");
+	}
+
+	despawnBlockSlot {|slotId, options|
+		options = options ? ();
+		net.sendMsg("/lc/blocks/despawnSlot", slotId, options.jsonString);
 	}
 
 	addBlockSlot {|spec, startPosition, id, options|
@@ -54,11 +59,14 @@ LCInteractionLayer {
 			};
 		};
 
+		id = id ? LifeCodes.randomId;
+		options = options ? ();
+
 		object = (
 			\spec: spec,
 			\pos: startPosition,
-			\id: id ? LifeCodes.randomId,
-			\options: options ? ()
+			\id: id,
+			\options: options
 		);
 
 		LifeCodes.instance.runtime.blockSpecs[spec.asSymbol].isNil.not.if({
@@ -72,9 +80,9 @@ LCInteractionLayer {
 }
 
 LCInteractionSlotRef {
-	var <id;
 	var <spec;
 	var <startPosition;
+	var <id;
 	var <options;
 
 	*new {|spec, startPosition, id, options|

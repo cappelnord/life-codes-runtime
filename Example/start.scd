@@ -26,6 +26,15 @@ o.add(l.interaction.addBlockSlot('mute', 0.6@0.5));
 o.add(l.interaction.addBlockSlot('faster', 0.7@0.5, options: (args: [4])));
 )
 
+(
+fork {
+	o.do {|ref|
+		l.interaction.despawnBlockSlot(ref.id, (fadeTime: 1));
+		0.5.wait;
+	}
+}
+)
+
 s.plotTree
 
 LCdef(\robin).clear

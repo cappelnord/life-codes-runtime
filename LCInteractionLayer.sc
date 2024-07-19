@@ -32,6 +32,14 @@ LCInteractionLayer {
 		net.sendMsg("/lc/blocks/commandFeedback", cmd.headId, cmd.id);
 	}
 
+	setBlockSlotProperties {|slotId, options|
+		var object = (
+			\slotId: slotId,
+			\options: options
+		);
+		net.sendMsg("/lc/blocks/setSlotProperties", object.jsonString);
+	}
+
 	addBlockSlot {|spec, startPosition, id, options|
 		var object;
 

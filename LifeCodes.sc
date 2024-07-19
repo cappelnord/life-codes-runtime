@@ -20,6 +20,19 @@ Command sequences (and lookup rules)
 
 // Should the subject block be just known as _subject in order to allow for inheritance of subject functionality? this would of course break multi inheritance (or actually also not - would make it weird though haha)
 
+
+// Cleanup/Dissolvement
+
+- For the blocks that should dissappear we can trigger the dissappearal from within!
+
+- It makes probably sense to seperatly control wether blocks can respawn or not (so that we first deactivate respawn and then slowly deleting all blocks)
+
+- We (probably) need to differntiate between a despawn that would also kill the group the block is currently connected to and one that would only despawn if the block is not connected to a group.
+
+- There will be a need for respawn options as well as how long a fade-out takes (or whatever other animation there will be).
+
+- Check good wording for dismiss, delete, etc. - but a dismissed slot that cannot respawn anymore probably can be deleted completely.
+
 */
 
 LifeCodes {

@@ -420,23 +420,11 @@ LCBlockInstance {
 		// decode (bit weird) syntax to send arguments alongside codeblocks from interaction layer
 		(cleanSource.class == String).if {
 			var x = cleanSource.split($,);
-			x[0] = x[0].asSymbol;
+
+			cleanSource = [x[0].asSymbol];
 			(x.size > 1).if {
-				(1..(x.size-1)).do {|i|
-					var type = x[i][0];
-					(type == $f).if {
-						x[i] = x[i][1..].asFloat;
-					};
-					(type == $i).if {
-						x[i] = x[i][1..].asInteger;
-					};
-					(type == $s).if {
-						x[i] = x[i][1..]
-					};
-				};
+				cleanSource = cleanSource.addAll(LCInteractionLayer.decodeOSCValues(x[1..]));
 			};
-			x.postln;
-			cleanSource = x;
 		};
 
 		(cleanSource.class == Symbol).if {

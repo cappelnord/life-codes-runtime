@@ -24,6 +24,16 @@ LCInteractionLayer {
 			this.prOnExecuteCommand(msg[1].asSymbol, msg[2].asString, msg[3].asString, msg[4].asString);
 		}, '/lc/executeCommand', recvPort: receivePort);
 
+		OSCdef(\lcUpdateContextData, {|msg, time, addr, recvPort|
+			var list = LCInteractionLayer.decodeOSCValues(msg[2].asString.split(","));
+			var data = ();
+			list.clump(2).do {|item|
+				data[item[0].asSymbol] = item[1];
+			};
+			this.prOnUpdateContextData(msg[1].asSymbol, data);
+		}, '/lc/updateContextData', recvPort: receivePort);
+
+
 		this.prInitData;
 	}
 
@@ -33,6 +43,10 @@ LCInteractionLayer {
 			^nil;
 		};
 		lc.runtime.contexts[contextId].execute(blockListString.split($;), headId: headId, cmdId: cmdId);
+	}
+
+	prOnUpdateContextData {|contextId, data|
+		// TODO: implement
 	}
 
 	sendCommandFeedback {|cmd|
@@ -106,6 +120,22 @@ LCInteractionLayer {
 
 	clear {
 		this.clearAllBlockSlots;
+	}
+
+	*decodeOSCValues {|x|
+		x.size.do {|i|
+			var type = x[i][0];
+			(type == $f).if {
+				x[i] = x[i][1..].asFloat;
+			};
+			(type == $i).if {
+				x[i] = x[i][1..].asInteger;
+			};
+			(type == $s).if {
+				x[i] = x[i][1..]
+			};
+		};
+		^x;
 	}
 }
 

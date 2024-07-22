@@ -10,25 +10,26 @@ l = LifeCodes(
 		\specsExportPath: basePath +/+ "_specs.json",
 		\traceExecutionQueues: true,
 		\audioOutputMode: \splay,
-		\interactionHost: NetAddr("127.0.0.1", 57140)
+		\interactionHost: NetAddr("127.0.0.1", 57140),
+		\entryScene: \act1a
 	)
 )
 )
 
-
 (
-o = List();
-LCdef(\robin, \pling);
-o.add(l.interaction.addBlockSlot('pling', 0.3@0.5, options: (context: \robin)));
-o.add(l.interaction.addBlockSlot('cycleSpeakers', 0.4@0.5));
-o.add(l.interaction.addBlockSlot('play', 0.5@0.5));
-o.add(l.interaction.addBlockSlot('mute', 0.6@0.5));
-o.add(l.interaction.addBlockSlot('faster', 0.7@0.5, options: (args: [4])));
+LCdef(\test, \pling);
+l.interaction.registerBlockSlots(\ok, [
+	['pling', 0.3@0.5, (context: \test)],
+	['cycleSpeakers', 0.4@0.5],
+	['play', 0.5@0.5, (canRespawn: true)],
+	['mute', 0.6@0.5, (canRespawn: true)],
+	['faster', 0.7@0.5, (args: [4])]
+]);
 )
 
 (
 fork {
-	o.do {|ref|
+	l.interaction.popRegistry(\ok).do {|ref|
 		l.interaction.despawnBlockSlot(ref.id, (fadeTime: 1));
 		0.5.wait;
 	}

@@ -4,8 +4,14 @@ LCInteractionLayer {
 
 	var receivePort;
 
+	var blockSlotRegistry;
+
 	*new {|lc|
 		^super.newCopyArgs(lc).init;
+	}
+
+	prInitData {
+		blockSlotRegistry = ();
 	}
 
 	init {
@@ -17,6 +23,8 @@ LCInteractionLayer {
 		OSCdef(\lcExecuteCommand, {|msg, time, addr, recvPort|
 			this.prOnExecuteCommand(msg[1].asSymbol, msg[2].asString, msg[3].asString, msg[4].asString);
 		}, '/lc/executeCommand', recvPort: receivePort);
+
+		this.prInitData;
 	}
 
 	prOnExecuteCommand {|contextId, blockListString, headId, cmdId|
@@ -38,6 +46,7 @@ LCInteractionLayer {
 
 	clearAllBlockSlots {
 		net.sendMsg("/lc/blocks/clearAllSlots");
+		blockSlotRegistry = ();
 	}
 
 	despawnBlockSlot {|slotId, options|
@@ -45,7 +54,7 @@ LCInteractionLayer {
 		net.sendMsg("/lc/blocks/despawnSlot", slotId, options.jsonString);
 	}
 
-	addBlockSlot {|spec, startPosition, id, options|
+	addBlockSlot {|spec, startPosition, options, id|
 		var object;
 
 		spec.asString.includes($:).not.if {
@@ -77,6 +86,27 @@ LCInteractionLayer {
 			^nil;
 		});
 	}
+
+	registerBlockSlots {|id, slots, waitFunction|
+		blockSlotRegistry[id].isNil.if {
+			blockSlotRegistry[id] = List();
+		};
+
+		slots.do {|slot|
+			blockSlotRegistry[id].add(this.addBlockSlot(*slot));
+			waitFunction.value;
+		};
+	}
+
+	popRegistry {|id|
+		var ret = blockSlotRegistry[id];
+		blockSlotRegistry[id] = nil;
+		^ret;
+	}
+
+	clear {
+		this.clearAllBlockSlots;
+	}
 }
 
 LCInteractionSlotRef {
@@ -84,6 +114,8 @@ LCInteractionSlotRef {
 	var <startPosition;
 	var <id;
 	var <options;
+
+
 
 	*new {|spec, startPosition, id, options|
 		^super.newCopyArgs(spec, startPosition, id, options).init;

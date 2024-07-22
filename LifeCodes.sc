@@ -21,22 +21,10 @@ Command sequences (and lookup rules)
 // Should the subject block be just known as _subject in order to allow for inheritance of subject functionality? this would of course break multi inheritance (or actually also not - would make it weird though haha)
 
 
-// Cleanup/Dissolvement
+// Issue of resetting keys in Patterns:
 
-- For the blocks that should dissappear we can trigger the dissappearal from within!
+If a block states what keys it (primarily) (re)sets and/or modifies we can mark blocks that were superseeded visually.
 
-/lc/blocks/despawn blockId, options
-
-(
-   \canRespawn,
-   \respawnTimer,
-   \fadeTime
-)
-
---> Mark to despawn
---> If not in group: Start despawn
---> If a head then copy fadeTime over and trigger despawn there as well
---> While despawning then "freeze" the block so that it cannot be interacted with anymore
 */
 
 LifeCodes {
@@ -49,6 +37,7 @@ LifeCodes {
 	var <runtime;
 	var <interaction;
 	var <mixer;
+    var <sceneManager;
 
 	// keeping track of things that are loaded
 	var <scriptFiles;
@@ -95,7 +84,8 @@ LifeCodes {
 			\clock: TempoClock.default,
 			\interactionHost: nil,
 			\interactionReceivePort: 57150,
-			\interactionExecuteOnlyInitializedContexts: true
+			\interactionExecuteOnlyInitializedContexts: true,
+			\entryScene: nil
 		);
 
 		instance.isNil.not.if {
@@ -140,9 +130,10 @@ LifeCodes {
 		loadingTask = nil;
 		this.prExecuteScriptsForLifecyclePhase(\on_unload);
 		this.prFreeBuffers;
+		interaction.clear;
 		runtime.clear;
 		mixer.clear;
-		// TODO: also clear other objects
+		sceneManager.clear;
 		^nil;
 	}
 
@@ -328,6 +319,9 @@ LifeCodes {
 		steadyClock = TempoClock(1);
 		this.prInitData;
 
+		"\n\nStarting scene manager".postln;
+		sceneManager = LCSceneManager(this);
+
 		loadingTask = {
 
 			options[\runDry].if {
@@ -354,7 +348,12 @@ LifeCodes {
 
 			"\nLifeCodes Runtime loaded and running!".postln;
 
-			options.action.value(this);
+			options[\action].value(this);
+
+			options[\entryScene].isNil.not.if {
+				sceneManager.runScene(options[\entryScene]);
+			};
+
 		}.fork;
 	}
 
@@ -395,7 +394,6 @@ LifeCodes {
 		runtime.buildIndex;
 
 		this.prExecuteScriptsForLifecyclePhase(\on_postload);
-
 
 		options[\specsExportPath].isNil.not.if {
 			LCJSONExport.write(options[\specsExportPath], runtime);

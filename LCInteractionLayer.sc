@@ -24,14 +24,14 @@ LCInteractionLayer {
 			this.prOnExecuteCommand(msg[1].asSymbol, msg[2].asString, msg[3].asString, msg[4].asString);
 		}, '/lc/executeCommand', recvPort: receivePort);
 
-		OSCdef(\lcUpdateContextData, {|msg, time, addr, recvPort|
-			var list = LCInteractionLayer.decodeOSCValues(msg[2].asString.split(","));
+		OSCdef(\lcContextDataUpdate, {|msg, time, addr, recvPort|
+			var list = LCInteractionLayer.decodeOSCValues(msg[2].asString.split($,));
 			var data = ();
 			list.clump(2).do {|item|
 				data[item[0].asSymbol] = item[1];
 			};
-			this.prOnUpdateContextData(msg[1].asSymbol, data);
-		}, '/lc/updateContextData', recvPort: receivePort);
+			this.prOnContextDataUpdate(msg[1].asSymbol, data);
+		}, '/lc/contextDataUpdate', recvPort: receivePort);
 
 
 		this.prInitData;
@@ -45,8 +45,12 @@ LCInteractionLayer {
 		lc.runtime.contexts[contextId].execute(blockListString.split($;), headId: headId, cmdId: cmdId);
 	}
 
-	prOnUpdateContextData {|contextId, data|
-		// TODO: implement
+	prOnContextDataUpdate {|contextId, data|
+		lc.runtime.contexts.includesKey(contextId).not {
+			// fail silently
+			^nil;
+		};
+		lc.runtime.contexts[contextId].updateData(data);
 	}
 
 	sendCommandFeedback {|cmd|
@@ -132,7 +136,10 @@ LCInteractionLayer {
 				x[i] = x[i][1..].asInteger;
 			};
 			(type == $s).if {
-				x[i] = x[i][1..]
+				x[i] = x[i][1..];
+			};
+			(type == $b).if {
+				x[i] = x[i][1] == $t;
 			};
 		};
 		^x;

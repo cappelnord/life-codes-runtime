@@ -24,12 +24,14 @@ l.sceneManager.runScene(\scene6)
 
 (
 LCdef(\test, \pling);
+LCdef(\dump, \dump);
 l.interaction.registerBlockSlots(\ok, [
 	['pling', 0.3@0.5, (context: \test)],
 	['cycleSpeakers', 0.4@0.5],
 	['play', 0.5@0.5, (canRespawn: true)],
 	['mute', 0.6@0.5, (canRespawn: true)],
-	['faster', 0.7@0.5, (args: [4])]
+	['faster', 0.7@0.5, (args: [4])],
+	['dump', 0.8@0.8, (context: \dump)]
 ]);
 )
 
@@ -71,6 +73,10 @@ l.runtime.blockSpecs
 LCdef(\ok, ["ok,f4"])
 LCdef(\bra, [[\dump]])
 LCdef(\bra, [[\dump, 123], "print", "print"])
+
+LCdef(\bra).updateData((\a: 100))
+
+LCdef(\bra).clear
 
 LCdef(\bra).family == LCdef(\ok).family
 

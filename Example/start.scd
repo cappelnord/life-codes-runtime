@@ -17,21 +17,20 @@ l = LifeCodes(
 )
 
 
-l.sceneManager.runScene(\scene6)
-
 // TODO registerBlockSlots should just return the array of added
 // slots; we then can use nil as a key for the registry
 
 (
 LCdef(\test, \pling);
-LCdef(\dump, \dump);
 l.interaction.registerBlockSlots(\ok, [
 	['pling', 0.3@0.5, (context: \test)],
 	['cycleSpeakers', 0.4@0.5],
 	['play', 0.5@0.5, (canRespawn: true)],
 	['mute', 0.6@0.5, (canRespawn: true)],
-	['faster', 0.7@0.5, (args: [4])],
-	['dump', 0.8@0.8, (context: \dump)]
+	['ring', 0.8@0.5, (args: [440])],
+	['ring', 0.8@0.6, (args: [550])],
+	['ring', 0.8@0.7, (args: [50])],
+	['faster', 0.7@0.5, (args: [4])]
 ]);
 )
 

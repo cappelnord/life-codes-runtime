@@ -115,54 +115,88 @@ LCAudioMixer {
 	}
 }
 
-LCContextAudioChain {
-	// TODO: better realize the actual connection to the context and its gain
-	var <id;
-	var <mixer;
+// I forgot how to do proper inheritance in SC ...
 
+LCAudioChain {
+	var <mixer;
+	var <id;
 	var <group;
+	var <parentGroup;
 	var <fxGroup;
 	var <bus;
 
 	var <gainNode;
 	var <sendNode;
 
+	var <fxNodes;
 
-	*new {|id, mixer|
-		^super.newCopyArgs(id, mixer).init;
+	prBaseInit {|id_, mixer_, parentGroup_|
+		id = id_;
+		mixer = mixer_;
+		parentGroup = parentGroup_;
+		fxNodes = ();
 	}
 
-	init {
-		this.prInstantiateNodes;
-	}
-
-	prInstantiateNodes {
+	prInstantiateBaseNodes {
 		bus = Bus.audio(mixer.server, mixer.numChannels);
-		group = Group(mixer.group, \addToHead);
+		group = Group(parentGroup, \addToHead);
 		fxGroup = Group(group, \addToHead);
 
 		gainNode = Synth(\lcam_gain, [\gain, 1.0, \bus, bus], group, \addToTail);
 		sendNode = Synth(\lcam_send, [\bus, bus, \out, mixer.bus], group, \addToTail);
 	}
 
-	clear {
+	prBaseClear {
 		bus.free;
 		group.free;
+		fxNodes = ();
+	}
+
+	// location is \head or \tail
+	addFxNode {|synthDef, args, addAction=\tail, id|
+		var node;
+		args = args ? ();
+
+		id.isNil.not.if {
+			fxNodes[id].isNil.not.if {
+				fxNodes[id].free;
+				fxNodes[id] = nil;
+			};
+		};
+
+		args[\bus] = bus;
+		((addAction == \head) || (addAction == \addToHead)).if ({
+			addAction = \addToHead;
+		}, {
+			addAction = \addToTail;
+		});
+
+		node = Synth(synthDef, args.getPairs, fxGroup, addAction);
+
+		id.isNil.not.if {
+			fxNodes[id] = node;
+		}
+		^node;
 	}
 }
 
-LCCommandAudioChain {
-	var <id;
-	var <ctxChain;
-	var <mixer;
+LCContextAudioChain : LCAudioChain {
+	*new {|id, mixer|
+		^super.new.init(id, mixer);
+	}
 
-	var <group;
-	var <fxGroup;
-	var <bus;
+	init {|id, mixer|
+		this.prBaseInit(id, mixer, mixer.group);
+		this.prInstantiateBaseNodes;
+	}
 
-	var <gainNode;
+	clear {
+		this.prBaseClear;
+	}
+}
+
+LCCommandAudioChain : LCAudioChain {
 	var <fadeNode;
-	var <sendNode;
 
 	var <audioTail = 3.0;
 	var <>fadeOutTime = 3.0;
@@ -170,26 +204,17 @@ LCCommandAudioChain {
 	var dismissed = false;
 
 	*new {|id, ctxChain, mixer|
-		^super.newCopyArgs(id, ctxChain, mixer).init;
+		^super.new.init(id, ctxChain, mixer);
 	}
 
-	init {
-		this.prInstantiateNodes;
-	}
-
-	prInstantiateNodes {
-		bus = Bus.audio(mixer.server, mixer.numChannels);
-		group = Group(ctxChain.group, \addToHead);
-		fxGroup = Group(group, \addToHead);
-
-		gainNode = Synth(\lcam_gain, [\gain, 1.0, \bus, bus], group, \addToTail);
-		sendNode = Synth(\lcam_send, [\bus, bus, \out, ctxChain.bus], group, \addToTail);
+	init {|id, ctxChain, mixer|
+		this.prBaseInit(id, mixer, ctxChain.group);
+		this.prInstantiateBaseNodes;
 		// TODO: FADE NODE
 	}
 
 	clear {
-		bus.free;
-		group.free;
+		this.prBaseClear;
 	}
 
 	dismiss {

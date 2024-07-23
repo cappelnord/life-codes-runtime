@@ -9,6 +9,9 @@ LCSceneDef(\act1a, {|sceneManager, interaction|
 	"act1a - final".postln;
 });
 
+
+
+
 LCSceneDef(\act1b, {|sceneManager, interaction|
 	"act1b".postln;
 	sceneManager.waitForTime(10);

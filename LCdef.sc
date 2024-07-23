@@ -117,11 +117,20 @@ LCContext {
 	}
 
 	updateData {|data, executeFunctions=true|
-		// TODO: Merge Data
+		data.keys.do {|key|
+			this.data[key] = data[key];
+		};
 
 		executeFunctions.if {
-			this.executeLifecyclePhase(\on_ctx_create);
-			// TODO: send up to active command (to notify blocks)
+			// context update function
+			executionQueue.executeList(
+				family.getLifecycleFunctionReferences(\on_ctx_data_update)
+				.collect {|f| f.bind(data, this, family, LifeCodes.instance)}
+			);
+			// notify active command to forward to blocks
+			cmd.isNil.not.if {
+				cmd.notifyCtxDataUpdate(data);
+			};
 		};
 	}
 
@@ -330,6 +339,13 @@ LCCommand {
 		}, {
 			quantFunc.value;
 		});
+	}
+
+	notifyCtxDataUpdate {|data|
+		blockInstanceList.do {|blockInstance|
+			var functionReferences = ctx.family.getBlockFunctionReferences(blockInstance.name, \on_ctx_data_update);
+			executionQueue.executeList(functionReferences.collect {|ref| ref.bind(data, blockInstance, this, this.ctx, this.ctx.family, ref.family)});
+		};
 	}
 
 	executeLeave {

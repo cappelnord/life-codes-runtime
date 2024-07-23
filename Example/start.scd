@@ -16,6 +16,12 @@ l = LifeCodes(
 )
 )
 
+
+l.sceneManager.runScene(\scene6)
+
+// TODO registerBlockSlots should just return the array of added
+// slots; we then can use nil as a key for the registry
+
 (
 LCdef(\test, \pling);
 l.interaction.registerBlockSlots(\ok, [

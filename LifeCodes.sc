@@ -25,6 +25,8 @@ Command sequences (and lookup rules)
 
 If a block states what keys it (primarily) (re)sets and/or modifies we can mark blocks that were superseeded visually.
 
+// maybe we should rename interaction to gui?
+
 */
 
 LifeCodes {

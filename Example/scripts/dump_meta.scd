@@ -15,8 +15,9 @@ LCSpec(\dump, \meta, {|spec|
 			"on_ctx_create".postln;
 		},
 
-		\on_ctx_data_change: {|ctx, family, spec|
-			"on_ctx_data_changed".postln;
+		\on_ctx_data_update: {|data, ctx, family, spec|
+			"CTX on_ctx_data_update".postln;
+			data.postln;
 		},
 
 		\on_cmd_rush: {|cmd, ctx, family, spec|
@@ -62,8 +63,9 @@ LCSpec(\dump, \meta, {|spec|
 			"dump on_leave".postln;
 		},
 
-		\on_ctx_data_change: {|block, cmd, ctx, family, spec|
-			"dump on_ctx_data_changed".postln;
+		\on_ctx_data_update: {|data, block, cmd, ctx, family, spec|
+			"dump on_ctx_data_update".postln;
+			data.postln;
 		},
 
 		\on_enter: {|block, cmd, ctx, family, spec|

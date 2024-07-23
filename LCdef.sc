@@ -125,7 +125,8 @@ LCContext {
 			// context update function
 			executionQueue.executeList(
 				family.getLifecycleFunctionReferences(\on_ctx_data_update)
-				.collect {|f| f.bind(data, this, family, LifeCodes.instance)}
+				.collect {|f| f.bind(data, this, family, LifeCodes.instance)},
+				LifeCodes.instance.options[\alsoTraceRapidFunctions].not
 			);
 			// notify active command to forward to blocks
 			cmd.isNil.not.if {
@@ -344,7 +345,10 @@ LCCommand {
 	notifyCtxDataUpdate {|data|
 		blockInstanceList.do {|blockInstance|
 			var functionReferences = ctx.family.getBlockFunctionReferences(blockInstance.name, \on_ctx_data_update);
-			executionQueue.executeList(functionReferences.collect {|ref| ref.bind(data, blockInstance, this, this.ctx, this.ctx.family, ref.family)});
+			executionQueue.executeList(
+				functionReferences.collect {|ref| ref.bind(data, blockInstance, this, this.ctx, this.ctx.family, ref.family)},
+				LifeCodes.instance.options[\alsoTraceRapidFunctions].not
+			);
 		};
 	}
 

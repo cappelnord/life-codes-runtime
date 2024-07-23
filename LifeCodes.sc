@@ -27,6 +27,8 @@ If a block states what keys it (primarily) (re)sets and/or modifies we can mark 
 
 // maybe we should rename interaction to gui?
 
+// what do we now send to functions/blocks/etc? Family AND spec?
+
 */
 
 LifeCodes {
@@ -83,6 +85,7 @@ LifeCodes {
 			\ignoreDomains: [],
 			\exportPath: nil,
 			\traceExecutionQueues: false,
+			\alsoTraceRapidFunctions: false,
 			\clock: TempoClock.default,
 			\interactionHost: nil,
 			\interactionReceivePort: 57150,

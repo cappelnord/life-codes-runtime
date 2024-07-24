@@ -1,6 +1,10 @@
 
 # Life Codes Quick Manual
 
+## Prerequisites
+### Binaural Room Simulation
+In order to use the `binaural` output mode the [Ambisonics Toolkit (ATK)](https://github.com/ambisonictoolkit/atk-sc3/blob/master/README.md#installing) must be installed. This includes the Quark, sc3-plugins as well as the Atk kernels and matrices.
+
 ## Terminology
 Here is a quick overview of terms and what they mean in the context of the Life Codes runtime.
 

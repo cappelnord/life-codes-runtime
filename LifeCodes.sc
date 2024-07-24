@@ -82,6 +82,14 @@ LifeCodes {
 			server: Server.default,
 			runDry: false,
 			numAudioChannels: 4,
+			// unit circle; forward is 1@0
+			speakerPositions: [
+				Point(-1, 1),
+				Point(1, 1),
+				Point(1, -1),
+				Point(-1, -1)
+			],
+			binauralElevation: 10.degrad,
 			audioOutputMode: \direct,
 			audioOutputDelay: 0,
 			assignGlobalVariables: true,

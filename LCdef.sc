@@ -315,7 +315,7 @@ LCCommand {
 		var quantFunc = {
 			active.if {
 				headId.isNil.not.if {
-					LifeCodes.instance.interaction.sendCommandFeedback(this);
+					LifeCodes.instance.gui.sendCommandFeedback(this);
 				};
 				executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_quant_once, ctx.getOnceCandidates(blockInstanceList, true)));
 				executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_quant));
@@ -437,13 +437,13 @@ LCBlockInstance {
 	*cleanSource {|source|
 		var cleanSource = source.deepCopy;
 
-		// decode (bit weird) syntax to send arguments alongside codeblocks from interaction layer
+		// decode (bit weird) syntax to send arguments alongside codeblocks from gui layer
 		(cleanSource.class == String).if {
 			var x = cleanSource.split($,);
 
 			cleanSource = [x[0].asSymbol];
 			(x.size > 1).if {
-				cleanSource = cleanSource.addAll(LCInteractionLayer.decodeOSCValues(x[1..]));
+				cleanSource = cleanSource.addAll(LCGUI.decodeOSCValues(x[1..]));
 			};
 		};
 

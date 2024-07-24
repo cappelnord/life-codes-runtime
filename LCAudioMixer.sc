@@ -80,6 +80,8 @@ LCAudioMixer : LCAudioChain {
 	var ctxChains;
 	var cmdChains;
 
+	classvar <channelAzimuths;
+
 	*new {
 		^super.newCopyArgs().init;
 	}
@@ -108,6 +110,10 @@ LCAudioMixer : LCAudioChain {
 			outputNode = Synth(\lcam_splay, [\bus, bus, \out, 0], group, \addToTail);
 		};
 
+		(outputMode == \binaural).if {
+			outputNode = Synth(\lcam_binaural, [\bus, bus, \out, 0], group, \addToTail);
+		};
+
 		// kind of the catch-all case
 		(outputNode == nil).if {
 			outputNode = Synth(\lcam_send, [\bus, bus, \out, 0], group, \addToTail);
@@ -116,6 +122,11 @@ LCAudioMixer : LCAudioChain {
 
 	*buildSynthDefs {
 		var numChannels = LifeCodes.instance.options[\numAudioChannels];
+		channelAzimuths = LifeCodes.instance.options[\speakerPositions].collect {|position|
+			(position.y).atan2(position.x)
+		};
+
+		// TODO: Calculate channel Azimuths
 
 		SynthDef(\lcam_gain, {|bus=0, gain=1.0, lag=0.5|
 			var sig = In.ar(bus, numChannels);
@@ -137,6 +148,30 @@ LCAudioMixer : LCAudioChain {
 			var sig = In.ar(bus, numChannels);
 			Out.ar(bus, DelayC.ar(sig, 2.0, delay));
 		}).add;
+
+		(Class.allClasses.collect {|class| class.asSymbol}).includes(\Atk).if {
+			(LifeCodes.instance.options[\audioOutputMode] == \binaural).if {
+				var decoder = FoaDecoderKernel.newCIPIC;
+				var encoder = FoaEncoderMatrix.newOmni;
+				// bit stupid but most likely needed
+				1.wait;
+
+				SynthDef(\lcam_binaural, {|bus=0, out=0, listenerAzimuth=0|
+					var sig = In.ar(bus, numChannels);
+					var ambi = Silent.ar(4);
+
+					numChannels.do {|i|
+						var channel = FoaEncode.ar(sig[i] * 0.5, encoder);
+						ambi = ambi + FoaPush.ar(channel, pi/2, LCAudioMixer.channelAzimuths[i], LifeCodes.instance.options[\binauralElevation]);
+						// TODO: should the signal be focues or are plane waves OK?
+					};
+
+					ambi = FoaRotate.ar(ambi, listenerAzimuth);
+
+					Out.ar(out, FoaDecode.ar(ambi, decoder));
+				}).add;
+			}
+		};
 	}
 
 	getContextChain {|id|
@@ -210,7 +245,7 @@ LCCommandAudioChain : LCAudioChain {
 	init {|id_, ctxChain_, mixer|
 		id = id_;
 		ctxChain = ctxChain_;
-		this.prBaseInit(id, mixer, ctxChain.group);
+		this.prBaseInit(mixer, ctxChain.group);
 		this.prInstantiateBaseNodes;
 		sendNode = Synth(\lcam_send, [\bus, bus, \out, ctxChain.bus], group, \addToTail);
 

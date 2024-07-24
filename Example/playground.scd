@@ -3,6 +3,8 @@
 // TODO registerBlockSlots should just return the array of added
 // slots; we then can use nil as a key for the registry
 
+s.plotTree
+
 (
 LCdef(\test, \pling);
 l.gui.registerBlockSlots(\ok, [

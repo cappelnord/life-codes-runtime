@@ -8,7 +8,7 @@ l = LifeCodes(
 		specsExportPath: basePath +/+ "_specs.json",
 		traceExecutionQueues: true,
 		guiHost: NetAddr("127.0.0.1", 57140),
-		audioOutputMode: \splay,
+		audioOutputMode: \binaural,
 		entryScene: \act1a
 	)
 );

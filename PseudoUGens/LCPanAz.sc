@@ -26,7 +26,7 @@ LCPanAz {
 		);
 
 		// atan2 to the rescue (best friend)
-		^targetPoint.y.atan2(targetPoint.x);
+		^(targetPoint.y.atan2(targetPoint.x) * -1);
 	}
 
 	// the orientation is 1.5 - then a pos of 0 is azimuth 0

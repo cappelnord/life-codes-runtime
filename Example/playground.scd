@@ -5,11 +5,16 @@
 
 s.plotTree
 
+LCContext
+
+LCdef(\test).audioChain.fxNodes
+
 (
 LCdef(\test, \pling);
+LCdef(\test).appendModifiers = [[\xPosPan]];
+
 l.gui.registerBlockSlots(\ok, [
 	['pling', 0.3@0.5, (context: \test)],
-	['cycleSpeakers', 0.4@0.5],
 	['play', 0.5@0.5, (canRespawn: true)],
 	['mute', 0.6@0.5, (canRespawn: true)],
 	['ring', 0.8@0.5, (args: [440])],
@@ -64,7 +69,7 @@ LCdef(\bra).clear
 
 LCdef(\bra).family == LCdef(\ok).family
 
-LCdef(\ok, [\pling, \play, \cycleSpeakers])
+LCdef(\ok, [\pling, \play])
 LCdef(\okk, [\pling, \play, \cycleSpeakers])
 
 

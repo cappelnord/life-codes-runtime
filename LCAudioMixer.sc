@@ -33,7 +33,7 @@ LCAudioChain {
 	}
 
 	// location is \head or \tail
-	addFxNode {|synthDef, args, addAction=\tail, id|
+	addFxNode {|synthDef, args, id, addAction=\tail|
 		var node;
 		args = args ? ();
 

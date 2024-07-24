@@ -93,14 +93,14 @@ LCSceneManager {
 	// basically busy-waits until condition is true
 	prStepOnCondition {|condition|
 		{condition.value.not && rushCurrentStep.not && rushCurrentScene.not}.while {
-			(1/240.0).wait;
+			(1/60.0).wait;
 		};
 		rushCurrentStep = false;
 	}
 
 	prTransitionOnCondition {|sceneId, condition|
 		{condition.value.not && rushCurrentStep.not && rushCurrentScene.not}.while {
-			(1/240.0).wait;
+			(1/60.0).wait;
 		};
 		rushCurrentStep = false;
 		rushCurrentScene = false;

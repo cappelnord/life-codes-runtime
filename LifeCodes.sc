@@ -180,7 +180,7 @@ LifeCodes {
 		// ... and bin them
 		scriptFiles = (
 			\ignored: [],
-			\spec: []
+			\familyDefs: []
 		);
 
 		scriptExecutionPhases.do {|phase| scriptFiles[phase.asSymbol] = [];};
@@ -208,7 +208,7 @@ LifeCodes {
 				fileName.beginsWith("_").if ({
 					addScriptFile.value(\ignored, file);
 				}, {
-					addScriptFile.value(\spec, file);
+					addScriptFile.value(\familyDefs, file);
 				});
 			});
 		};
@@ -397,11 +397,11 @@ LifeCodes {
 			this.prExecuteScriptsForLifecyclePhase(\on_load);
 		};
 
-		this.prExecuteScriptsForLifecyclePhase(\spec);
+		this.prExecuteScriptsForLifecyclePhase(\familyDefs);
 
 		runtime.compile;
 
-		this.prExecuteAllSpecsInit;
+		this.prExecuteAllFamiliesInit;
 
 		runtime.buildIndex;
 
@@ -412,8 +412,8 @@ LifeCodes {
 		};
 	}
 
-	prExecuteAllSpecsInit {
-		"\n*** EXECUTE ALL SPECS ON_INIT ***".postln;
+	prExecuteAllFamiliesInit {
+		"\n*** EXECUTE ALL FAMILIES ON_INIT ***".postln;
 
 		runtime.families.keys.asArray.sort.do {|key|
 			var family = runtime.families[key];

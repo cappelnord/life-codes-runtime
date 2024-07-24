@@ -7,7 +7,7 @@ Here is a quick overview of terms and what they mean in the context of the Life 
 ## Startup and Loading
 
 ### Startup
-A startup script will likely be called on installation startup which will start the loading process and specify options. Please check [Example/startup.scd](Example/start.scd?plain=1) as a guiding point. Options are currently not yet documented but all options can be found in [LifeCodes.sc](LifeCodes.sc) with hopefully meaningful names.
+A startup script will likely be called on installation startup which will start the loading process and specify options. Please check [Example/startup.scd](Example/start.scd) as a guiding point. Options are currently not yet documented but all options can be found in [LifeCodes.sc](LifeCodes.sc) with hopefully meaningful names.
 
 ### Scripts Folder
 All content code is organized in a folder specified by `scriptsPath` in the startup script. Code files can be organized in folders as it seems sensible - they will all be treated equally. File names matter though:
@@ -18,8 +18,15 @@ All content code is organized in a folder specified by `scriptsPath` in the star
 
 Within their execution scope all files are executed in alphanumerical order (independent in which folder they are).
 
-### Lifecycle Scripts
+### Life Cycle Scripts
 File names starting with `on_`. All scripts are run within a `Task` - so `.wait` can be used. They should ideally not spawn any other `Task` or `Tdef` so that all loading operations run sequentially and the order of operations is maintained.
+
+The name of the life cycle can be complemented by a domain using a following underscore. In case this domain is ignored using startup options the file will not be executed (e.g: `on_init_visuals.scd` or `on_init_visuals_blabla.scd` would not be executed if `ignoredDomains` contains `\visuals`).
+
+A list of life cycle phases can be found below.
+
+### Family Definition Scripts
+All other files are considerd family definition scripts. Their file names carry no further meaning (except that they are executed in alphanumerical order). Family definitions are explained below.
 
 ### Order of Loading Operations
 
@@ -27,20 +34,20 @@ File names starting with `on_`. All scripts are run within a `Task` - so `.wait`
 ## Class Overview
 This is a (potentially) incomplete list of all classes currently used. Italic classes are considerend to be relevant only internally and are currently not further documented.
 
-### LifeCodes
-### LCdef
-### LCContext
-### LCBlockInstance
-### *LCBlockSpec*
-### *LCParameterSpec*
-### *LCExecutionQueue*
-### *LCExecutionUnit*
-### *LCBlockFunctionReference*
-### LCGUI
-### LCBlockSlotRef
-### *LCJSONExport*
-### LCRuntime
-### LCSceneDef
-### LCSceneManager
-### LCFamliyDef
-### LCFamily
+#### LifeCodes
+#### LCdef
+#### LCContext
+#### LCBlockInstance
+#### *LCBlockSpec*
+#### *LCParameterSpec*
+#### *LCExecutionQueue*
+#### *LCExecutionUnit*
+#### *LCBlockFunctionReference*
+#### LCGUI
+#### LCBlockSlotRef
+#### *LCJSONExport*
+#### LCRuntime
+#### LCSceneDef
+#### LCSceneManager
+#### LCFamliyDef
+#### LCFamily

@@ -29,9 +29,12 @@ If a block states what keys it (primarily) (re)sets and/or modifies we can mark 
 
 
 // what do we now send to functions/blocks/etc? Family AND domain? Also lc?
+// --> check all what is bound to functions currently, adjust and document at the same time
 // Is spec/domain used internally correctly?
 
 // on_init and on_load: are family supplied or the domain?
+
+// check overall naming of things
 
 */
 
@@ -75,26 +78,26 @@ LifeCodes {
 	*new {|scriptsPath="", samplesPath="", options|
 
 		var defaultOptions = (
-			\server: Server.default,
-			\runDry: false,
-			\numAudioChannels: 4,
-			\audioOutputMode: \direct,
-			\audioOutputDelay: 0,
-			\assignGlobalVariables: true,
-			\outDevice: nil,
-			\sampleRate: 48000,
-			\serverLatency: 0.2,
-			\onStartAction: {},
-			\quitOnFatalError: false,
-			\ignoreDomains: [],
-			\exportPath: nil,
-			\traceExecutionQueues: false,
-			\alsoTraceRapidFunctions: false,
-			\clock: TempoClock.default,
-			\guiHost: nil,
-			\guiReceivePort: 57150,
-			\guiExecuteOnlyInitializedContexts: true,
-			\entryScene: nil
+			server: Server.default,
+			runDry: false,
+			numAudioChannels: 4,
+			audioOutputMode: \direct,
+			audioOutputDelay: 0,
+			assignGlobalVariables: true,
+			outDevice: nil,
+			sampleRate: 48000,
+			serverLatency: 0.2,
+			onStartAction: {},
+			quitOnFatalError: false,
+			ignoreDomains: [],
+			exportPath: nil,
+			traceExecutionQueues: false,
+			alsoTraceRapidFunctions: false,
+			clock: TempoClock.default,
+			guiHost: nil,
+			guiReceivePort: 57150,
+			guiExecuteOnlyInitializedContexts: true,
+			entryScene: nil
 		);
 
 		instance.isNil.not.if {

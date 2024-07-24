@@ -1,4 +1,4 @@
-LCInteractionLayer {
+LCGUI {
 	var lc;
 	var net;
 
@@ -15,9 +15,9 @@ LCInteractionLayer {
 	}
 
 	init {
-		receivePort = lc.options[\interactionReceivePort];
+		receivePort = lc.options[\guiReceivePort];
 
-		net = lc.options[\interactionHost];
+		net = lc.options[\guiHost];
 		net.sendMsg("/lc/blocks/loadSpecs", lc.options[\specsExportPath]);
 
 		OSCdef(\lcExecuteCommand, {|msg, time, addr, recvPort|
@@ -25,7 +25,7 @@ LCInteractionLayer {
 		}, '/lc/executeCommand', recvPort: receivePort);
 
 		OSCdef(\lcContextDataUpdate, {|msg, time, addr, recvPort|
-			var list = LCInteractionLayer.decodeOSCValues(msg[2].asString.split($,));
+			var list = LCGUI.decodeOSCValues(msg[2].asString.split($,));
 			var data = ();
 			list.clump(2).do {|item|
 				data[item[0].asSymbol] = item[1];
@@ -38,7 +38,7 @@ LCInteractionLayer {
 	}
 
 	prOnExecuteCommand {|contextId, blockListString, headId, cmdId|
-		(lc.runtime.contexts.includesKey(contextId).not && lc.options[\interactionExecuteOnlyInitializedContexts]).if {
+		(lc.runtime.contexts.includesKey(contextId).not && lc.options[\guiExecuteOnlyInitializedContexts]).if {
 			"Received command for uninitialized context: %".format(contextId).warn;
 			^nil;
 		};
@@ -98,7 +98,7 @@ LCInteractionLayer {
 
 		LifeCodes.instance.runtime.blockSpecs[spec.asSymbol].isNil.not.if({
 			net.sendMsg("/lc/blocks/addSlot", object.jsonString);
-			^LCInteractionSlotRef(spec, startPosition, id, options);
+			^LCBlockSlotRef(spec, startPosition, id, options);
 		}, {
 			"Could not find spec identifier: %".format(spec).error;
 			^nil;
@@ -146,13 +146,11 @@ LCInteractionLayer {
 	}
 }
 
-LCInteractionSlotRef {
+LCBlockSlotRef {
 	var <spec;
 	var <startPosition;
 	var <id;
 	var <options;
-
-
 
 	*new {|spec, startPosition, id, options|
 		^super.newCopyArgs(spec, startPosition, id, options).init;

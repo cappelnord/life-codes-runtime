@@ -25,9 +25,13 @@ Command sequences (and lookup rules)
 
 If a block states what keys it (primarily) (re)sets and/or modifies we can mark blocks that were superseeded visually.
 
-// maybe we should rename interaction to gui?
 
-// what do we now send to functions/blocks/etc? Family AND spec?
+
+
+// maybe we should rename interaction to gui?
+// what do we now send to functions/blocks/etc? Family AND spec? Also lc?
+// LCdef but LCSpec? CHECK and fix
+// LCspec / LCFamilyDef (?)
 
 */
 
@@ -39,7 +43,7 @@ LifeCodes {
 
 	var <server;
 	var <runtime;
-	var <interaction;
+	var <gui;
 	var <mixer;
     var <sceneManager;
 
@@ -80,16 +84,16 @@ LifeCodes {
 			\outDevice: nil,
 			\sampleRate: 48000,
 			\serverLatency: 0.2,
-			\action: {},
+			\onStartAction: {},
 			\quitOnFatalError: false,
 			\ignoreDomains: [],
 			\exportPath: nil,
 			\traceExecutionQueues: false,
 			\alsoTraceRapidFunctions: false,
 			\clock: TempoClock.default,
-			\interactionHost: nil,
-			\interactionReceivePort: 57150,
-			\interactionExecuteOnlyInitializedContexts: true,
+			\guiHost: nil,
+			\guiReceivePort: 57150,
+			\guiExecuteOnlyInitializedContexts: true,
 			\entryScene: nil
 		);
 
@@ -135,7 +139,7 @@ LifeCodes {
 		loadingTask = nil;
 		this.prExecuteScriptsForLifecyclePhase(\on_unload);
 		this.prFreeBuffers;
-		interaction.clear;
+		gui.clear;
 		runtime.clear;
 		mixer.clear;
 		sceneManager.clear;
@@ -342,18 +346,18 @@ LifeCodes {
 				mixer = LCAudioMixer();
 			};
 
-			options[\interactionHost].isNil.not.if {
-				"\n\nStarting interaction layer on % - listening on port %".format(options[\interactionHost], options[\interactionReceivePort]).postln;
+			options[\guiHost].isNil.not.if {
+				"\n\nStarting GUI layer on % - listening on port %".format(options[\guiHost], options[\guiReceivePort]).postln;
 				options[\specsExportPath].isNil.if({
-					"Cannot initialize interaction layer without 'specsExportPath' set!".error;
+					"Cannot initialize GUI layer without 'specsExportPath' set!".error;
 				}, {
-					interaction = LCInteractionLayer(this);
+					gui = LCGUI(this);
 			    })
 			};
 
 			"\nLifeCodes Runtime loaded and running!".postln;
 
-			options[\action].value(this);
+			options[\onStartAction].value(this);
 
 			options[\entryScene].isNil.not.if {
 				sceneManager.runScene(options[\entryScene]);

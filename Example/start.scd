@@ -10,7 +10,7 @@ l = LifeCodes(
 		\specsExportPath: basePath +/+ "_specs.json",
 		\traceExecutionQueues: true,
 		\audioOutputMode: \splay,
-		\interactionHost: NetAddr("127.0.0.1", 57140),
+		\guiHost: NetAddr("127.0.0.1", 57140),
 		\entryScene: \act1a
 	)
 )
@@ -22,7 +22,7 @@ l = LifeCodes(
 
 (
 LCdef(\test, \pling);
-l.interaction.registerBlockSlots(\ok, [
+l.gui.registerBlockSlots(\ok, [
 	['pling', 0.3@0.5, (context: \test)],
 	['cycleSpeakers', 0.4@0.5],
 	['play', 0.5@0.5, (canRespawn: true)],
@@ -36,8 +36,8 @@ l.interaction.registerBlockSlots(\ok, [
 
 (
 fork {
-	l.interaction.popRegistry(\ok).do {|ref|
-		l.interaction.despawnBlockSlot(ref.id, (fadeTime: 1));
+	l.gui.popRegistry(\ok).do {|ref|
+		l.gui.despawnBlockSlot(ref.id, (fadeTime: 1));
 		0.5.wait;
 	}
 }

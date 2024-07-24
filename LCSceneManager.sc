@@ -28,7 +28,6 @@ LCSceneDef {
 
 LCSceneManager {
 	var <lc;
-	var <interaction;
 
 	var <sceneDefs;
 
@@ -43,7 +42,7 @@ LCSceneManager {
 	var rushCurrentScene = false;
 
 	*new {|lc|
-		^super.newCopyArgs(lc, lc.interaction).init;
+		^super.newCopyArgs(lc).init;
 	}
 
 	rush {
@@ -116,7 +115,7 @@ LCSceneManager {
 
 		// call final func
 		currentScene.isNil.not.if {
-			currentScene.final.value(this, interaction);
+			currentScene.final.value(this, lc.gui, lc);
 		};
 
 		routine = nil;
@@ -140,7 +139,7 @@ LCSceneManager {
 		rushCurrentStep = false;
 		rushCurrentScene = false;
 
-		routine = Routine({currentScene.function.value(this, interaction)});
+		routine = Routine({currentScene.function.value(this, lc.gui, lc)});
 		routine.play(lc.steadyClock);
 	}
 }

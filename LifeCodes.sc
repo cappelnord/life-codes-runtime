@@ -84,10 +84,16 @@ LifeCodes {
 			numAudioChannels: 4,
 			// unit circle; forward is 1@0
 			speakerPositions: [
-				Point(-1, 1),
-				Point(1, 1),
-				Point(1, -1),
-				Point(-1, -1)
+				Point(-2,  2.5),
+				Point(2,   2.5),
+				Point(2,  -2.5),
+				Point(-2, -2.5)
+			],
+			guiXTranslation: [
+				(x: 0.0, position: Point(-2, 2.5)),
+				(x: 0.307, position: Point(2, 2.5)),
+				(x: 0.692, position: Point(2, -2.5)),
+				(x: 1.0, position: Point(-2, -2.5))
 			],
 			binauralElevation: 10.degrad,
 			audioOutputMode: \direct,

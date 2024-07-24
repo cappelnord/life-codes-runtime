@@ -1,16 +1,16 @@
-LCSpec(\pling, \meta, {|spec|
-	spec.define((
+LCFamilyDef(\pling, \meta, {|domain|
+	domain.define((
 		type: \pattern,
 		color: Color.blue,
 		quant: 4
 	));
 
-	spec.defineBlock(\pling, (
+	domain.defineBlock(\pling, (
 		type: \subject,
 		primary: true
 	));
 
-	spec.defineBlock(\cycleSpeakers, (
+	domain.defineBlock(\cycleSpeakers, (
 		type: \modifier,
 		primary: true
 	));

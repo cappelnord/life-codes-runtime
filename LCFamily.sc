@@ -1,9 +1,9 @@
-LCSpec {
+LCFamilyDef {
 	*new {|familyId, domain=nil, function=nil|
 		var runtime;
 
 		LifeCodes.instance.isNil.if {
-			"LifeCodes is not initialized - cannot use LCSpec things ...".warn;
+			"LifeCodes is not initialized - cannot define families ...".warn;
 			^nil;
 		};
 
@@ -190,7 +190,7 @@ LCFamily {
 	}
 
 	asString {
-		^"LCSpec(\%)".format(id);
+		^"Family: %".format(id);
 	}
 
 	addExtensionFamily {|extension|

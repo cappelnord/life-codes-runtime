@@ -5,13 +5,12 @@ l = LifeCodes(
 	scriptsPath: basePath +/+ "scripts",
 	samplesPath: basePath +/+ "samples",
 	options: (
-		// \runDry: true,
-		\ignoreDomains: [],
-		\specsExportPath: basePath +/+ "_specs.json",
-		\traceExecutionQueues: true,
-		\audioOutputMode: \splay,
-		\guiHost: NetAddr("127.0.0.1", 57140),
-		\entryScene: \act1a
+		ignoreDomains: [],
+		specsExportPath: basePath +/+ "_specs.json",
+		traceExecutionQueues: true,
+		audioOutputMode: \splay,
+		guiHost: NetAddr("127.0.0.1", 57140),
+		entryScene: \act1a
 	)
 )
 )

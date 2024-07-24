@@ -28,10 +28,10 @@ If a block states what keys it (primarily) (re)sets and/or modifies we can mark 
 
 
 
-// maybe we should rename interaction to gui?
-// what do we now send to functions/blocks/etc? Family AND spec? Also lc?
-// LCdef but LCSpec? CHECK and fix
-// LCspec / LCFamilyDef (?)
+// what do we now send to functions/blocks/etc? Family AND domain? Also lc?
+// Is spec/domain used internally correctly?
+
+// on_init and on_load: are family supplied or the domain?
 
 */
 
@@ -341,11 +341,6 @@ LifeCodes {
 
 			this.prLoad;
 
-			options[\runDry].not.if {
-				"\n\nStarting audio mixer".postln;
-				mixer = LCAudioMixer();
-			};
-
 			options[\guiHost].isNil.not.if {
 				"\n\nStarting GUI layer on % - listening on port %".format(options[\guiHost], options[\guiReceivePort]).postln;
 				options[\specsExportPath].isNil.if({
@@ -389,9 +384,13 @@ LifeCodes {
 		options[\runDry].not.if {
 			this.prBootServer;
 			this.prExecuteScriptsForLifecyclePhase(\on_preload);
+
+			LCAudioMixer.buildSynthDefs;
+			"\n\nStarting audio mixer".postln;
+			mixer = LCAudioMixer();
+
 			this.prLoadSamples;
 			this.prExecuteScriptsForLifecyclePhase(\on_load);
-			LCAudioMixer.buildSynthDefs;
 		};
 
 		this.prExecuteScriptsForLifecyclePhase(\spec);

@@ -1,20 +1,20 @@
-LCSpec(\bowl, \meta, {|spec|
-	spec.define((
-		\type: \pattern,
-		\color: Color.blue,
+LCFamilyDef(\bowl, \meta, {|domain|
+	domain.define((
+		type: \pattern,
+		color: Color.blue,
 	));
 
-	spec.defineBlock(\bowl, (
-		\type: \subject,
-		\primary: true,
-		\on_execute: {|block, cmd, ctx, family, spec|
+	domain.defineBlock(\bowl, (
+		type: \subject,
+		primary: true,
+		on_execute: {|block, cmd, ctx, family, spec|
 			"bowl subject".postln;
 		}
 	));
 
-	spec.defineBlock(\play, (
-		\type: \action,
-		\on_execute: {|block, cmd, ctx, family, spec|
+	domain.defineBlock(\play, (
+		type: \action,
+		on_execute: {|block, cmd, ctx, family, spec|
 			"bowl play".postln;
 		}
 	));

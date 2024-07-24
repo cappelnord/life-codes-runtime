@@ -1,10 +1,10 @@
-LCSpec(\universal_audio, \meta, {|spec|
-	spec.define((
+LCFamilyDef(\universal_audio, \meta, {|domain|
+	domain.define((
 		extends: [\type_pattern],
 		color: Color.gray,
 	));
 
-	spec.defineBlock(\ring, (
+	domain.defineBlock(\ring, (
 		type: \modifier,
 		primary: true,
 

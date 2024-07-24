@@ -149,8 +149,8 @@ LCAudioMixer : LCAudioChain {
 			Out.ar(bus, DelayC.ar(sig, 2.0, delay));
 		}).add;
 
-		(Class.allClasses.collect {|class| class.asSymbol}).includes(\Atk).if {
-			(LifeCodes.instance.options[\audioOutputMode] == \binaural).if {
+		(LifeCodes.instance.options[\audioOutputMode] == \binaural).if {
+			(Class.allClasses.collect {|class| class.asSymbol}).includes(\Atk).if({
 				var decoder = FoaDecoderKernel.newCIPIC;
 				var encoder = FoaEncoderMatrix.newOmni;
 				// bit stupid but most likely needed
@@ -170,8 +170,11 @@ LCAudioMixer : LCAudioChain {
 
 					Out.ar(out, FoaDecode.ar(ambi, decoder));
 				}).add;
-			}
-		};
+			}, {
+				"Ambisonics Toolkit is not installed - reverting to audioOutputMode: \splay".warn;
+				LifeCodes.instance.options[\audioOutputMode] = \splay;
+			});
+		}
 	}
 
 	getContextChain {|id|

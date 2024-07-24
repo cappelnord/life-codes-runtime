@@ -26,6 +26,7 @@ Command sequences (and lookup rules)
 If a block states what keys it (primarily) (re)sets and/or modifies we can mark blocks that were superseeded visually.
 
 
+// Check File Names and how domains are specified here.
 
 
 // what do we now send to functions/blocks/etc? Family AND domain? Also lc?

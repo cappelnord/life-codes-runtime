@@ -364,7 +364,7 @@ LCCommand {
 		instanceList = instanceList ? blockInstanceList;
 		instanceList.do {|blockInstance|
 			var functionReferences = ctx.family.getBlockFunctionReferences(blockInstance.name, phase);
-			ret.addAll(functionReferences.collect {|ref| ref.bind(blockInstance, this, this.ctx, this.ctx.family, ref.family)});
+			ret.addAll(functionReferences.collect {|ref| ref.bind(blockInstance, this, this.ctx, this.ctx.family)});
 		};
 		^ret;
 	}

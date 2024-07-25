@@ -34,6 +34,28 @@ All other files are considerd family definition scripts. Their file names carry 
 
 ### Order of Loading Operations
 
+## Family, Context and Block Life Cycle Functions
+Defining functions of the various stages in the life cycle of a family, context, command and block is bringing Life Codes to life!
+
+### LCFamilyDef and Domains
+
+### Family Life Cycle Functions
+
+### `on_init: {|family| ...}`
+Is called after the server is booted and the family/block index is generated. It is a good spot to load SynthDefs.
+
+### `on_load: {|family| ...}`
+Is called when the family is first used in a context. It is either called explicitly with `.load` on a context or is called before the first command is executed.
+
+
+FamilyDef: domain, lc
+Family: family
+Ctx: ctx, family
+Cmd: cmd, ctx, family
+Block: block, cmd, ctx, family
+Data: data, ctx, family or data, block, cmd, ctx, family
+pattern: event, cmd, ctx, family
+
 
 ## Class Overview
 This is a (potentially) incomplete list of all classes currently used. Italic classes are considerend to be relevant only internally and are currently not further documented.

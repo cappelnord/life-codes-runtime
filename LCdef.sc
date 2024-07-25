@@ -107,7 +107,7 @@ LCContext {
 		"Execute Context Lifecycle Phase: %/%/%".format(id, family.id, phase).postln;
 		executionQueue.executeList(
 			family.getLifecycleFunctionReferences(phase)
-			.collect {|f| f.bind(this, family, LifeCodes.instance)}
+			.collect {|f| f.bind(this, family)}
 		);
 	}
 
@@ -125,7 +125,7 @@ LCContext {
 			// context update function
 			executionQueue.executeList(
 				family.getLifecycleFunctionReferences(\on_ctx_data_update)
-				.collect {|f| f.bind(data, this, family, LifeCodes.instance)},
+				.collect {|f| f.bind(data, this, family)},
 				LifeCodes.instance.options[\alsoTraceRapidFunctions].not
 			);
 			// notify active command to forward to blocks
@@ -280,7 +280,7 @@ LCCommand {
 			var functionReferences = ctx.family.getLifecycleFunctionReferences(\on_pattern_finish);
 			var patternFinishFunc = {|event|
 				functionReferences.do {|ref|
-					ref.function.value(event, this, ctx, ctx.family, ctx.family)
+					ref.function.value(event, this, ctx, ctx.family)
 				};
 			};
 
@@ -346,7 +346,7 @@ LCCommand {
 		blockInstanceList.do {|blockInstance|
 			var functionReferences = ctx.family.getBlockFunctionReferences(blockInstance.name, \on_ctx_data_update);
 			executionQueue.executeList(
-				functionReferences.collect {|ref| ref.bind(data, blockInstance, this, this.ctx, this.ctx.family, ref.family)},
+				functionReferences.collect {|ref| ref.bind(data, blockInstance, this, this.ctx, this.ctx.family)},
 				LifeCodes.instance.options[\alsoTraceRapidFunctions].not
 			);
 		};

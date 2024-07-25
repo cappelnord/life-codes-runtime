@@ -25,27 +25,34 @@ Within their execution scope all files are executed in alphanumerical order (ind
 ### Life Cycle Scripts
 File names starting with `on_`. All scripts are run within a `Task` - so `.wait` can be used. They should ideally not spawn any other `Task` or `Tdef` so that all loading operations run sequentially and the order of operations is maintained.
 
-The name of the life cycle can be complemented by a domain using a following underscore. In case this domain is ignored using startup options the file will not be executed (e.g: `on_init_visuals.scd` or `on_init_visuals_blabla.scd` would not be executed if `ignoredDomains` contains `\visuals`).
+The name of the lifecycle can be complemented by a domain using a following underscore. In case this domain is ignored using startup options the file will not be executed (e.g: `on_init_visuals.scd` or `on_init_visuals_blabla.scd` would not be executed if `ignoredDomains` contains `\visuals`).
 
-A list of life cycle phases can be found below.
+A list of lifecycle phases can be found below.
 
 ### Family Definition Scripts
 All other files are considerd family definition scripts. Their file names carry no further meaning (except that they are executed in alphanumerical order). Family definitions are explained below.
 
 ### Order of Loading Operations
 
-## Family, Context and Block Life Cycle Functions
-Defining functions of the various stages in the life cycle of a family, context, command and block is bringing Life Codes to life!
+## Family, Context and Block Lifecycle Functions
+Defining functions of the various stages in the lifecycle of a family, context, command and block is bringing Life Codes to life!
 
 ### LCFamilyDef and Domains
 
-### Family Life Cycle Functions
+### Family Lifecycle Functions
 
 #### `on_init: {|family| ...}`
 Is called after the server is booted and the family/block index is generated. It is a good spot to load SynthDefs.
 
 #### `on_load: {|family| ...}`
 Is called when the family is first used in a context. It is either called explicitly with `.load` on a context or is called before the first command is executed.
+
+#### `on_unload: {|family| ...}`
+Is called when the family is not used in any context anymore.
+
+*Please note that on_load and on_unload currently don't have a well defined behaviour in case these functions are inherited ...*
+
+### Context Lifecycle Functions
 
 
 FamilyDef: domain, lc

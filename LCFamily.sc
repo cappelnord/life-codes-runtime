@@ -160,7 +160,7 @@ LCFamily {
 
 	getLifecycleExecutionUnits {|phase|
 		^this.getLifecycleFunctionReferences(phase).collect({|ref|
-			ref.bind(this, LifeCodes.instance)
+			ref.bind(this)
 		});
 	}
 

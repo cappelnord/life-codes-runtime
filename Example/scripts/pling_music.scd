@@ -1,4 +1,4 @@
-LCFamilyDef(\pling, \music, {|domain|
+LCFamilyDef(\pling, \music, {|domain, lc|
 	domain.define((
 		on_init: {
 			SynthDef(\pling, {|out=0, freq=440, amp=0.1|
@@ -15,6 +15,6 @@ LCFamilyDef(\pling, \music, {|domain|
 	));
 
 	domain.defineBlock(\cycleSpeakers, Pbind(
-		\channel, Pseries(0, 1, inf) % LifeCodes.instance.options[\numAudioChannels]
+		\channel, Pseries(0, 1, inf) % lc.options[\numAudioChannels]
 	));
 });

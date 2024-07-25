@@ -1,4 +1,4 @@
-LCFamilyDef(\universal_audio, \meta, {|domain|
+LCFamilyDef(\universal_audio, \meta, {|domain, lc|
 	domain.define((
 		extends: [\type_pattern],
 		color: Color.gray,

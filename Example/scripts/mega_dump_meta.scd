@@ -1,4 +1,4 @@
-LCFamilyDef(\mega_dump, \meta, {|domain|
+LCFamilyDef(\mega_dump, \meta, {|domain, lc|
 	domain.define((
 		inheritsFrom: [\dump],
 		color: Color.red,
@@ -11,7 +11,7 @@ LCFamilyDef(\mega_dump, \meta, {|domain|
 
 	domain.defineBlock(\print, (
 		type: \action,
-		on_execute: {|block, cmd, ctx, family, domain|
+		on_execute: {|block, cmd, ctx, family|
 			"print addon from mega dump".postln;
 		}
 	));
@@ -20,7 +20,7 @@ LCFamilyDef(\mega_dump, \meta, {|domain|
 		type: \modifier,
 		primary: true,
 
-		on_execute: {|block, cmd, ctx, family, domain|
+		on_execute: {|block, cmd, ctx, family|
 			"mega modifier".postln;
 		}
 	));

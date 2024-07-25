@@ -1,4 +1,4 @@
-LCFamilyDef(\universal_pattern, \meta, {|domain|
+LCFamilyDef(\universal_pattern, \meta, {|domain, lc|
 	domain.define((
 		extends: [\type_pattern],
 		color: Color.gray,
@@ -8,7 +8,7 @@ LCFamilyDef(\universal_pattern, \meta, {|domain|
 		type: \action,
 		primary: true,
 
-		on_execute: {|block, cmd, ctx, family, domain|
+		on_execute: {|block, cmd, ctx, family|
 			cmd.doPerform = true;
 		}
 	));
@@ -17,7 +17,7 @@ LCFamilyDef(\universal_pattern, \meta, {|domain|
 		type: \modifier,
 		primary: true,
 
-		on_execute: {|block, cmd, ctx, family, domain|
+		on_execute: {|block, cmd, ctx, family|
 			cmd.pattern.extend(Pbind(\amp, 0.0));
 		}
 	));
@@ -30,7 +30,7 @@ LCFamilyDef(\universal_pattern, \meta, {|domain|
 			(id: \speed, type: \number, default: 2)
 		],
 
-		on_execute: {|block, cmd, ctx, family, domain|
+		on_execute: {|block, cmd, ctx, family|
 			cmd.pattern.extend(Pbind(\dur, cmd.pattern[\dur] / block.args[\speed]));
 		}
 	));

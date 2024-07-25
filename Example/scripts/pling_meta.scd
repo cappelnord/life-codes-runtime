@@ -1,4 +1,4 @@
-LCFamilyDef(\pling, \meta, {|domain|
+LCFamilyDef(\pling, \meta, {|domain, lc|
 	domain.define((
 		type: \pattern,
 		color: Color.blue,

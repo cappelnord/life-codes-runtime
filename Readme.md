@@ -54,6 +54,17 @@ Is called when the family is not used in any context anymore.
 
 ### Context Lifecycle Functions
 
+#### `on_ctx_create: {|ctx, family| ...}`
+Is called when a execution context (e.g. an `LCdef`) is created.
+
+#### `on_ctx_data_update: {|data, ctx, family| ...}`
+Is called when context data is changed externally. This can happen either via the OSC interface or the `updateData` method. In case the context data was changed directly via accessing `ctx.data` this function will not be called.
+
+The `data` arguments holds a Dictionary of updated values.
+
+#### `on_ctx_clear: {|ctx, family| ...}`
+Is called when a execution context (e.g. an `LCdef`) is cleared.
+
 
 FamilyDef: domain, lc
 Family: family

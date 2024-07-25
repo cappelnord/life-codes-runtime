@@ -41,10 +41,10 @@ Defining functions of the various stages in the life cycle of a family, context,
 
 ### Family Life Cycle Functions
 
-### `on_init: {|family| ...}`
+#### `on_init: {|family| ...}`
 Is called after the server is booted and the family/block index is generated. It is a good spot to load SynthDefs.
 
-### `on_load: {|family| ...}`
+#### `on_load: {|family| ...}`
 Is called when the family is first used in a context. It is either called explicitly with `.load` on a context or is called before the first command is executed.
 
 

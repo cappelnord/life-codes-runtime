@@ -186,6 +186,8 @@ LCBlockInstance {
 	var <source;
 	var <cmd;
 
+	var <id;
+
 	var <cleanSource;
 	var <name;
 	var <args;
@@ -213,6 +215,7 @@ LCBlockInstance {
 
 		args = cleanSource[\args];
 		data = cleanSource[\data];
+		id = cleanSource[\id];
 	}
 
 	prProcessParameters {
@@ -260,6 +263,12 @@ LCBlockInstance {
 				\name: cleanSource[0],
 				\positionalArgs: cleanSource[1..]
 			);
+		};
+
+		cleanSource[\name].asString.includes($?).if {
+			var tokens = cleanSource[\name].asString.split($?);
+			cleanSource[\name] = tokens[0].asSymbol;
+			cleanSource[\id] = tokens[1].asSymbol;
 		};
 
 		^cleanSource;

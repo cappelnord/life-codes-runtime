@@ -37,6 +37,8 @@ All other files are considerd family definition scripts. Their file names carry 
 ## Family, Context, Command and Block Lifecycle Functions
 Defining functions of the various stages in the lifecycle of a family, context, command and block is bringing Life Codes to life!
 
+Currently only method and properties that are useful for defining functionality are mentioned here. Full documentation is still pending ...
+
 ### LCFamilyDef and Domains
 ...
 
@@ -60,6 +62,11 @@ Is called when the family is not used in any context anymore.
 
 ### Context Lifecycle Functions
 
+#### `ctx` methods and properties
+* `id` and `data`: see `family`
+* `audioChain`: object to add audio effects to the ctx
+* `updateData {|data, executeFunctions=true| ... }`: update context data and also call all `on_ctx_data_update` functions. `data` should be a Dictionary/Event and only keys that are present in `data` are updated.
+
 #### `on_ctx_create: {|ctx, family| ...}`
 Is called when a execution context (e.g. an `LCdef`) is created.
 
@@ -72,6 +79,9 @@ The `data` arguments holds a Dictionary of updated values.
 Is called when a execution context (e.g. an `LCdef`) is cleared.
 
 ### Command Lifecycle Functions
+
+#### `cmd` methods and properties
+...
 
 #### `on_cmd_rush: {|cmd, ctx, family| ...}`
 *Not yet implmeneted.* Called when a scene is rushed.

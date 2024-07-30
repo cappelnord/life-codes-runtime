@@ -18,7 +18,8 @@ LCGUI {
 		receivePort = lc.options[\guiReceivePort];
 
 		net = lc.options[\guiHost];
-		net.sendMsg("/lc/blocks/loadSpecs", lc.options[\specsExportPath]);
+
+		this.prSendSpecs;
 
 		OSCdef(\lcExecuteCommand, {|msg, time, addr, recvPort|
 			this.prOnExecuteCommand(msg[1].asSymbol, msg[2].asString, msg[3].asString, msg[4].asString);
@@ -33,8 +34,17 @@ LCGUI {
 			this.prOnContextDataUpdate(msg[1].asSymbol, data);
 		}, '/lc/contextDataUpdate', recvPort: receivePort);
 
+		OSCdef(\lcRequestSpecs, {|msg, time, addr, recvPort|
+			"Block Specs requested via OSC ...".postln;
+			this.prSendSpecs;
+		}, '/lc/requestSpecs', recvPort: receivePort);
+
 
 		this.prInitData;
+	}
+
+	prSendSpecs {
+		net.sendMsg("/lc/blocks/loadSpecs", lc.options[\specsExportPath]);
 	}
 
 	prOnExecuteCommand {|contextId, blockSourceListString, cmdId|

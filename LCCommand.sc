@@ -2,12 +2,12 @@
 LCCommand {
 	var <id;
 	var <ctx;
-	var <blockList;
+	var <blockSourceList;
 	var <data;
 	var <prependModifiers;
 	var <appendModifiers;
 
-	var <blockInstanceList;
+	var <blockList;
 
 	var <pattern;
 	var <audioChain;
@@ -21,13 +21,13 @@ LCCommand {
 
 	var active = true;
 
-	*new {|id, ctx, blockList, cmdData, prependModifiers, appendModifiers|
-		^super.newCopyArgs(id, ctx, blockList, cmdData, prependModifiers, appendModifiers).init;
+	*new {|id, ctx, blockSourceList, cmdData, prependModifiers, appendModifiers|
+		^super.newCopyArgs(id, ctx, blockSourceList, cmdData, prependModifiers, appendModifiers).init;
 	}
 
 	init {
 		try({
-			this.prBuildBlockInstanceList;
+			this.prBuildBlockList;
 		}, {|exception|
 			valid = false;
 			exception.reportError;
@@ -36,24 +36,24 @@ LCCommand {
 		executionQueue = LCExecutionQueue("CMD:%".format(id));
 	}
 
-	prBuildBlockInstanceList {
+	prBuildBlockList {
 		var didPrependModifiers = false;
 
-		blockInstanceList = List();
-		blockList.do {|blockSource|
+		blockList = List();
+		blockSourceList.do {|blockSource|
 			var blockInstance = LCBlockInstance(blockSource, this);
 			blockInstance.valid.if {
-				blockInstanceList.add(blockInstance);
+				blockList.add(blockInstance);
 				((blockInstance.spec.type == \modifier) && didPrependModifiers.not).if {
 					prependModifiers.do {|prependBlockSource|
-						blockInstanceList.add(LCBlockInstance(prependBlockSource, this));
+						blockList.add(LCBlockInstance(prependBlockSource, this));
 						didPrependModifiers = true;
 					};
 				};
 			}
 		};
 		appendModifiers.do {|appendBlockSource|
-			blockInstanceList.add(LCBlockInstance(appendBlockSource, this));
+			blockList.add(LCBlockInstance(appendBlockSource, this));
 		};
 	}
 
@@ -120,7 +120,7 @@ LCCommand {
 					LifeCodes.instance.gui.sendCommandFeedback(this, this.headBlockId);
 				};
 
-				executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_quant_once, ctx.getOnceCandidates(blockInstanceList, true)));
+				executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_quant_once, ctx.getOnceCandidates(blockList, true)));
 				executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_quant));
 			};
 		};
@@ -128,7 +128,7 @@ LCCommand {
 		this.prPrepare;
 
 		executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_pre_execute));
-		executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_once, ctx.getOnceCandidates(blockInstanceList, false)));
+		executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_once, ctx.getOnceCandidates(blockList, false)));
 		executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_execute));
 		executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_post_execute));
 
@@ -146,7 +146,7 @@ LCCommand {
 	}
 
 	notifyCtxDataUpdate {|data|
-		blockInstanceList.do {|blockInstance|
+		blockList.do {|blockInstance|
 			var functionReferences = ctx.family.getBlockFunctionReferences(blockInstance.name, \on_ctx_data_update);
 			executionQueue.executeList(
 				functionReferences.collect {|ref| ref.bind(data, blockInstance, this, this.ctx, this.ctx.family)},
@@ -164,7 +164,7 @@ LCCommand {
 
 	prGetBlockLifecycleExecutionUnits {|phase, instanceList|
 		var ret = List();
-		instanceList = instanceList ? blockInstanceList;
+		instanceList = instanceList ? blockList;
 		instanceList.do {|blockInstance|
 			var functionReferences = ctx.family.getBlockFunctionReferences(blockInstance.name, phase);
 			ret.addAll(functionReferences.collect {|ref| ref.bind(blockInstance, this, this.ctx, this.ctx.family)});

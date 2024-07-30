@@ -37,12 +37,12 @@ LCGUI {
 		this.prInitData;
 	}
 
-	prOnExecuteCommand {|contextId, blockListString, cmdId|
+	prOnExecuteCommand {|contextId, blockSourceListString, cmdId|
 		(lc.runtime.contexts.includesKey(contextId).not && lc.options[\guiExecuteOnlyInitializedContexts]).if {
 			"Received command for uninitialized context: %".format(contextId).warn;
 			^nil;
 		};
-		lc.runtime.contexts[contextId].execute(blockListString.split($;), cmdId: cmdId);
+		lc.runtime.contexts[contextId].execute(blockSourceListString.split($;), cmdId: cmdId);
 	}
 
 	prOnContextDataUpdate {|contextId, data|

@@ -1,8 +1,8 @@
 LCdef {
-	*new {|contextId, blockList, data|
+	*new {|contextId, blockSourceList, data|
 		var runtime;
 		var context;
-		var contentIsBlockList = false;
+		var contentIsBlockSourceList = false;
 		var family;
 
 		LifeCodes.instance.isNil.if {
@@ -16,13 +16,13 @@ LCdef {
 
 		// This is a bit a shmoo here but hopefully catches all cases
 		// ...
-		(blockList.class == String).if { blockList = blockList.asSymbol};
+		(blockSourceList.class == String).if { blockSourceList = blockSourceList.asSymbol};
 
-		(blockList.isNil || (blockList.class == Symbol)).if({
-			family = blockList;
+		(blockSourceList.isNil || (blockSourceList.class == Symbol)).if({
+			family = blockSourceList;
 		}, {
-			contentIsBlockList = true;
-			family = LCBlockInstance.cleanSource(blockList[0])[\name];
+			contentIsBlockSourceList = true;
+			family = LCBlockInstance.cleanSource(blockSourceList[0])[\name];
 		});
 		// ...
 
@@ -31,7 +31,7 @@ LCdef {
 
 		context.isNil.if {
 			family.isNil.if {
-				"Could not initialize context with family '%' ...".format(blockList).warn;
+				"Could not initialize context with family '%' ...".format(blockSourceList).warn;
 				^nil;
 			};
 
@@ -51,8 +51,8 @@ LCdef {
 			context.updateData(data, false);
 		};
 
-		contentIsBlockList.if {
-			context.execute(blockList);
+		contentIsBlockSourceList.if {
+			context.execute(blockSourceList);
 		};
 
 		^context;

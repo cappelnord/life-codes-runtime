@@ -96,7 +96,7 @@ Is called when a execution context (e.g. an `LCdef`) is cleared.
 *Not yet implmeneted.* Called when a command retires (is replaced by a new command).
 
 #### `on_pattern_finish: {|event, cmd, ctx, family| ...}`
-Is called for event type families for every event before it is played.
+Is called for event type families for every event before it is played. `event` holds all values that were generated from the pattern chain of the command.
 
 ### Block Lifecycle Functions
 

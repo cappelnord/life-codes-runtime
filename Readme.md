@@ -81,7 +81,12 @@ Is called when a execution context (e.g. an `LCdef`) is cleared.
 ### Command Lifecycle Functions
 
 #### `cmd` methods and properties
-...
+* `id` and `data`: see `family`
+* `audioChain`: object to add audio effects to a command audio chain
+* `blockList`: list of all blocks in the command (represented by `BlockListInstance`s)
+* `pattern`: for families that are of a `\pattern` type this is the `Pbind` that is built up by the blocks and modifiers. Use `cmd.pattern.extend(Pbind(...))` to add pattern values. You can retrieve pattern values (to modify them) by indexing the pattern, e.g. `cmd.pattern[\dur]`
+* `doPerform`: a boolean that specifies if the command should 'play' or not. Usually a action block (e.g. `[play]`) will set doPerform to `true`.
+
 
 #### `on_cmd_rush: {|cmd, ctx, family| ...}`
 *Not yet implmeneted.* Called when a scene is rushed.
@@ -99,6 +104,9 @@ Is called when a execution context (e.g. an `LCdef`) is cleared.
 Is called for event type families for every event before it is played. `event` holds all values that were generated from the pattern chain of the command.
 
 ### Block Lifecycle Functions
+#### `block` methods and properties
+* `id` and `data`: see `family` - but be aware that `id` can be nil if not explicitly specified in the command.
+* `args`: a dictionary that holds all arguments of the block. If an argument is not specified it will contain its default value.
 
 
 

@@ -53,11 +53,14 @@ LCFamily {
 
 	var isLoaded = false;
 
+	var <data;
+
 	prInitData {
 		domainFunctions = ();
 		matches = List();
 		lookup = List();
 		extensionFamilies = List();
+		data = ();
     }
 
 	init {|familyId|

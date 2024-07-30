@@ -34,12 +34,18 @@ All other files are considerd family definition scripts. Their file names carry 
 
 ### Order of Loading Operations
 
-## Family, Context and Block Lifecycle Functions
+## Family, Context, Command and Block Lifecycle Functions
 Defining functions of the various stages in the lifecycle of a family, context, command and block is bringing Life Codes to life!
 
 ### LCFamilyDef and Domains
+...
 
 ### Family Lifecycle Functions
+
+#### `family` methods and properties
+* `id`: The id of the family as `Symbol`
+* `data`: Dictionary to store any data from within lifecycle functions
+* `table`: Holds all properties and lifecycle functions - use at own risk :)
 
 #### `on_init: {|family| ...}`
 Is called after the server is booted and the family/block index is generated. It is a good spot to load SynthDefs.
@@ -64,6 +70,26 @@ The `data` arguments holds a Dictionary of updated values.
 
 #### `on_ctx_clear: {|ctx, family| ...}`
 Is called when a execution context (e.g. an `LCdef`) is cleared.
+
+### Command Lifecycle Functions
+
+#### `on_cmd_rush: {|cmd, ctx, family| ...}`
+*Not yet implmeneted.* Called when a scene is rushed.
+
+#### `on_cmd_enter: {|cmd, ctx, family| ...}`
+*Not yet implmeneted.* Called before any blocks are evaluated.
+
+#### `on_cmd_finish: {|cmd, ctx, family| ...}`
+*Not yet implmeneted.* Called aftert all blocks are evaluated - right before the command is performed.
+
+#### `on_cmd_leave: {|cmd, ctx, family| ...}`
+*Not yet implmeneted.* Called when a command retires (is replaced by a new command).
+
+#### `on_pattern_finish: {|event, cmd, ctx, family| ...}`
+Is called for event type families for every event before it is played.
+
+### Block Lifecycle Functions
+
 
 
 FamilyDef: domain, lc

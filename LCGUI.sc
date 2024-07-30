@@ -37,12 +37,12 @@ LCGUI {
 		this.prInitData;
 	}
 
-	prOnExecuteCommand {|contextId, blockListString, headId, cmdId|
+	prOnExecuteCommand {|contextId, blockListString, cmdId|
 		(lc.runtime.contexts.includesKey(contextId).not && lc.options[\guiExecuteOnlyInitializedContexts]).if {
 			"Received command for uninitialized context: %".format(contextId).warn;
 			^nil;
 		};
-		lc.runtime.contexts[contextId].execute(blockListString.split($;), headId: headId, cmdId: cmdId);
+		lc.runtime.contexts[contextId].execute(blockListString.split($;), cmdId: cmdId);
 	}
 
 	prOnContextDataUpdate {|contextId, data|
@@ -53,8 +53,8 @@ LCGUI {
 		lc.runtime.contexts[contextId].updateData(data);
 	}
 
-	sendCommandFeedback {|cmd|
-		net.sendMsg("/lc/blocks/commandFeedback", cmd.headId, cmd.id);
+	sendCommandFeedback {|cmd, headBlockId|
+		net.sendMsg("/lc/blocks/commandFeedback", headBlockId, cmd.id);
 	}
 
 	setBlockSlotProperties {|slotId, options|

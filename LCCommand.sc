@@ -1,210 +1,6 @@
-LCdef {
-	*new {|contextId, blockList, data|
-		var runtime;
-		var context;
-		var contentIsBlockList = false;
-		var family;
-
-		LifeCodes.instance.isNil.if {
-			"LifeCodes is not initialized - cannot use LCdef ...".warn;
-			^nil;
-		};
-
-		runtime = LifeCodes.instance.runtime;
-
-		context = runtime.contexts[contextId];
-
-		// This is a bit a shmoo here but hopefully catches all cases
-		// ...
-		(blockList.class == String).if { blockList = blockList.asSymbol};
-
-		(blockList.isNil || (blockList.class == Symbol)).if({
-			family = blockList;
-		}, {
-			contentIsBlockList = true;
-			family = LCBlockInstance.cleanSource(blockList[0])[\name];
-		});
-		// ...
-
-
-		family = runtime.families[family];
-
-		context.isNil.if {
-			family.isNil.if {
-				"Could not initialize context with family '%' ...".format(blockList).warn;
-				^nil;
-			};
-
-			family.hasSubject.not.if {
-				"Family '%' does not have a subject ...".format(family.id).warn;
-				^nil;
-			};
-
-			runtime.contexts[contextId].isNil.if {
-				runtime.addContext(LCContext(contextId, family));
-			};
-
-			context = runtime.contexts[contextId];
-		};
-
-		data.isNil.not.if {
-			context.updateData(data, false);
-		};
-
-		contentIsBlockList.if {
-			context.execute(blockList);
-		};
-
-		^context;
-	}
-}
-
-LCContext {
-	var <id;
-	var <family;
-	var <data;
-
-	var <cmd = nil;
-	var <lastCmd = nil;
-	var <executionQueue;
-	var <>clock;
-	var <>quant;
-
-	var <audioChain;
-
-	var <>prependModifiers;
-	var <>appendModifiers;
-
-	var runtime;
-
-	var executedBlocksSet;
-	var quantExecutedBlocksSet;
-
-	*new {|id, family|
-		^super.newCopyArgs(id, family).init;
-	}
-
-	init {
-		executedBlocksSet = Set();
-		quantExecutedBlocksSet = Set();
-
-		executionQueue = LCExecutionQueue("CTX:%".format(id));
-		data = ();
-		prependModifiers = [];
-		appendModifiers = [];
-		runtime = LifeCodes.instance.runtime;
-		quant = family.quant;
-		clock = LifeCodes.instance.options[\clock] ? TempoClock.default;
-
-		family.hasAudio.if {
-			audioChain = LifeCodes.instance.mixer.getContextChain(id);
-		};
-
-		this.executeLifecyclePhase(\on_ctx_create);
-	}
-
-	executeLifecyclePhase {|phase|
-		"Execute Context Lifecycle Phase: %/%/%".format(id, family.id, phase).postln;
-		executionQueue.executeList(
-			family.getLifecycleFunctionReferences(phase)
-			.collect {|f| f.bind(this, family)}
-		);
-	}
-
-	// called by execute or manually
-	load {
-		family.load(executionQueue);
-	}
-
-	updateData {|data, executeFunctions=true|
-		data.keys.do {|key|
-			this.data[key] = data[key];
-		};
-
-		executeFunctions.if {
-			// context update function
-			executionQueue.executeList(
-				family.getLifecycleFunctionReferences(\on_ctx_data_update)
-				.collect {|f| f.bind(data, this, family)},
-				LifeCodes.instance.options[\alsoTraceRapidFunctions].not
-			);
-			// notify active command to forward to blocks
-			cmd.isNil.not.if {
-				cmd.notifyCtxDataUpdate(data);
-			};
-		};
-	}
-
-	execute {|blockList, cmdData, headId, cmdId|
-		var newCmd;
-		// this is just to ensure that the family is loaded
-		this.load;
-
-		// create a new command from the block list
-		newCmd = LCCommand(cmdId ? LifeCodes.randomId, headId, this, blockList, cmdData ? (), prependModifiers, appendModifiers);
-
-		newCmd.valid.if({
-			this.prExecuteCommand(newCmd);
-		}, {
-			"Received invalid command: % - did not execute".format(blockList.cs).error;
-		});
-	}
-
-	prExecuteCommand {|newCmd|
-		cmd.isNil.not.if {
-			lastCmd = cmd;
-			// TODO: class on_cmd_leave and on_leave on all blocks of the last command
-		};
-
-		cmd = newCmd;
-
-		lastCmd.isNil.not.if {
-			lastCmd.executeLeave;
-		};
-		cmd.execute;
-	}
-
-	clear {|unloadFamily=true|
-		runtime.removeContext(this, unloadFamily);
-		this.executeLifecyclePhase(\on_ctx_clear);
-
-		lastCmd.isNil.not.if {
-			lastCmd.clear;
-		};
-		cmd.isNil.not.if {
-			cmd.clear;
-		};
-
-		audioChain.isNil.not.if {
-			// maybe this could be more graceful (to dismiss the chain, not to clear)
-			LifeCodes.instance.mixer.clearContextChain(id);
-		}
-	}
-
-	resetBlockSets {
-		executedBlocksSet.clear;
-		quantExecutedBlocksSet.clear;
-	}
-
-	getOnceCandidates {|blockInstances, quant=false|
-		var set = executedBlocksSet;
-		var ret = List();
-		quant.if { set = quantExecutedBlocksSet };
-		blockInstances.do {|blockInstance|
-			set.includes(blockInstance.name).not.if {
-				ret.add(blockInstance);
-				set.add(blockInstance.name);
-			};
-		};
-		^ret;
-	}
-}
 
 LCCommand {
 	var <id;
-	// this is the block id of the head(subject) of a group used for feedback; it seems a bit redudant to have so many different ids (command, head, ctx, ...)
-	// but it is currently easiest to retrieve the block by its (internal?) id than to see which context a group belongs to
-	var <headId;
 	var <ctx;
 	var <blockList;
 	var <data;
@@ -225,8 +21,8 @@ LCCommand {
 
 	var active = true;
 
-	*new {|id, headId, ctx, blockList, cmdData, prependModifiers, appendModifiers|
-		^super.newCopyArgs(id, headId, ctx, blockList, cmdData, prependModifiers, appendModifiers).init;
+	*new {|id, ctx, blockList, cmdData, prependModifiers, appendModifiers|
+		^super.newCopyArgs(id, ctx, blockList, cmdData, prependModifiers, appendModifiers).init;
 	}
 
 	init {
@@ -311,12 +107,19 @@ LCCommand {
 		^("lc_" + ctx.id).asSymbol;
 	}
 
+	// TODO TODO TODO
+	headBlockId {
+		^nil;
+	}
+
 	execute {
 		var quantFunc = {
 			active.if {
-				headId.isNil.not.if {
-					LifeCodes.instance.gui.sendCommandFeedback(this);
+
+				this.headBlockId.isNil.not.if {
+					LifeCodes.instance.gui.sendCommandFeedback(this, this.headBlockId);
 				};
+
 				executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_quant_once, ctx.getOnceCandidates(blockInstanceList, true)));
 				executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_quant));
 			};

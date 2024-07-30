@@ -77,8 +77,8 @@ LCBlockInstance {
 		// if it is a sequenceable collection we build an event here
 		cleanSource.isSequenceableCollection.if {
 			cleanSource = (
-				\name: cleanSource[0],
-				\positionalArgs: cleanSource[1..]
+				name: cleanSource[0],
+				positionalArgs: cleanSource[1..]
 			);
 		};
 

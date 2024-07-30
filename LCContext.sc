@@ -135,13 +135,13 @@ LCContext {
 		};
 	}
 
-	execute {|blockList, cmdData, headId, cmdId|
+	execute {|blockList, cmdData, cmdId|
 		var newCmd;
 		// this is just to ensure that the family is loaded
 		this.load;
 
 		// create a new command from the block list
-		newCmd = LCCommand(cmdId ? LifeCodes.randomId, headId, this, blockList, cmdData ? (), prependModifiers, appendModifiers);
+		newCmd = LCCommand(cmdId ? LifeCodes.randomId, this, blockList, cmdData ? (), prependModifiers, appendModifiers);
 
 		newCmd.valid.if({
 			this.prExecuteCommand(newCmd);

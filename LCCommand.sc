@@ -107,17 +107,12 @@ LCCommand {
 		^("lc_" + ctx.id).asSymbol;
 	}
 
-	// TODO TODO TODO
-	headBlockId {
-		^nil;
-	}
 
 	execute {
 		var quantFunc = {
 			active.if {
-
-				this.headBlockId.isNil.not.if {
-					LifeCodes.instance.gui.sendCommandFeedback(this, this.headBlockId);
+				this.blockList.first.id.isNil.not.if {
+					LifeCodes.instance.gui.sendCommandFeedback(this, this.blockList.first.id);
 				};
 
 				executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_quant_once, ctx.getOnceCandidates(blockList, true)));

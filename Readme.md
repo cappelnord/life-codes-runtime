@@ -97,6 +97,9 @@ Is called when a execution context (e.g. an `LCdef`) is cleared.
 #### `on_cmd_finish: {|cmd, ctx, family| ...}`
 *Not yet implmeneted.* Called aftert all blocks are evaluated - right before the command is performed.
 
+#### `on_cmd_perform: {|cmd, ctx, family| ...}`
+*Not yet implmeneted.* Called when a command is performed.
+
 #### `on_cmd_leave: {|cmd, ctx, family| ...}`
 *Not yet implmeneted.* Called when a command retires (is replaced by a new command).
 
@@ -107,6 +110,9 @@ Is called for event type families for every event before it is played. `event` h
 #### `block` methods and properties
 * `id` and `data`: see `family` - but be aware that `id` can be nil if not explicitly specified in the command.
 * `args`: a dictionary that holds all arguments of the block. If an argument is not specified it will contain its default value.
+
+
+--> Rename once to execute once and quant to perform (and perform once)
 
 
 

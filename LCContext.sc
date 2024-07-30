@@ -77,16 +77,16 @@ LCContext {
 
 	var runtime;
 
-	var executedBlocksSet;
-	var quantExecutedBlocksSet;
+	var <executedBlockHistory;
+	var <performedBlockHistory;
 
 	*new {|id, family|
 		^super.newCopyArgs(id, family).init;
 	}
 
 	init {
-		executedBlocksSet = Set();
-		quantExecutedBlocksSet = Set();
+		executedBlockHistory = ();
+		performedBlockHistory = ();
 
 		executionQueue = LCExecutionQueue("CTX:%".format(id));
 		data = ();
@@ -181,22 +181,35 @@ LCContext {
 		}
 	}
 
-	// let's refactor it, call it blockHistory and count the occurences of blocks
-	resetBlockSets {
-		executedBlocksSet.clear;
-		quantExecutedBlocksSet.clear;
+	blockHistory {|performed=false|
+		^(performed.if({performedBlockHistory}, {executedBlockHistory}));
 	}
 
-	getOnceCandidates {|blockInstances, quant=false|
-		var set = executedBlocksSet;
+	// let's refactor it, call it blockHistory and count the occurences of blocks
+	resetBlockHistory {
+		executedBlockHistory.clear;
+		performedBlockHistory.clear;
+	}
+
+	getOnceCandidates {|blockInstances, performed=false|
+		var dict = this.blockHistory(performed);
 		var ret = List();
-		quant.if { set = quantExecutedBlocksSet };
 		blockInstances.do {|blockInstance|
-			set.includes(blockInstance.name).not.if {
+			dict[blockInstance.name].isNil.if {
 				ret.add(blockInstance);
-				set.add(blockInstance.name);
-			};
+			}
 		};
 		^ret;
+	}
+
+	markBlockHistory {|blockInstances, performed=false|
+		var dict = this.blockHistory(performed);
+		var ret = List();
+		blockInstances.do {|blockInstance|
+			dict[blockInstance.name].isNil.if {
+				dict[blockInstance.name] = 0;
+			};
+			dict[blockInstance.name] = dict[blockInstance.name] + 1;
+		};
 	}
 }

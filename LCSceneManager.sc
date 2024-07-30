@@ -81,6 +81,10 @@ LCSceneManager {
 		this.prStepOnCondition(condition);
 	}
 
+	waitForBlock {|ctx, name, performed=false|
+		this.prStepOnCondition(this.prBlockCondition(ctx, name, performed));
+	}
+
 	transitionAfterTime {|sceneId, seconds|
 		var then = lc.steadyClock.beats + seconds;
 		this.prTransitionOnCondition(sceneId, {lc.steadyClock.beats >= then});
@@ -88,6 +92,27 @@ LCSceneManager {
 
 	transitionOnCondition {|sceneId, condition|
 		this.prTransitionOnCondition(sceneId, condition);
+	}
+
+	transitionOnBlock {|sceneId, ctx, name, performed=false|
+		this.prTransitionOnCondition(sceneId, this.prBlockCondition(ctx, name, performed));
+	}
+
+	prBlockCondition {|ctx, name, performed=false|
+		var dict, old, condition;
+
+		(ctx.class == Symbol).if {
+			ctx = LCdef(ctx);
+		};
+
+		dict = ctx.blockHistory(performed);
+		old = dict[name] ? 0;
+		condition = {
+			var new = dict[name] ? 0;
+			(new < old).if {old = new;};
+			new > old;
+		};
+		^condition;
 	}
 
 	// basically busy-waits until condition is true

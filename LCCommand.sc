@@ -114,17 +114,20 @@ LCCommand {
 				this.blockList.first.id.isNil.not.if {
 					LifeCodes.instance.gui.sendCommandFeedback(this, this.blockList.first.id);
 				};
-
-				executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_quant_once, ctx.getOnceCandidates(blockList, true)));
-				executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_quant));
+				doPerform.if {
+					executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_perform_once, ctx.getOnceCandidates(blockList, true)));
+					executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_perform));
+					ctx.markBlockHistory(blockList, true);
+				}
 			};
 		};
 
 		this.prPrepare;
 
 		executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_pre_execute));
-		executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_once, ctx.getOnceCandidates(blockList, false)));
+		executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_execute_once, ctx.getOnceCandidates(blockList, false)));
 		executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_execute));
+		ctx.markBlockHistory(blockList, false);
 		executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_post_execute));
 
 		this.prFinalize;

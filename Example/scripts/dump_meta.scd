@@ -76,20 +76,20 @@ LCFamilyDef(\dump, \meta, {|domain, lc|
 			"dump on_pre_execute".postln;
 		},
 
-		on_once: {|block, cmd, ctx, family|
-			"dump on_once".postln;
+		on_execute_once: {|block, cmd, ctx, family|
+			"dump on_execute_once:".postln;
 		},
 
 		on_execute: {|block, cmd, ctx, family|
 			"dump on_execute".postln;
 		},
 
-		on_quant_once: {|block, cmd, ctx, family|
-			"dump on_quant_once".postln;
+		on_perform_once: {|block, cmd, ctx, family|
+			"dump on_perform_once:".postln;
 		},
 
-		on_quant: {|block, cmd, ctx, family|
-			"on_quant".postln;
+		on_perform: {|block, cmd, ctx, family|
+			"on_perform".postln;
 		},
 
 		on_post_execute: {|block, cmd, ctx, family|

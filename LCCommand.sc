@@ -124,6 +124,9 @@ LCCommand {
 
 		this.prPrepare;
 
+
+		this.prExecuteLifecycleComplement(\on_enter, ctx.lastCmd.isNil.not.if({ctx.lastCmd.blockList}, nil));
+
 		executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_pre_execute));
 		executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_execute_once, ctx.getOnceCandidates(blockList, false)));
 		executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_execute));
@@ -153,11 +156,33 @@ LCCommand {
 		};
 	}
 
+	prExecuteLifecycleComplement {|phase, otherList|
+		var list = List();
+		var set = IdentitySet();
+		blockList.do {|blockInstance|
+			var include = true;
+			// if otherList is nil it should still work
+			otherList.do {|otherInstance|
+				(blockInstance.name == otherInstance.name).if {
+					include = false;
+				};
+			};
+			include.if {
+				set.includes(blockInstance.name).not.if {
+					set.add(blockInstance.name);
+					list.add(blockInstance);
+				};
+			};
+		};
+		executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(phase, list));
+	}
+
 	executeLeave {
 		active = false;
 		audioChain.isNil.not.if {
 			audioChain.dismiss;
 		};
+		this.prExecuteLifecycleComplement(\on_leave, ctx.cmd.blockList);
 	}
 
 	prGetBlockLifecycleExecutionUnits {|phase, instanceList|

@@ -153,7 +153,6 @@ LCContext {
 	prExecuteCommand {|newCmd|
 		cmd.isNil.not.if {
 			lastCmd = cmd;
-			// TODO: class on_cmd_leave and on_leave on all blocks of the last command
 		};
 
 		cmd = newCmd;
@@ -161,6 +160,7 @@ LCContext {
 		lastCmd.isNil.not.if {
 			lastCmd.executeLeave;
 		};
+
 		cmd.execute;
 	}
 
@@ -174,6 +174,8 @@ LCContext {
 		cmd.isNil.not.if {
 			cmd.clear;
 		};
+
+		// should we also send the leave functions here?
 
 		audioChain.isNil.not.if {
 			// maybe this could be more graceful (to dismiss the chain, not to clear)

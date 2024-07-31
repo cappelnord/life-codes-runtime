@@ -46,9 +46,9 @@ Currently only method and properties that are useful for defining functionality 
 
 #### `family` methods and properties
 * Object of class `LCFamily`
-* `id`: The id of the family as `Symbol`
-* `data`: Dictionary to store any data from within lifecycle functions
-* `table`: Holds all properties and lifecycle functions - use at own risk :)
+* `.id`: The id of the family as `Symbol`
+* `.data`: Dictionary to store any data from within lifecycle functions
+* `.table`: Holds all properties and lifecycle functions - use at own risk :)
 
 #### `on_init: {|family| ...}`
 Is called after the server is booted and the family/block index is generated. It is a good spot to load SynthDefs.
@@ -65,15 +65,15 @@ Is called when the family is not used in any context anymore.
 
 #### `ctx` methods and properties
 * Object of class `LCContext`
-* `id` and `data`: see `family`
-* `audioChain`: object to add audio effects to the ctx
-* `updateData {|data, executeFunctions=true| ... }`: update context data and also call all `on_ctx_data_update` functions. `data` should be a Dictionary/Event and only keys that are present in `data` are updated.
+* `.id` and `.data`: see `family`
+* `.audioChain`: object to add audio effects to the ctx
+* `.updateData {|data, executeFunctions=true| ... }`: update context data and also call all `on_ctx_data_update` functions. `data` should be a Dictionary/Event and only keys that are present in `data` are updated.
 
 #### `on_ctx_create: {|ctx, family| ...}`
 Is called when a execution context (e.g. an `LCdef`) is created.
 
 #### `on_ctx_data_update: {|data, ctx, family| ...}`
-Is called when context data is changed externally. This can happen either via the OSC interface or the `updateData` method. In case the context data was changed directly via accessing `ctx.data` this function will not be called.
+Is called when context data is changed externally. This can happen either via the OSC interface or the `.updateData` method of an `LCContext`. In case the context data was changed directly via accessing `ctx.data` this function will not be called.
 
 The `data` arguments holds a Dictionary of updated values.
 
@@ -84,11 +84,11 @@ Is called when a execution context (e.g. an `LCdef`) is cleared.
 
 #### `cmd` methods and properties
 * Object of class `LCCommand`
-* `id` and `data`: see `family`
-* `audioChain`: object to add audio effects to a command audio chain
-* `blockList`: list of all blocks in the command (represented by `BlockListInstance`s)
-* `pattern`: for families that are of a `\pattern` type this is the `Pbind` that is built up by the blocks and modifiers. Use `cmd.pattern.extend(Pbind(...))` to add pattern values. You can retrieve pattern values (to modify them) by indexing the pattern, e.g. `cmd.pattern[\dur]`
-* `doPerform`: a boolean that specifies if the command should 'play' or not. Usually a action block (e.g. `[play]`) will set doPerform to `true`.
+* `.id` and `.data`: see `family`
+* `.audioChain`: object to add audio effects to a command audio chain
+* `.blockList`: list of all blocks in the command (represented by `BlockListInstance`s)
+* `.pattern`: for families that are of a `\pattern` type this is the `Pbind` that is built up by the blocks and modifiers. Use `cmd.pattern.extend(Pbind(...))` to add pattern values. You can retrieve pattern values (to modify them) by indexing the pattern, e.g. `cmd.pattern[\dur]`
+* `.doPerform`: a boolean that specifies if the command should 'play' or not. Usually a action block (e.g. `[play]`) will set doPerform to `true`.
 
 
 #### *`on_cmd_rush: {|cmd, ctx, family| ...}`*
@@ -117,16 +117,15 @@ The order of functions as it is presented here is also representing the order of
 * Object of class `LCBlockInstance`
 * `id` and `data`: see `family` - but be aware that `id` can be nil if not explicitly specified in the command.
 * `args`: a dictionary that holds all arguments of the block. If an argument is not specified it will contain its default value.
-* `spec`: returns the `LCBlockSpec` object that defines this block
 
 #### *`on_rush: {|block, cmd, ctx, family| ...}`*
 *Not yet implmeneted.* Called when a scene is rushed.
 
-#### *`on_leave: {|block, cmd, ctx, family| ...}`*
-*Not yet implemented.* Called when a block is added to the context. Be aware that `on_enter` and `on_leave` will not receive the same `block` argument, therefore all state must be saved within `ctx.data`.
+#### `on_leave: {|block, cmd, ctx, family| ...}`
+Called when a block is added to the context. Be aware that `on_enter` and `on_leave` will not receive the same `block` argument, therefore all state must be saved within `ctx.data`.
 
-#### *`on_enter: {|block, cmd, ctx, family| ...}`*
-*Not yet implemented.* Called when a block is added to the context. It will only be called once, even if 2 blocks with the same name are present.
+#### `on_enter: {|block, cmd, ctx, family| ...}`
+Called when a block is added to the context. It will only be called once, even if 2 blocks with the same name are present.
 
 #### `on_pre_execute: {|block, cmd, ctx, family| ...}`
 Executes before `on_execute` - use in case something must happen before everything else.
@@ -149,6 +148,7 @@ Executes if the command is performed (e.g. `cmd.doPerform` was set to `true`). I
 #### `on_ctx_data_update: {|data, block, cmd, ctx, family| ...}`
 Please refer to the function with the same name above. The only difference is, that a block and command reference is given as arguments as well.
 
+## Playing with LifeCodes / Executing Blocks
 
 ## Class Overview
 This is a (potentially) incomplete list of all classes currently used with some brief remarks. Italic classes are considerend to be currently irrelevant to understand and not needed for defining block functionality and trying things out.
@@ -159,6 +159,7 @@ Full documentation would be great but there is no time for that currently I fear
 * The main class that houses all functionality. Instantiating creates a singleton object (accessible via `LifeCodes.instance` or `l`).
 * `LifeCodes.clear` will clear the instance. 
 * Subcomponents can be accessed via `l.runtime`, `l.gui`, `l.mixer`, `l.sceneManager`.
+* Options can be accessed via `l.options`.
 * A TempoClock that stays at 1 BPS can be accessed via `l.steadyClock`.
 * `l.buffers` contains all buffers in a dictionary structure (folder/file name as keys).
 * `l.bufferLists` contains all folders with audio samples as arrays of buffers.
@@ -179,23 +180,34 @@ Full documentation would be great but there is no time for that currently I fear
 * `.audioChain` can be used to add effect nodes or to do other manipulations to the audio chain.
 
 ### LCCommand
+* Theyr are mostly manipulated by lifecycle functions (look above for more infos)
 * Commands are generally generated by executing a block source list via an `LCdef`, e.g. `LCdef(\test, [\pling, \play])`.
-
+* `.blockSourceList` is the original source for the command (use `.blockList` if you want to actually use data from it as it is easier).
 
 ### LCBlockInstance
+* They are mostly manipulated by lifecycle functions (look above for more infos)
+* `.name` will return the name of the block as a `Symbol`
+* `.spec`: returns the `LCBlockSpec` object that defines this block
+* `.source` will return the source for this block while `.cleanSource` will return a normalized Dictionary with all data encoded.
+
+### LCFamliyDef
+
+
+### LCFamily
+
+## More Classes (but I currently have no time to write about them and I might be the only one using them currently)
+
+### LCGUI
+### LCBlockSlotRef
+### LCSceneDef
+### LCSceneManager
+### LCAudioMixer
+### LCContextAudioChain
+### LCCommandAudioChain
 ### *LCBlockSpec*
 ### *LCParameterSpec*
 ### *LCExecutionQueue*
 ### *LCExecutionUnit*
 ### *LCBlockFunctionReference*
-### LCGUI
-### LCBlockSlotRef
 ### *LCJSONExport*
 ### *LCRuntime*
-### LCSceneDef
-### LCSceneManager
-### LCFamliyDef
-### LCFamily
-### LCAudioMixer
-### LCContextAudioChain
-### LCCommandAudioChain

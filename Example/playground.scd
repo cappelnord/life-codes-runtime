@@ -74,6 +74,7 @@ LCdef(\okk, [\pling, \play, \cycleSpeakers])
 
 
 LCdef(\mega, [\dump, \print])
+LCdef(\mega).clear
 
 LCdef(\ok).load
 LCdef(\ok).clear

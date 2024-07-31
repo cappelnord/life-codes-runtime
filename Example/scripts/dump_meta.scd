@@ -59,18 +59,11 @@ LCFamilyDef(\dump, \meta, {|domain, lc|
 			"dump on_rush".postln;
 		},
 
-		on_leave: {|block, cmd, ctx, family|
-			"dump on_leave".postln;
-		},
-
 		on_ctx_data_update: {|data, block, cmd, ctx, family|
 			"dump on_ctx_data_update".postln;
 			data.postln;
 		},
 
-		on_enter: {|block, cmd, ctx, family|
-			"dump on_enter".postln;
-		},
 
 		on_pre_execute: {|block, cmd, ctx, family|
 			"dump on_pre_execute".postln;
@@ -103,6 +96,14 @@ LCFamilyDef(\dump, \meta, {|domain, lc|
 
 		on_execute: {|block, cmd, ctx, family|
 			"print on_execute".postln;
+		},
+
+		on_leave: {|block, cmd, ctx, family|
+			"dump on_leave".postln;
+		},
+
+		on_enter: {|block, cmd, ctx, family|
+			"dump on_enter".postln;
 		}
 	));
 });

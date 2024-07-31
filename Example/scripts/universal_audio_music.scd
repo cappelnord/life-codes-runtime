@@ -29,13 +29,14 @@ LCFamilyDef(\universal_audio, \music, {|domain, lc|
 
 
 	domain.defineBlock(\xPosPan, (
-		on_execute: {|block, cmd, ctx, family|
-			ctx.audioChain.fxNodes[\xPosPan].isNil.if {
-				ctx.audioChain.addFxNode(\xPosPan, (
-					width: block.args[\width],
-					azimuth: LCPanAz.azimuthFromGuiX(ctx.data[\headPosX] ? 0.5)
-				), \xPosPan);
-			};
+		on_enter: {|block, cmd, ctx, family|
+			ctx.audioChain.addFxNode(\xPosPan, (
+				width: block.args[\width],
+				azimuth: LCPanAz.azimuthFromGuiX(ctx.data[\headPosX] ? 0.5)
+			), \xPosPan);
+		},
+		on_leave: {|block, cmd, ctx, family|
+			ctx.audioChain.freeFxNode(\xPosPan);
 		},
 		on_ctx_data_update: {|data, block, cmd, ctx, family|
 			data[\headPosX].isNil.not.if {
@@ -45,14 +46,15 @@ LCFamilyDef(\universal_audio, \music, {|domain, lc|
 	));
 
 	domain.defineBlock(\xPosPan2, (
-		on_execute: {|block, cmd, ctx, family|
-			ctx.audioChain.fxNodes[\xPosPan2].isNil.if {
-				ctx.audioChain.addFxNode(\xPosPan2, (
-					width: block.args[\width],
-					spread: block.args[\spread],
-					azimuth: LCPanAz.azimuthFromGuiX(ctx.data[\headPosX] ? 0.5)
-				), \xPosPan2);
-			};
+		on_enter: {|block, cmd, ctx, family|
+			ctx.audioChain.addFxNode(\xPosPan2, (
+				width: block.args[\width],
+				spread: block.args[\spread],
+				azimuth: LCPanAz.azimuthFromGuiX(ctx.data[\headPosX] ? 0.5)
+			), \xPosPan2);
+		},
+		on_leave: {|block, cmd, ctx, family|
+			ctx.audioChain.freeFxNode(\xPosPan2);
 		},
 		on_ctx_data_update: {|data, block, cmd, ctx, family|
 			data[\headPosX].isNil.not.if {

@@ -59,6 +59,11 @@ LCAudioChain {
 		^node;
 	}
 
+	freeFxNode {|id|
+		fxNodes[id].free;
+		fxNodes.removeAt(id);
+	}
+
 	gain_ {|value|
 		gainNode.set(\gain, value);
 		gain = value;

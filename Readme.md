@@ -88,60 +88,81 @@ Is called when a execution context (e.g. an `LCdef`) is cleared.
 * `doPerform`: a boolean that specifies if the command should 'play' or not. Usually a action block (e.g. `[play]`) will set doPerform to `true`.
 
 
-#### `on_cmd_rush: {|cmd, ctx, family| ...}`
+#### *`on_cmd_rush: {|cmd, ctx, family| ...}`*
 *Not yet implmeneted.* Called when a scene is rushed.
 
-#### `on_cmd_enter: {|cmd, ctx, family| ...}`
+#### *`on_cmd_enter: {|cmd, ctx, family| ...}`*
 *Not yet implmeneted.* Called before any blocks are evaluated.
 
-#### `on_cmd_finish: {|cmd, ctx, family| ...}`
+#### *`on_cmd_finish: {|cmd, ctx, family| ...}`*
 *Not yet implmeneted.* Called aftert all blocks are evaluated - right before the command is performed.
 
-#### `on_cmd_perform: {|cmd, ctx, family| ...}`
+#### *`on_cmd_perform: {|cmd, ctx, family| ...}`*
 *Not yet implmeneted.* Called when a command is performed.
 
-#### `on_cmd_leave: {|cmd, ctx, family| ...}`
+#### *`on_cmd_leave: {|cmd, ctx, family| ...}`*
 *Not yet implmeneted.* Called when a command retires (is replaced by a new command).
 
 #### `on_pattern_finish: {|event, cmd, ctx, family| ...}`
 Is called for event type families for every event before it is played. `event` holds all values that were generated from the pattern chain of the command.
 
 ### Block Lifecycle Functions
+
+The order of functions as it is presented here is also representing the order of execution.
+
 #### `block` methods and properties
 * `id` and `data`: see `family` - but be aware that `id` can be nil if not explicitly specified in the command.
 * `args`: a dictionary that holds all arguments of the block. If an argument is not specified it will contain its default value.
+* `spec`: returns the `LCBlockSpec` object that defines this block
 
+#### *`on_rush: {|block, cmd, ctx, family| ...}`*
+*Not yet implmeneted.* Called when a scene is rushed.
 
---> Rename once to execute once and quant to perform (and perform once)
+#### *`on_leave: {|block, cmd, ctx, family| ...}`*
+*Not yet implemented.* Called when a block is added to the context. Be aware that `on_enter` and `on_leave` will not receive the same `block` argument, therefore all state must be saved within `ctx.data`.
 
+#### *`on_enter: {|block, cmd, ctx, family| ...}`*
+*Not yet implemented.* Called when a block is added to the context. It will only be called once, even if 2 blocks with the same name are present.
 
+#### `on_pre_execute: {|block, cmd, ctx, family| ...}`
+Executes before `on_execute` - use in case something must happen before everything else.
 
-FamilyDef: domain, lc
-Family: family
-Ctx: ctx, family
-Cmd: cmd, ctx, family
-Block: block, cmd, ctx, family
-Data: data, ctx, family or data, block, cmd, ctx, family
-pattern: event, cmd, ctx, family
+#### `on_execute_once: {|block, cmd, ctx, family| ...}`
+Executes only for the first time a block with this name is active within a context. A context can be reset using the `.resetBlockHistory` method (e.g. `LCdef(\bla).resetBlockHistory;`)
+
+#### `on_execute: {|block, cmd, ctx, family| ...}`
+This is the general place to modify a pattern, the audio chain or any other aspect of the current command. Use `on_pre_execute` and `on_post_execute` only as exceptions.
+
+#### `on_post_execute: {|block, cmd, ctx, family| ...}`
+Executes after `on_execute` - use in case something must happen after everything else.
+
+#### `on_perform_once: {|block, cmd, ctx, family| ...}`
+Executes only for the first time a block with this name is performed (e.g. `cmd.doPerform` was set to `true`)  within a context. If the family uses `quant` its execution will be delayed. The pattern or audio chain of the current command should not be modified anymore at this point.
+
+#### `on_perform: {|block, cmd, ctx, family| ...}`
+Executes if the command is performed (e.g. `cmd.doPerform` was set to `true`). If the family uses `quant` its execution will be delayed. The pattern or audio chain of the current command should not be modified anymore at this point.
+
+#### `on_ctx_data_update: {|data, block, cmd, ctx, family| ...}`
+Please refer to the function with the same name above. The only difference is, that a block and command reference is given as arguments as well.
 
 
 ## Class Overview
 This is a (potentially) incomplete list of all classes currently used. Italic classes are considerend to be relevant only internally and are currently not further documented.
 
-#### LifeCodes
-#### LCdef
-#### LCContext
-#### LCBlockInstance
-#### *LCBlockSpec*
-#### *LCParameterSpec*
-#### *LCExecutionQueue*
-#### *LCExecutionUnit*
-#### *LCBlockFunctionReference*
-#### LCGUI
-#### LCBlockSlotRef
-#### *LCJSONExport*
-#### LCRuntime
-#### LCSceneDef
-#### LCSceneManager
-#### LCFamliyDef
-#### LCFamily
+### LifeCodes
+### LCdef
+### LCContext
+### LCBlockInstance
+### *LCBlockSpec*
+### *LCParameterSpec*
+### *LCExecutionQueue*
+### *LCExecutionUnit*
+### *LCBlockFunctionReference*
+### LCGUI
+### LCBlockSlotRef
+### *LCJSONExport*
+### LCRuntime
+### LCSceneDef
+### LCSceneManager
+### LCFamliyDef
+### LCFamily

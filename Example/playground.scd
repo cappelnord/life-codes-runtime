@@ -11,7 +11,7 @@ LCdef(\test).audioChain.fxNodes
 
 (
 LCdef(\test, \pling);
-LCdef(\test).appendModifiers = [[\xPosPan]];
+LCdef(\test).appendModifiers = [\xPosPan];
 
 l.gui.registerBlockSlots(\ok, [
 	['pling', 0.3@0.5, (context: \test)],
@@ -73,11 +73,13 @@ LCdef(\ok, [\pling, \play])
 LCdef(\okk, [\pling, \play, \cycleSpeakers])
 
 
-LCdef(\mega, [\mega_dump, \print])
+LCdef(\mega, [\dump, \print])
 
 LCdef(\ok).load
 LCdef(\ok).clear
 LCdef(\bra).clear
+
+LCdef(\pling, [\pling, \play])
 
 LCdef(\ok).family.lookup[1].id
 

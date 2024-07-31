@@ -147,9 +147,19 @@ Please refer to the function with the same name above. The only difference is, t
 
 
 ## Class Overview
-This is a (potentially) incomplete list of all classes currently used. Italic classes are considerend to be relevant only internally and are currently not further documented.
+This is a (potentially) incomplete list of all classes currently used with some brief remarks. Italic classes are considerend to be relevant only internally and are currently not further documented.
+
+Full documentation would be great but there is no time for that currently I fear ...
 
 ### LifeCodes
+* The main class that houses all functionality. Instantiating creates a singleton object (accessible via `LifeCodes.instance` or `l`).
+* `LifeCodes.clear` will clear the instance. 
+* Subcomponents can be accessed via `l.runtime`, `l.gui`, `l.mixer`, `l.sceneManager`.
+* A TempoClock that stays at 1 BPS can be accessed via `l.steadyClock`.
+* `l.buffers` contains all buffers in a dictionary structure (folder/file name as keys).
+* `l.bufferLists` contains all folders with audio samples as arrays of buffers.
+
+
 ### LCdef
 ### LCContext
 ### LCBlockInstance

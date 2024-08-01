@@ -8,6 +8,8 @@ In order to use the `binaural` output mode the [Ambisonics Toolkit (ATK)](https:
 ## Terminology
 Here is a quick overview of terms and what they mean in the context of the Life Codes runtime.
 
+**TODO**
+
 ## Startup and Loading
 
 ### Startup
@@ -40,7 +42,8 @@ Defining functions of the various stages in the lifecycle of a family, context, 
 Currently only method and properties that are useful for defining functionality are mentioned here. Full documentation is still pending ...
 
 ### LCFamilyDef and Domains
-...
+
+**TODO**
 
 ### Family Lifecycle Functions
 
@@ -150,6 +153,8 @@ Please refer to the function with the same name above. The only difference is, t
 
 ## Playing with LifeCodes / Executing Blocks
 
+**TODO**
+
 ## Class Overview
 This is a (potentially) incomplete list of all classes currently used with some brief remarks. Italic classes are considerend to be currently irrelevant to understand and not needed for defining block functionality and trying things out.
 
@@ -191,23 +196,53 @@ Full documentation would be great but there is no time for that currently I fear
 * `.source` will return the source for this block while `.cleanSource` will return a normalized Dictionary with all data encoded.
 
 ### LCFamliyDef
-
+* Used to define families (and blocks). See **LCFamilyDef and Domains**.
 
 ### LCFamily
+* See **LCFamilyDef and Domains** as well as **`family` methods and properties**.
 
-## More Classes (but I currently have no time to write about them and I might be the only one using them currently)
+## More Classes
+
+*I would love to document them all but I will do it later as I will most likely only use them myself. So I only give brief words of what they are doing.*
 
 ### LCGUI
+* Handles all OSC communication and interfaces with the interaction layer. Used to spawn and despawn blocks.
+
 ### LCBlockSlotRef
+* Holds a reference (and some info) of a spawned block. Mostly use to keep track of things and to automatically despawn.
+
 ### LCSceneDef
+* Defines and stores scene functions.
+
 ### LCSceneManager
+* Controls (conditional) scene transitions (from scene to scene and within scenes).
+
 ### LCAudioMixer
+* The root audio chain where all context audio chains will be mixed into.
+
 ### LCContextAudioChain
+* The audio chain for each context.
+
 ### LCCommandAudioChain
-### *LCBlockSpec*
-### *LCParameterSpec*
-### *LCExecutionQueue*
-### *LCExecutionUnit*
-### *LCBlockFunctionReference*
-### *LCJSONExport*
-### *LCRuntime*
+* The audio chain for each command (which will be automatically freed when a new command takes over). In the future there might be also a fade out but currently not needed.
+
+### LCBlockSpec
+* Holds all meta information for a block which will be exported as JSON to the interaction layer.
+
+### LCParameterSpec
+* Holds all information on block parameters which will also be exported as JSON to the interaction layer.
+
+### LCJSONExport
+* Class to export block meta data as JSON. The file also includes class extension of SuperCollider base types in order to build JSON strings out of Dictionaries.
+
+### LCExecutionQueue
+* Executes all the lifecycle functions. Currently this is not very spectacular but if/when temporal functions are introduced this will make more sense to have it.
+
+### LCBlockFunctionReference
+* Function with reference to its family and domain.
+
+### LCExecutionUnit
+* Function bound to values with some additional meta data to be executed in the execution queue.
+
+### LCRuntime
+* Manages contexts, blocks and whatnot.

@@ -436,10 +436,16 @@ LifeCodes {
 	}
 
 	prBootServer {
-		server = options.server;
+		server = options[\server];
 		server.options.outDevice = options[\outDevice];
 		server.options.sampleRate = options[\sampleRate];
 		server.latency = options[\serverLatency];
+
+		// let's increase some internal server options to not run into issues ...
+		server.options.numBuffers = 1024 * 8;
+		server.options.numWireBufs = 128;
+		server.options.memSize = 8192 * 4;
+		server.options.maxNodes = 1024 * 4;
 
 		server.bootSync;
 

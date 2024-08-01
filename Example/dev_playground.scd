@@ -1,7 +1,7 @@
+/*
+This is a developer playground - don't expect structure and sense here :)
 
-
-// TODO registerBlockSlots should just return the array of added
-// slots; we then can use nil as a key for the registry
+*/
 
 s.plotTree
 

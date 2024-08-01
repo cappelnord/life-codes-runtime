@@ -56,11 +56,9 @@ LCGUI {
 	}
 
 	prOnContextDataUpdate {|contextId, data|
-		lc.runtime.contexts.includesKey(contextId).not {
-			// fail silently
-			^nil;
-		};
-		lc.runtime.contexts[contextId].updateData(data);
+		lc.runtime.contexts[contextId].isNil.not.if {
+			lc.runtime.contexts[contextId].updateData(data);
+		}
 	}
 
 	sendCommandFeedback {|cmd, headBlockId|
@@ -85,6 +83,15 @@ LCGUI {
 	addBlockSlot {|spec, startPosition, options, id|
 		var object;
 
+		options = options ? ();
+
+		// allow to combine spec with arguments
+		(spec.class == Array).if {
+			var array = spec;
+			spec = array[0];
+			options[\args] = array[1..];
+	    };
+
 		spec.asString.includes($:).not.if {
 			var name = spec.asSymbol;
 			var blockSpecCandidates = lc.runtime.blockSpecsForName(name);
@@ -97,7 +104,6 @@ LCGUI {
 		};
 
 		id = id ? LifeCodes.randomId;
-		options = options ? ();
 
 		object = (
 			\spec: spec,

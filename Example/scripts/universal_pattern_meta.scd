@@ -15,11 +15,7 @@ LCFamilyDef(\universal_pattern, \meta, {|domain, lc|
 
 	domain.defineBlock(\mute, (
 		type: \modifier,
-		primary: true,
-
-		on_execute: {|block, cmd, ctx, family|
-			cmd.pattern.extend(Pbind(\amp, 0.0));
-		}
+		primary: true
 	));
 
 	domain.defineBlock(\faster, (
@@ -28,10 +24,24 @@ LCFamilyDef(\universal_pattern, \meta, {|domain, lc|
 
 		parameters: [
 			(id: \speed, type: \number, default: 2)
-		],
+		]
+	));
 
-		on_execute: {|block, cmd, ctx, family|
-			cmd.pattern.extend(Pbind(\dur, cmd.pattern[\dur] / block.args[\speed]));
-		}
+	domain.defineBlock(\transpose, (
+		type: \modifier,
+		primary: true,
+
+		parameters: [
+			(id: \interval, type: \number, default: 12)
+		]
+	));
+
+	domain.defineBlock(\offbeat, (
+		type: \modifier,
+		primary: true,
+
+		parameters: [
+			(id: \beats, type: \number, default: 0.5)
+		]
 	));
 });

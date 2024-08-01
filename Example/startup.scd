@@ -9,7 +9,7 @@ l = LifeCodes(
 		traceExecutionQueues: true,
 		guiHost: NetAddr("127.0.0.1", 57140),
 		audioOutputMode: \binaural,
-		entryScene: \act1a
+		entryScene: nil
 	)
 );
 )

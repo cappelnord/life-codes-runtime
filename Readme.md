@@ -8,7 +8,28 @@ In order to use the `binaural` output mode the [Ambisonics Toolkit (ATK)](https:
 ## Terminology
 Here is a quick overview of terms and what they mean in the context of the Life Codes runtime.
 
-**TODO**
+### Block
+
+A block is the basic element of Life Codes that the user operates with either via programming or a graphical user interface. We currently have 3 different block types: `\subject`, `\action` and `\modifier`. Blocks can have parameters (but don't need to).
+
+### Family
+
+A family (represented by `LCFamily`) is a set of blocks that are compatible with each other. A family furthermore defines its color and how it is compatible with other families. Families can extend other families (e.g. define blocks that are then compatible with another family) or inherit from families in order to get functionality (and blocks) from another family wihout copy & paste.
+
+### Domain
+
+Functionality and meta data is added to families via domains. Currently the most relevant domains are `\meta`, `\music` and `\visuals` but they can be arbitrarily added. This allows for seperation of concerns as code that is used for visuals is seperated from code that specifies music or code that specifies meta data of a family and of blocks. Information from all domains are combined into one lookup table. Each domain can specify functions for any life cycle - they will all be executed in alphabetic sequence (so: `\meta`, `\music`, `\visuals`).
+
+A domain can be completely ignored on startup (e.g. if one does not want to have visuals at all).
+
+### Command
+
+A command (represented by `LCCommand`) is a list of blocks (and their parameters). Currently the syntax dictates that each command starts with a subject followed by one action. After the action there can be 0 to many modifiers. For each life cycle functiions are executed in the order of the blocks. If a block has functions defined by multiple domains then these functions will be executed in alphabetic order. The block functions will manipulate the state of the command object (e.g. its pattern chain, audio chain or data dictionary) or have side effects (e.g. send OSC messages). At the end a command might be 'performed', e.g. the pattern is played. Block function can also affect the execution context.
+
+### Context
+
+A (execution) context (represented by `LCContext` and accessed via `LCdef`) houses a command
+
 
 ## Startup and Loading
 
@@ -153,7 +174,7 @@ Please refer to the function with the same name above. The only difference is, t
 
 ## Playing with LifeCodes / Executing Blocks
 
-**TODO**
+This will be more elaborated, but there is some commented code in [Example/example_playground.scd](Example/example_playground.scd).
 
 ## Class Overview
 This is a (potentially) incomplete list of all classes currently used with some brief remarks. Italic classes are considerend to be currently irrelevant to understand and not needed for defining block functionality and trying things out.

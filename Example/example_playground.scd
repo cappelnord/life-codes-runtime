@@ -49,6 +49,9 @@ LCdef(\test1).clear;
 LCdef(\test2).clear;
 LCdef(\test3).clear;
 
+
+
+
 // ###
 // Live Coding with Life Codes using the Interaction Layer
 // ###
@@ -132,6 +135,8 @@ fork {
 )
 
 
+
+
 // ###
 // Dump Things
 // ###
@@ -148,3 +153,30 @@ LCdef(\dump).updateData((ok: 10))
 LCdef(\dump, [\dump, \print])
 
 LCdef(\dump).updateData((ok: 20))
+
+
+
+
+// ###
+// Inheritance / Extensions
+// ###
+
+// check scripts/inheritance.scd
+
+// \act is a native block in the base family
+LCdef(\test, [\base, \act])
+
+// \mod is not defined in the base family but in the extension family (which declares to extend base)
+LCdef(\test, [\base, \act, \mod])
+
+
+// \inheritance inherits from \base
+LCdef(\test2, \inheritance)
+
+// so while it needs its own subject it can use the \act block from \base
+LCdef(\test2, [\inheritance, \act])
+
+// as well as the \mod block from extension
+LCdef(\test2, [\inheritance, \act, \mod])
+
+

@@ -20,6 +20,9 @@ If a block states what keys it (primarily) (re)sets and/or modifies we can mark 
 // Is spec/domain used internally correctly?
 
 
+// Does extends and inheritsFrom work as it is thought?
+
+
 */
 
 LifeCodes {

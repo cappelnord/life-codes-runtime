@@ -28,7 +28,9 @@ A command (represented by `LCCommand`) is a list of blocks (and their parameters
 
 ### Context
 
-A (execution) context (represented by `LCContext` and accessed via `LCdef`) houses a command
+A (execution) context (represented by `LCContext` and accessed via `LCdef`) executes a command and keeps track of the execution of blocks. Through the context commands can keep state between commands. blabla
+
+What else is needed?
 
 
 ## Startup and Loading
@@ -64,7 +66,33 @@ Currently only method and properties that are useful for defining functionality 
 
 ### LCFamilyDef and Domains
 
-**TODO**
+Properties and functions of families are defined within domains using `LCFamilyDef`. Generally everything is specified as `Event` and combined into a single nested datastructure (accessible via `.table` on a `LCFamily` object.) 
+
+The general pattern of `LCFamilyDef` is:
+
+```sclang
+LCFamilyDef(\family, \domain, {|domain, lc|
+    domain.define((
+        // ...
+    ));
+
+    domain.defineBlock(\block, (
+        // ...
+    ));
+});
+```
+
+For further examples please see the [Example/scripts](Example/scripts/) folder, in particular the following, as they are fully commented:
+* [pling_meta.scd](Example/scripts/pling_meta.scd)
+* [pling_music.scd](Example/scripts/pling_music.scd)
+* [_pling_print.scd](Example/scripts/_pling_print.scd)
+* [universal_audio_meta.scd](Example/scripts/universal_audio_meta.scd)
+* [universal_audio_music.scd](Example/scripts/universal_audio_music.scd)
+* [universal_pattern_meta.scd](Example/scripts/universal_pattern_meta.scd)
+* [universal_pattern_music.scd](Example/scripts/universal_pattern_music.scd)
+
+Not yet implemented but forseen is a way to execute LCFamilyDef without reloading Life Codes in order to hot-swap functionality of running commands. Let's see!
+
 
 ### Family Lifecycle Functions
 
@@ -174,7 +202,11 @@ Please refer to the function with the same name above. The only difference is, t
 
 ## Playing with LifeCodes / Executing Blocks
 
-This will be more elaborated, but there is some commented code in [Example/example_playground.scd](Example/example_playground.scd).
+This will be more elaborated, but there is some commented code in [Example/playground_tutorial.scd](Example/playground_tutorial.scd).
+
+## Scenes and the Scene Manager
+
+This will be documented at a later stage.
 
 ## Class Overview
 This is a (potentially) incomplete list of all classes currently used with some brief remarks. Italic classes are considerend to be currently irrelevant to understand and not needed for defining block functionality and trying things out.

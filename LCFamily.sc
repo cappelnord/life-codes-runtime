@@ -120,10 +120,18 @@ LCFamily {
 		(def.class == Pbind).if {
 			var pbind = def;
 			def = (
-				\on_execute: {|block, cmd, ctx, family|
+				on_execute: {|block, cmd, ctx, family|
 					cmd.pattern.extend(pbind);
 				}
 			)
+		};
+
+		// shortcut to allow functions to solely define a block
+		(def.class == Function).if {
+			var func = def;
+			def = (
+				on_execute: func
+			);
 		};
 
 		this.prMergeTable(def, table[\blocks][blockId], blockId);

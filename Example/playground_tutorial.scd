@@ -30,9 +30,9 @@ LCdef(\test2, [\pling, \play, \cycleSpeakers, [\offbeat, 0.25], [\transpose, 7]]
 LCdef(\test3, [\pling, \play, \cycleSpeakers, [\faster, 0.5], [\offbeat, 0.25], [\transpose, -12]])
 
 // They now all sound the same, let's add a ring modulator as audio effect (defined in unviersal_audio)
-LCdef(\test1, [\pling, \play, \cycleSpeakers, [\faster, 2]])
-LCdef(\test2, [\pling, \play, \cycleSpeakers, [\offbeat, 0.25], [\transpose, 7], [\ring, 220]])
-LCdef(\test3, [\pling, \play, \cycleSpeakers, [\faster, 0.5], [\offbeat, 0.25], [\transpose, -12], [\ring, 110]])
+LCdef(\test1, [\pling, \play, \cycleSpeakers, [\faster, 2]]);
+LCdef(\test2, [\pling, \play, \cycleSpeakers, [\offbeat, 0.25], [\transpose, 7], [\ring, 220]]);
+LCdef(\test3, [\pling, \play, \cycleSpeakers, [\faster, 0.5], [\offbeat, 0.25], [\transpose, -12], [\ring, 110]]);
 
 // let's mute test2 and test3 for now
 LCdef(\test2, [\pling, \play, \cycleSpeakers, [\offbeat, 0.25], [\transpose, 7], [\ring, 220], \mute])

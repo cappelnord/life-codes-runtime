@@ -26,6 +26,8 @@ A domain can be completely ignored on startup (e.g. if one does not want to have
 
 A command (represented by `LCCommand`) is a list of blocks (and their parameters). Currently the syntax dictates that each command starts with a subject followed by one action. After the action there can be 0 to many modifiers. For each life cycle functiions are executed in the order of the blocks. If a block has functions defined by multiple domains then these functions will be executed in alphabetic order. The block functions will manipulate the state of the command object (e.g. its pattern chain, audio chain or data dictionary) or have side effects (e.g. send OSC messages). At the end a command might be 'performed', e.g. the pattern is played. Block function can also affect the execution context.
 
+A command persists, holds audio chain, bla ...
+
 ### Context
 
 A (execution) context (represented by `LCContext` and accessed via `LCdef`) executes a command and keeps track of the execution of blocks. Through the context commands can keep state between commands. blabla

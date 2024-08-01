@@ -13,5 +13,3 @@ l = LifeCodes(
 	)
 );
 )
-
-l

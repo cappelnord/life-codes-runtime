@@ -60,4 +60,28 @@ LCFamilyDef(\inheritance, \meta, {|domain, lc|
 			"inheritance subject: inheritance".postln;
 		}
 	));
+
+	// We can also add functionality to blocks that are not directly part of our
+	// family. These functions will be executed after the original functions.
+
+	// This is a powerful feature to add functions to very generic blocks such as
+	// \play.
+
+	domain.defineBlock(\act, {|block, cmd, ctx, family|
+		"function added by inheritance to act".postln;
+	});
+
+	// of course we can not only add on_execute lifecycle functions
+
+	domain.defineBlock(\mod, (
+		on_execute: {|block, cmd, ctx, family|
+			"function added by inheritance to mod".postln;
+		},
+		on_enter: {|block, cmd, ctx, family|
+			"on_enter added by inheritance to mod".postln;
+		},
+		on_leave: {|block, cmd, ctx, family|
+			"on_leave added by inheritance to mod".postln;
+		}
+	));
 });

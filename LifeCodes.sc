@@ -6,16 +6,6 @@ Temporal Roles:
 // (do we need more actually? TemporalFunction should maybe also have the ability to as well store a non-temporal function
 
 --> maybe it is actually not so hard!
---> Maybe we could have a seperate object which represents the runtime queue
-
-
-Command sequences (and lookup rules)
-
-[subject] <- always also controls the family - subjects cannot inherit
-[action]
-[modifiers]
-
-[block arg1 arg2 arg3] arguments are always positional, if not present default values will be taken (or loaded from block instance data block)
 
 
 // Should the subject block be just known as _subject in order to allow for inheritance of subject functionality? this would of course break multi inheritance (or actually also not - would make it weird though haha)
@@ -26,16 +16,9 @@ Command sequences (and lookup rules)
 If a block states what keys it (primarily) (re)sets and/or modifies we can mark blocks that were superseeded visually.
 
 
-// Check File Names and how domains are specified here.
 
-
-// what do we now send to functions/blocks/etc? Family AND domain? Also lc?
-// --> check all what is bound to functions currently, adjust and document at the same time
 // Is spec/domain used internally correctly?
 
-// on_init and on_load: are family supplied or the domain?
-
-// check overall naming of things
 
 */
 

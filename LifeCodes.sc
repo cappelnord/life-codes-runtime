@@ -47,6 +47,7 @@ LifeCodes {
 	var <steadyClock;
 
 	classvar <instance = nil;
+	classvar <steadyClock = nil;
 
 	// will be used to notify the watchdog and/or terminate sclang
 	*fatal {|message, quit=false|
@@ -328,8 +329,17 @@ LifeCodes {
 		bufferLists = ();
 	}
 
+	*assureSteadyClock {
+		steadyClock.isNil.if {
+			steadyClock = TempoClock(1);
+			steadyClock.permanent = true;
+		};
+		^steadyClock;
+	}
+
 	init {
-		steadyClock = TempoClock(1);
+		steadyClock = LifeCodes.assureSteadyClock;
+
 		this.prInitData;
 
 		"\n\nStarting scene manager".postln;

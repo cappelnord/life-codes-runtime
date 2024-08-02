@@ -2,7 +2,7 @@
 # Life Codes Quick Manual
 
 ## Known Issues
-* Life Codes is currently not yet resilient to "Command/Ctrl ." - in case this was used it might be the best thing to recompile the class library and restart Life Codes. This will be fixed soon!
+* Life Codes is currently not yet resilient to "Command/Ctrl ." - in case you used it you currently need to run the LifeCodes startup code again.
 * After clearing an LCdef "Node not found" messages might appear. This is just an cosmetic issue.
 
 ## Prerequisites

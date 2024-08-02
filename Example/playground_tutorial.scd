@@ -41,8 +41,9 @@ LCdef(\test3, [\pling, \play, \cycleSpeakers, [\faster, 0.5], [\offbeat, 0.25], 
 // we can also bind modifiers to a context so that they will be automatically appended when we execute a new command
 LCdef(\test1).appendModifiers = [[\ring, 1100]];
 
-// the [\ring, 1100] block is now automatically appended.
-LCdef(\test1, [\pling, \play, \cycleSpeakers, [\faster, 2]]);
+// the [\ring, 1100] block is now automatically appended - but we need to reevaluate the last command
+// or execute a new command.
+LCdef(\test1).reevaluate
 
 // let's clean up
 LCdef(\test1).clear;
@@ -61,7 +62,7 @@ LCdef(\test3).clear;
 
 (
 // let's put all in random positions
-var randomPoint = {Point(0.8.rand + 0.1, 0.8.rand + 0.1)};
+var rp = {Point(0.8.rand + 0.1, 0.8.rand + 0.1)};
 
 // let's initialize the execution contexts
 LCdef(\test1, \pling);
@@ -73,41 +74,41 @@ l.gui.clear;
 
 // let's spawn our subject blocks and 3 plays
 l.gui.registerBlockSlots(\test, [
-	['pling', randomPoint.value, (context: \test1)],
-	['pling', randomPoint.value, (context: \test2)],
-	['pling', randomPoint.value, (context: \test3)],
+	['pling', rp.value, (context: \test1)],
+	['pling', rp.value, (context: \test2)],
+	['pling', rp.value, (context: \test3)],
 ]);
 
 // also 3 play blocks and 3 mute blocks
 l.gui.registerBlockSlots(\test, [
-	['play', randomPoint.value],
-	['play', randomPoint.value],
-	['play', randomPoint.value],
-	['mute', randomPoint.value],
-	['mute', randomPoint.value],
-	['mute', randomPoint.value],
+	['play', rp.value],
+	['play', rp.value],
+	['play', rp.value],
+	['mute', rp.value],
+	['mute', rp.value],
+	['mute', rp.value],
 ]);
 
 // and a bunch of modifiers to play with
 l.gui.registerBlockSlots(\test, [
-	['transpose', randomPoint.value, (args: [4])],
-	['transpose', randomPoint.value, (args: [7])],
-	['transpose', randomPoint.value, (args: [12])],
-	['transpose', randomPoint.value, (args: [-12])],
-	['faster', randomPoint.value, (args: [2])],
-	['faster', randomPoint.value, (args: [2])],
-	['faster', randomPoint.value, (args: [0.5])],
-	['faster', randomPoint.value, (args: [4])],
-	['offbeat', randomPoint.value, (args: [0.125])],
-	['offbeat', randomPoint.value, (args: [0.25])],
-	['offbeat', randomPoint.value, (args: [0.375])],
-	['offbeat', randomPoint.value, (args: [0.5])],
+	['transpose', rp.value, (args: [4])],
+	['transpose', rp.value, (args: [7])],
+	['transpose', rp.value, (args: [12])],
+	['transpose', rp.value, (args: [-12])],
+	['faster', rp.value, (args: [2])],
+	['faster', rp.value, (args: [2])],
+	['faster', rp.value, (args: [0.5])],
+	['faster', rp.value, (args: [4])],
+	['offbeat', rp.value, (args: [0.125])],
+	['offbeat', rp.value, (args: [0.25])],
+	['offbeat', rp.value, (args: [0.375])],
+	['offbeat', rp.value, (args: [0.5])],
 
 	// alternative way on how to express arguments
-	[['ring', 110], randomPoint.value],
-	[['ring', 220], randomPoint.value],
-	[['ring', 440], randomPoint.value],
-	[['ring', 880], randomPoint.value],
+	[['ring', 110], rp.value],
+	[['ring', 220], rp.value],
+	[['ring', 440], rp.value],
+	[['ring', 880], rp.value],
 ]);
 )
 

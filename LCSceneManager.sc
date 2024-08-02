@@ -35,6 +35,7 @@ LCSceneManager {
 	var <lastScene;
 
 	var <data;
+	var <stepCounter = 0;
 
 	var routine;
 
@@ -120,6 +121,7 @@ LCSceneManager {
 		{condition.value.not && rushCurrentStep.not && rushCurrentScene.not}.while {
 			(1/60.0).wait;
 		};
+		stepCounter = stepCounter + 1;
 		rushCurrentStep = false;
 	}
 
@@ -127,6 +129,7 @@ LCSceneManager {
 		{condition.value.not && rushCurrentStep.not && rushCurrentScene.not}.while {
 			(1/60.0).wait;
 		};
+		stepCounter = stepCounter + 1;
 		rushCurrentStep = false;
 		rushCurrentScene = false;
 		{this.runScene(sceneId);}.defer;

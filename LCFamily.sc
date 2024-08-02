@@ -180,7 +180,7 @@ LCFamily {
 		(list.size > 0).if {
 			"Execute Family Lifecycle Phase: %/%".format(id, phase).postln;
 			executionQueue = executionQueue ? runtime.executionQueue;
-			executionQueue.executeList();
+			executionQueue.executeList(list);
 	    }
 	}
 

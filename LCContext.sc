@@ -135,19 +135,25 @@ LCContext {
 		};
 	}
 
-	execute {|blockList, cmdData, cmdId|
+	execute {|blockSourceList, cmdData, cmdId|
 		var newCmd;
 		// this is just to ensure that the family is loaded
 		this.load;
 
 		// create a new command from the block list
-		newCmd = LCCommand(cmdId ? LifeCodes.randomId, this, blockList, cmdData ? (), prependModifiers, appendModifiers);
+		newCmd = LCCommand(cmdId ? LifeCodes.randomId, this, blockSourceList, cmdData ? (), prependModifiers, appendModifiers);
 
 		newCmd.valid.if({
 			this.prExecuteCommand(newCmd);
 		}, {
-			"Received invalid command: % - did not execute".format(blockList.cs).error;
+			"Received invalid command: % - did not execute".format(blockSourceList.cs).error;
 		});
+	}
+
+	reevaluate {
+		cmd.isNil.not.if {
+			this.execute(cmd.blockSourceList, cmd.data);
+		}
 	}
 
 	prExecuteCommand {|newCmd|

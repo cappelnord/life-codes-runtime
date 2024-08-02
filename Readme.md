@@ -30,7 +30,7 @@ A domain can be completely ignored on startup (e.g. if one does not want to have
 
 A command (represented by `LCCommand`) is a list of blocks (and their parameters). Currently the syntax dictates that each command starts with a subject followed by one action. After the action there can be 0 to many modifiers. For each life cycle functiions are executed in the order of the blocks. If a block has functions defined by multiple domains then these functions will be executed in alphabetic order. The block functions will manipulate the state of the command object (e.g. its pattern chain, audio chain or data dictionary) or have side effects (e.g. send OSC messages). At the end a command might be 'performed', e.g. the pattern is played. Block function can also affect the execution context.
 
-A command persists, holds audio chain, bla ...
+A command is active until it is replaced by another command (e.g. it can still receive data via `on_ctx_data_update`).
 
 ### Context
 
@@ -88,7 +88,7 @@ LCFamilyDef(\family, \domain, {|domain, lc|
 });
 ```
 
-For further examples please see the [Example/scripts](Example/scripts/) folder, in particular the following, as they are fully commented:
+For further examples please see the [Example/scripts](Example/scripts/) folder, in particular the following, as they are fully commented - try out the blocks alongside with [playground_tutorial.scd](Example/playground_tutorial.scd).
 * [pling_meta.scd](Example/scripts/pling_meta.scd)
 * [pling_music.scd](Example/scripts/pling_music.scd)
 * [_pling_print.scd](Example/scripts/_pling_print.scd)
@@ -96,8 +96,9 @@ For further examples please see the [Example/scripts](Example/scripts/) folder, 
 * [universal_audio_music.scd](Example/scripts/universal_audio_music.scd)
 * [universal_pattern_meta.scd](Example/scripts/universal_pattern_meta.scd)
 * [universal_pattern_music.scd](Example/scripts/universal_pattern_music.scd)
+* [inheritance.scd](Example/scripts/inheritance.scd)
 
-Not yet implemented but forseen is a way to execute LCFamilyDef without reloading Life Codes in order to hot-swap functionality of running commands. Let's see!
+Not yet implemented but forseen is a way to execute `LCFamilyDef` without reloading Life Codes in order to hot-swap functionality of running commands. Let's see!
 
 
 ### Family Lifecycle Functions

@@ -178,7 +178,7 @@ LCFamily {
 	executeLifecyclePhase {|phase, executionQueue|
 		var list = this.getLifecycleExecutionUnits(phase);
 		(list.size > 0).if {
-			"Execute Family Lifecycle Phase: %/%".format(id, phase).postln;
+			// "Execute Family Lifecycle Phase: %/%".format(id, phase).postln;
 			executionQueue = executionQueue ? runtime.executionQueue;
 			executionQueue.executeList(list);
 	    }

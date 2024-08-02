@@ -34,9 +34,11 @@ A command is active until it is replaced by another command (e.g. it can still r
 
 ### Context
 
-A (execution) context (represented by `LCContext` and accessed via `LCdef`) executes a command and keeps track of the execution of blocks. Through the context commands can keep state between commands. blabla
+A (execution) context (represented by `LCContext` and accessed via `LCdef`) executes a command and keeps track of the execution of blocks. Contexts can be used to keep state inbetween commands via `.data`. Data can also be set from outside through the `.updateData` method which will trigger `on_ctx_data_update` function calls. Contexts will count how often a certain block was used within the context and therefore allow the scene manager to progress when certain blocks were used or allow the use of `XXX_once` life cycle functions, which are only executed for the first time a block is active.
 
-What else is needed?
+### Scenes and Scene Manager
+
+Scenes are defined by `LCSceneDef` and managed by `LCSceneManager`. A scene is a function that can be divided into multiple steps. At a step the scene manager will wait until a certain condition is met. For development purposes we can step forward using `l.sceneManager.rush`. Transitions to a next scene are also conditional. We can rush to a next scene using `l.sceneManager.rushScene`. Acts are not directly represented and are just regular scenes.
 
 
 ## Startup and Loading
@@ -64,6 +66,18 @@ A list of lifecycle phases can be found below.
 All other files are considerd family definition scripts. Their file names carry no further meaning (except that they are executed in alphanumerical order). Family definitions are explained below.
 
 ### Order of Loading Operations
+At startup all this will happen in sequence:
+* The `scripts` folder is read and scripts are sorted for their different stages.
+* All scripts starting with `on_init` are executed (in alphabetical order).
+* The server is booted.
+* The `LCAudioMixer` is instantiated, base SynthDefs are loaded.
+* All audio samples are loaded.
+* All scripts starting with `on_load` are executed (in alphabetical order).
+* All other scripts are executed (expecting that these contain `LCFamilyDef`s)
+* All domain functions are evaluated
+* `on_init` is executed for all domains and families.
+* Families and blocks are indexes, inheritance is pre-processed and the block spec JSON file is written.
+* The interaction layer is started (along with all OSC responders)
 
 ## Family, Context, Command and Block Lifecycle Functions
 Defining functions of the various stages in the lifecycle of a family, context, command and block is bringing Life Codes to life!

@@ -104,7 +104,7 @@ LCContext {
 	}
 
 	executeLifecyclePhase {|phase|
-		"Execute Context Lifecycle Phase: %/%/%".format(id, family.id, phase).postln;
+		"Executing Context Lifecycle Phase for %: %/%".format(id, family.id, phase).postln;
 		executionQueue.executeList(
 			family.getLifecycleFunctionReferences(phase)
 			.collect {|f| f.bind(this, family)}

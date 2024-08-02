@@ -176,9 +176,12 @@ LCFamily {
 	}
 
 	executeLifecyclePhase {|phase, executionQueue|
-		"Execute Family Lifecycle Phase: %/%".format(id, phase).postln;
-		executionQueue = executionQueue ? runtime.executionQueue;
-		executionQueue.executeList(this.getLifecycleExecutionUnits(phase));
+		var list = this.getLifecycleExecutionUnits(phase);
+		(list.size > 0).if {
+			"Execute Family Lifecycle Phase: %/%".format(id, phase).postln;
+			executionQueue = executionQueue ? runtime.executionQueue;
+			executionQueue.executeList();
+	    }
 	}
 
 	compileDomainFunctions {
@@ -197,7 +200,7 @@ LCFamily {
 			currentLoadDomain = nil;
 		};
 
-		table.postln;
+		// table.postln;
 	}
 
 	asString {
@@ -205,8 +208,8 @@ LCFamily {
 	}
 
 	addExtensionFamily {|extension|
-		"Extension".postln;
-		extension.id.postln;
+		// "Extension".postln;
+		// extension.id.postln;
 		extensionFamilies.add(extension);
 	}
 

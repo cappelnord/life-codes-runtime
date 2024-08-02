@@ -175,7 +175,7 @@ LifeCodes {
 		recursiveAddFiles.value(PathName(scriptsPath));
 
 		// let's sort the files ...
-		files.sort({|a, b| a.fileName > b.fileName});
+		files.sort({|a, b| a.fileName < b.fileName});
 
 		// ... and bin them
 		scriptFiles = (
@@ -214,7 +214,7 @@ LifeCodes {
 		};
 
 		"Found % files in script repository (% ignored):".format(files.size - scriptFiles[\ignored].size, scriptFiles[\ignored].size).postln;
-		scriptFiles.collect({|x| x.collect {|file| file.fileName}}).postln;
+		// scriptFiles.collect({|x| x.collect {|file| file.fileName}}).postln;
 		"".postln;
 	}
 
@@ -413,7 +413,7 @@ LifeCodes {
 	}
 
 	prExecuteAllFamiliesInit {
-		"\n*** EXECUTE ALL FAMILIES ON_INIT ***".postln;
+		"\n*** EXECUTING ALL FAMILIES ON_INIT ***".postln;
 
 		runtime.families.keys.asArray.sort.do {|key|
 			var family = runtime.families[key];

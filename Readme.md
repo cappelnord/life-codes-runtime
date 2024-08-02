@@ -1,6 +1,10 @@
 
 # Life Codes Quick Manual
 
+## Known Issues
+* Life Codes is currently not yet resilient to "Command/Ctrl ." - in case this was used it might be the best thing to recompile the class library and restart Life Codes. This will be fixed soon!
+* After clearing an LCdef "Node not found" messages might appear. This is just an cosmetic issue.
+
 ## Prerequisites
 ### Binaural Room Simulation
 In order to use the `binaural` output mode the [Ambisonics Toolkit (ATK)](https://github.com/ambisonictoolkit/atk-sc3/blob/master/README.md#installing) must be installed. This includes the Quark, sc3-plugins as well as the Atk kernels and matrices.

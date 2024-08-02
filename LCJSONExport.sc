@@ -1,11 +1,14 @@
 LCJSONExport {
 	*write {|path, runtime|
-		var jsonObject = LCJSONExport.generate(runtime);
-		var jsonString = jsonObject.jsonString;
-		var file = File.open(path, "w");
+		var jsonObject, jsonString, file;
+
+		"\n*** EXPORTING SPECS ***\nPath: %".format(path).postln;
+
+		jsonObject = LCJSONExport.generate(runtime);
+		jsonString = jsonObject.jsonString;
+		file = File.open(path, "w");
 		file.write(jsonString);
 		file.close;
-		"\n*** EXPORTED SPECS TO % ***".format(path).postln;
 	}
 
 	*generate {|runtime|

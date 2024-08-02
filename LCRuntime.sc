@@ -42,7 +42,7 @@ LCRuntime {
 	}
 
 	buildIndex {
-		"\n*** BUILD INDEX ***".postln;
+		"\n*** BUILDING INDEX ***".postln;
 
 		// at the same time we keep an index of all families per type
 

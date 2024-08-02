@@ -225,7 +225,7 @@ LifeCodes {
 			});
 		};
 
-		"Found % files in script repository (% ignored):".format(files.size - scriptFiles[\ignored].size, scriptFiles[\ignored].size).postln;
+		"Found % files in script repository (% ignored) ...".format(files.size - scriptFiles[\ignored].size, scriptFiles[\ignored].size).postln;
 		// scriptFiles.collect({|x| x.collect {|file| file.fileName}}).postln;
 		"".postln;
 	}

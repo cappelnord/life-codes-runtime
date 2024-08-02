@@ -47,7 +47,11 @@ LifeCodes {
 	var <steadyClock;
 
 	classvar <instance = nil;
+
+	// some things we might want to cache
 	classvar <steadyClock = nil;
+	classvar <>bufferCacheServerId = nil;
+	classvar <bufferCache;
 
 	// will be used to notify the watchdog and/or terminate sclang
 	*fatal {|message, quit=false|
@@ -99,6 +103,7 @@ LifeCodes {
 			guiHost: nil,
 			guiReceivePort: 57150,
 			guiExecuteOnlyInitializedContexts: true,
+			reuseBuffers: false,
 			entryScene: nil
 		);
 
@@ -128,6 +133,10 @@ LifeCodes {
 			thisProcess.interpreter.l = instance;
 		};
 
+		bufferCache.isNil.if {
+			bufferCache = Dictionary.new;
+		}
+
 		^instance;
 	}
 
@@ -143,7 +152,9 @@ LifeCodes {
 		loadingTask.stop;
 		loadingTask = nil;
 		this.prExecuteScriptsForLifecyclePhase(\on_unload);
-		this.prFreeBuffers;
+		options[\reuseBuffers].not.if {
+			this.prFreeBuffers;
+		};
 		gui.clear;
 		runtime.clear;
 		mixer.clear;
@@ -295,12 +306,30 @@ LifeCodes {
 				var key = file.fileNameWithoutExtension.asSymbol;
 				var condition = Condition();
 				var stringPath = file.absolutePath;
-				var buffer = Buffer.read(server, stringPath, action: {condition.test = true; condition.signal});
-				"% ...".format(relPath ++ PathName(stringPath).fileName).postln;
-				condition.wait;
+				var postFileName = relPath ++ PathName(stringPath).fileName;
+				var buffer;
+				var reuseBuffer = false;
+
+				options[\reuseBuffers].if {
+					reuseBuffer = LifeCodes.bufferCache[stringPath].isNil.not;
+				};
+
+				reuseBuffer.if({
+					buffer = LifeCodes.bufferCache[stringPath];
+					"% ... (reused)".format(postFileName).postln;
+				}, {
+					buffer = Buffer.read(server, stringPath, action: {condition.test = true; condition.signal});
+					"% ...".format(postFileName).postln;
+					condition.wait;
+				});
+
 				node[key] = buffer;
 				list.add(buffer);
 				samplesLoaded = samplesLoaded + 1;
+
+				options[\reuseBuffers].if {
+					LifeCodes.bufferCache[stringPath] = buffer;
+				};
 			};
 
 			path.folders.do {|folder|
@@ -315,7 +344,14 @@ LifeCodes {
 			};
 		};
 
-		this.prFreeBuffers;
+		options[\reuseBuffers].not.if({
+			this.prFreeBuffers;
+		}, {
+			(server.pid != LifeCodes.bufferCacheServerId).if {
+				LifeCodes.bufferCache.clear;
+				LifeCodes.bufferCacheServerId = server.pid;
+			}
+		});
 
 		"\n*** LOADING SAMPLES ***".postln;
 

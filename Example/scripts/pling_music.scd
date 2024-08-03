@@ -35,6 +35,6 @@ LCFamilyDef(\pling, \music, {|domain, l|
 	// a block by a Pbind (it will automatically be assumed to be a
 	// on_execute function that extends the cmd.pattern with this Pbind
 	domain.defineBlock(\cycleSpeakers, Pbind(
-		\channel, Pseries(0, 1, inf) % lc.options[\numAudioChannels]
+		\channel, Pseries(0, 1, inf) % l.options[\numAudioChannels]
 	));
 });

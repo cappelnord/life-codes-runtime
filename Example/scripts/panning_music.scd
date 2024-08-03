@@ -2,13 +2,13 @@ LCFamilyDef(\panning, \music, {|domain, l|
 	domain.define((
 		on_init: {
 			SynthDef(\xPosPan, {|bus=0, azimuth=0, width=2.0|
-				var sig = In.ar(bus, lc.mixer.numChannels);
+				var sig = In.ar(bus, l.mixer.numChannels);
 				sig = LCPanAz.ar(sig[0], azimuth, width: width);
 				ReplaceOut.ar(bus, sig);
 			}).add;
 
 			SynthDef(\xPosPan2, {|bus=0, azimuth=0, spread=0.7, width=2.0|
-				var sig = In.ar(bus, lc.mixer.numChannels);
+				var sig = In.ar(bus, l.mixer.numChannels);
 				sig = LCPanAz2.ar([sig[0], sig[1]], azimuth, spread, width: width);
 				ReplaceOut.ar(bus, sig);
 			}).add;

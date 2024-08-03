@@ -167,7 +167,7 @@ LCSceneManager {
 		rushCurrentStep = false;
 		rushCurrentScene = false;
 
-		routine = Routine({currentScene.function.value(this, lc.gui, lc)});
+		routine = Routine({currentScene.function.value(this, lc)});
 		routine.play(lc.steadyClock);
 	}
 }

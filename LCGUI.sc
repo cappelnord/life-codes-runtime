@@ -6,6 +6,7 @@ LCGUI {
 
 	var blockSlotRegistry;
 
+
 	*new {|lc|
 		^super.newCopyArgs(lc).init;
 	}
@@ -14,13 +15,7 @@ LCGUI {
 		blockSlotRegistry = ();
 	}
 
-	init {
-		receivePort = lc.options[\guiReceivePort];
-
-		net = lc.options[\guiHost];
-
-		this.prSendSpecs;
-
+	prInitOSCListeners {
 		OSCdef(\lcExecuteCommand, {|msg, time, addr, recvPort|
 			this.prOnExecuteCommand(msg[1].asSymbol, msg[2].asString, msg[3].asString, msg[4].asString);
 		}, '/lc/executeCommand', recvPort: receivePort);
@@ -38,8 +33,15 @@ LCGUI {
 			"Block Specs requested via OSC ...".postln;
 			this.prSendSpecs;
 		}, '/lc/requestSpecs', recvPort: receivePort);
+	}
 
 
+
+	init {
+		receivePort = lc.options[\guiReceivePort];
+		net = lc.options[\guiHost];
+		this.prSendSpecs;
+		this.prInitOSCListeners;
 		this.prInitData;
 	}
 
@@ -140,6 +142,14 @@ LCGUI {
 
 	clear {
 		this.clearAllBlockSlots;
+	}
+
+	cmdPeriod {
+		this.clearAllBlockSlots;
+	}
+
+	recoverFromCmdPeriod {
+		this.prInitOSCListeners;
 	}
 
 	*decodeOSCValues {|x|

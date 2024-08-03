@@ -46,6 +46,8 @@ LifeCodes {
 
 	var <steadyClock;
 
+	var cmdPeriodFunc;
+
 	classvar <instance = nil;
 
 	// some things we might want to cache
@@ -149,6 +151,8 @@ LifeCodes {
 	}
 
 	clear {
+		CmdPeriod.remove(cmdPeriodFunc);
+		this.prStopSkipJack;
 		loadingTask.stop;
 		loadingTask = nil;
 		this.prExecuteScriptsForLifecyclePhase(\on_unload);
@@ -402,6 +406,10 @@ LifeCodes {
 
 			"\nLifeCodes Runtime loaded and running!".postln;
 
+			cmdPeriodFunc = {this.prCmdPeriod};
+			CmdPeriod.add(cmdPeriodFunc);
+			this.prStartSkipJack;
+
 			options[\onStartAction].value(this);
 
 			options[\entryScene].isNil.not.if {
@@ -409,6 +417,26 @@ LifeCodes {
 			};
 
 		}.fork;
+	}
+
+	prCmdPeriod {
+		gui.cmdPeriod;
+	}
+
+	prStartSkipJack {
+		var era = CmdPeriod.era;
+		SkipJack({
+			(era != CmdPeriod.era).if {
+
+				gui.recoverFromCmdPeriod;
+
+				era = CmdPeriod.era;
+			};
+		}, 0.05, name: \lifecodes, autostart: true);
+	}
+
+	prStopSkipJack {
+		SkipJack.stop(\lifecodes);
 	}
 
 	prExecuteScriptsForLifecyclePhase {|phase|

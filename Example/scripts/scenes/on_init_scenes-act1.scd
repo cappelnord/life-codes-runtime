@@ -5,7 +5,7 @@ LCSceneDef(\act1a, {|sceneManager, gui, l|
 	sceneManager.waitForTime(10);
 	"10 more seconds later".postln;
 	LCdef(\pling, \pling);
-	sceneManager.transitionOnBlock(\act1b, \pling, \play, true);
+	sceneManager.transitionOnBlock(\act1b, LCdef(\pling), \play, on_perform:true);
 }, final: {|sceneManager, gui, l|
 	"act1a - final".postln;
 });

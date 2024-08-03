@@ -82,8 +82,8 @@ LCSceneManager {
 		this.prStepOnCondition(condition);
 	}
 
-	waitForBlock {|ctx, name, performed=false|
-		this.prStepOnCondition(this.prBlockCondition(ctx, name, performed));
+	waitForBlock {|ctx, name, on_perform=false|
+		this.prStepOnCondition(this.prBlockCondition(ctx, name, on_perform));
 	}
 
 	transitionAfterTime {|sceneId, seconds|
@@ -95,18 +95,18 @@ LCSceneManager {
 		this.prTransitionOnCondition(sceneId, condition);
 	}
 
-	transitionOnBlock {|sceneId, ctx, name, performed=false|
-		this.prTransitionOnCondition(sceneId, this.prBlockCondition(ctx, name, performed));
+	transitionOnBlock {|sceneId, ctx, name, on_perform=false|
+		this.prTransitionOnCondition(sceneId, this.prBlockCondition(ctx, name, on_perform));
 	}
 
-	prBlockCondition {|ctx, name, performed=false|
+	prBlockCondition {|ctx, name, on_perform=false|
 		var dict, old, condition;
 
 		(ctx.class == Symbol).if {
 			ctx = LCdef(ctx);
 		};
 
-		dict = ctx.blockHistory(performed);
+		dict = ctx.blockHistory(on_perform);
 		old = dict[name] ? 0;
 		condition = {
 			var new = dict[name] ? 0;

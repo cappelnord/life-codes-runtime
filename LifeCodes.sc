@@ -192,7 +192,7 @@ LifeCodes {
 		// ... and bin them
 		scriptFiles = (
 			\ignored: [],
-			\familyDefs: []
+			\defs: []
 		);
 
 		scriptExecutionPhases.do {|phase| scriptFiles[phase.asSymbol] = [];};
@@ -220,7 +220,7 @@ LifeCodes {
 				fileName.beginsWith("_").if ({
 					addScriptFile.value(\ignored, file);
 				}, {
-					addScriptFile.value(\familyDefs, file);
+					addScriptFile.value(\defs, file);
 				});
 			});
 		};
@@ -443,7 +443,7 @@ LifeCodes {
 			this.prExecuteScriptsForLifecyclePhase(\on_load);
 		};
 
-		this.prExecuteScriptsForLifecyclePhase(\familyDefs);
+		this.prExecuteScriptsForLifecyclePhase(\defs);
 
 		runtime.compile;
 

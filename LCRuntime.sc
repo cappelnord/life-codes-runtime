@@ -32,7 +32,7 @@ LCRuntime {
 	}
 
 	compile {
-		"\n*** COMPILING SPECS/FAMILIES ***".postln;
+		"\n*** COMPILING DOMAINS ***".postln;
 
 		familyKeys = families.keys.asArray.sort;
 

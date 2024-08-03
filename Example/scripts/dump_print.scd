@@ -1,4 +1,4 @@
-LCFamilyDef(\dump, \print, {|domain, lc|
+LCFamilyDef(\dump, \print, {|domain, l|
 	domain.define((
 		on_init: {|family|
 			"on_init meta".postln;

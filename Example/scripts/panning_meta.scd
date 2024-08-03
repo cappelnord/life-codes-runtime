@@ -1,4 +1,4 @@
-LCFamilyDef(\panning, \meta, {|domain, lc|
+LCFamilyDef(\panning, \meta, {|domain, l|
 	domain.define((
 		extends: [\type_pattern, \type_audio],
 		color: Color.gray,

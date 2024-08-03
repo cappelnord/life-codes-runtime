@@ -91,7 +91,7 @@ Properties and functions of families are defined within domains using `LCFamilyD
 The general pattern of `LCFamilyDef` is:
 
 ```sclang
-LCFamilyDef(\family, \domain, {|domain, lc|
+LCFamilyDef(\family, \domain, {|domain, l|
     domain.define((
         // ...
     ));

@@ -2,7 +2,7 @@
 // \meta also includes functions? Also no problem!
 
 
-LCFamilyDef(\base, \meta, {|domain, lc|
+LCFamilyDef(\base, \meta, {|domain, l|
 	domain.define((
 		color: Color.red
 	));
@@ -28,7 +28,7 @@ LCFamilyDef(\base, \meta, {|domain, lc|
 });
 
 // We can extend our base family with another block through another family
-LCFamilyDef(\extension, \meta, {|domain, lc|
+LCFamilyDef(\extension, \meta, {|domain, l|
 	domain.define((
 		color: Color.red,
 		extends: [\base]
@@ -46,7 +46,7 @@ LCFamilyDef(\extension, \meta, {|domain, lc|
 
 // We can also define a new family that will inherit everything from another family
 
-LCFamilyDef(\inheritance, \meta, {|domain, lc|
+LCFamilyDef(\inheritance, \meta, {|domain, l|
 	domain.define((
 		color: Color.red,
 		inheritsFrom: [\base]

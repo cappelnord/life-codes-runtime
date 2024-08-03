@@ -1,4 +1,4 @@
-LCFamilyDef(\panning, \music, {|domain, lc|
+LCFamilyDef(\panning, \music, {|domain, l|
 	domain.define((
 		on_init: {
 			SynthDef(\xPosPan, {|bus=0, azimuth=0, width=2.0|

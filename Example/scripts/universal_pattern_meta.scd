@@ -3,7 +3,7 @@
 // We define here blocks that work with all families of the pattern type.
 // One is special though!
 
-LCFamilyDef(\universal_pattern, \meta, {|domain, lc|
+LCFamilyDef(\universal_pattern, \meta, {|domain, l|
 	domain.define((
 		extends: [\type_pattern],
 		color: Color.gray,

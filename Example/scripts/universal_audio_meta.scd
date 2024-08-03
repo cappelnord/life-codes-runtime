@@ -1,7 +1,7 @@
 // Another family is defined (\universal_audio) with
 // one block that adds a ring modulator effect.
 
-LCFamilyDef(\universal_audio, \meta, {|domain, lc|
+LCFamilyDef(\universal_audio, \meta, {|domain, l|
 
 	// With 'extends' we make blocks of this family
 	// available to other families. Families can either

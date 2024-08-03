@@ -1,6 +1,6 @@
 // Defines how \pling should sound (the music domain of pling)
 
-LCFamilyDef(\pling, \music, {|domain, lc|
+LCFamilyDef(\pling, \music, {|domain, l|
 
 	// Within the domain we define a life cycle function on_init
 	// that is called after the server is booted. This is a good

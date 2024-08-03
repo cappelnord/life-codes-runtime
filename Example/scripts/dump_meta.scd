@@ -1,4 +1,4 @@
-LCFamilyDef(\dump, \meta, {|domain, lc|
+LCFamilyDef(\dump, \meta, {|domain, l|
 	domain.define((
 		color: Color.green,
 		quant: 2

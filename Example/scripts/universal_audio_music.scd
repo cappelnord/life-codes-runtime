@@ -1,4 +1,4 @@
-LCFamilyDef(\universal_audio, \music, {|domain, lc|
+LCFamilyDef(\universal_audio, \music, {|domain, l|
 
 	domain.define((
 		// on_init is a good place to load SynthDefs.
@@ -12,7 +12,7 @@ LCFamilyDef(\universal_audio, \music, {|domain, lc|
 				// 2) They should always adhere to the number of channels
 				// that is specified in the options (or can be retrieved
 				// from the mixer object like here
-				var sig = In.ar(bus, lc.mixer.numChannels);
+				var sig = In.ar(bus, l.mixer.numChannels);
 
 				sig = sig * SinOsc.ar(freq);
 

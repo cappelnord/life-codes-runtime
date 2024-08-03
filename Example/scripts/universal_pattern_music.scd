@@ -1,4 +1,4 @@
-LCFamilyDef(\universal_pattern, \music, {|domain, lc|
+LCFamilyDef(\universal_pattern, \music, {|domain, l|
 
 	// the shortest way on how to define a pattern modifier ...
 	// ... this only works if the block has no parameters and

@@ -1,6 +1,6 @@
 // Defines the meta data of the pling family, a simple pattern.
 
-LCFamilyDef(\pling, \meta, {|domain, lc|
+LCFamilyDef(\pling, \meta, {|domain, l|
 
 	// In the \meta domain we define meta data for the family:
 

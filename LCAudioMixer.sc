@@ -32,6 +32,13 @@ LCAudioChain {
 		fxNodes = ();
 	}
 
+	playEvent {|event|
+		event[\out] = bus.index + (event[\channel] ? 0);
+		event[\group] = group;
+		event[\addAction] = \addToHead;
+		^event.play;
+	}
+
 	// location is \head or \tail
 	addFxNode {|synthDef, args, id, addAction=\tail|
 		var node;

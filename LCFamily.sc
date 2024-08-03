@@ -303,6 +303,6 @@ LCFamily {
 
 	// TODO
 	hasAudio {
-		^(type == \pattern);
+		^((type == \pattern) || (type == \audio));
 	}
 }

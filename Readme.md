@@ -51,7 +51,7 @@ All content code is organized in a folder specified by `scriptsPath` in the star
 
 * File names that start with an underscore (`_`) will be ignored, e.g. to temporarily ignore content.
 * File names that start with `on_` are executed at a specific point in the lifecycle of the runtime.
-* All other files should contain only family definitions to specify blocks and their behaviour.
+* All other files should contain only definitions to specify families, blocks and their behaviour and scenes.
 
 Within their execution scope all files are executed in alphanumerical order (independent in which folder they are).
 
@@ -62,8 +62,8 @@ The name of the lifecycle can be complemented by a domain using a following unde
 
 A list of lifecycle phases can be found below.
 
-### Family Definition Scripts
-All other files are considerd family definition scripts. Their file names carry no further meaning (except that they are executed in alphanumerical order). Family definitions are explained below.
+### Definition Scripts
+All other files are considerd definition scripts. Their file names carry no further meaning (except that they are executed in alphanumerical order). Family definitions are explained below - the documentation for scene definitions will follow at a later point.
 
 ### Order of Loading Operations
 At startup all this will happen in sequence:
@@ -73,7 +73,7 @@ At startup all this will happen in sequence:
 * The `LCAudioMixer` is instantiated, base SynthDefs are loaded.
 * All audio samples are loaded.
 * All scripts starting with `on_load` are executed (in alphabetical order).
-* All other scripts are executed (expecting that these contain `LCFamilyDef`s)
+* All other scripts are executed (expecting that these contain `LCFamilyDef`s or `LCSceneDef`s)
 * All domain functions are evaluated
 * `on_init` is executed for all domains and families.
 * Families and blocks are indexes, inheritance is pre-processed and the block spec JSON file is written.

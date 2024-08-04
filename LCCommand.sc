@@ -58,7 +58,7 @@ LCCommand {
 	}
 
 	prPrepare {
-		(ctx.family.type == \pattern).if {
+		ctx.family.isPatternType.if {
 			pattern = Pbind(
 				\clock, ctx.clock,
 				\channel, 0
@@ -71,7 +71,7 @@ LCCommand {
 	}
 
 	prFinalize {
-		(ctx.family.type == \pattern).if {
+		ctx.family.isPatternType.if {
 			// add the finish func
 			var functionReferences = ctx.family.getLifecycleFunctionReferences(\on_pattern_finish);
 			var patternFinishFunc = {|event|
@@ -92,7 +92,7 @@ LCCommand {
 
 	prTryPerform {
 		// this is quite temporary so that we can see that things are actually working ...
-		(ctx.family.type == \pattern).if {
+		ctx.family.isPatternType.if {
 			var key = this.prPdefKey;
 			doPerform.not.if ({
 				Pdef(key).stop;

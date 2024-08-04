@@ -301,8 +301,15 @@ LCFamily {
 		};
 	}
 
-	// TODO
+	isPatternType {
+		^type.asString.find("pattern").isNil.not;
+	}
+
+	isAudioType {
+		^type.asString.find("audio").isNil.not;
+	}
+
 	hasAudio {
-		^((type == \pattern) || (type == \audio));
+		^(this.isPatternType || this.isAudioType);
 	}
 }

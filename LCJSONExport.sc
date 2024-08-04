@@ -14,7 +14,8 @@ LCJSONExport {
 	*generate {|runtime|
 		var ret = (
 			\familySpecs: LCJSONExport.generateFamilySpecs(runtime),
-			\blockSpecs: LCJSONExport.generateBlockSpecs(runtime)
+			\blockSpecs: LCJSONExport.generateBlockSpecs(runtime),
+			\cornerVertices: LifeCodes.instance.options[\guiXTranslation]
 		);
 		^ret;
 	}

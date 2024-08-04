@@ -140,6 +140,12 @@ LCGUI {
 		^ret;
 	}
 
+	despawnBlockSlotsFromRegistry {|id|
+		this.popRegistry(id).do {|slotRef|
+			this.despawnBlockSlot(slotRef.id);
+		};
+	}
+
 	clear {
 		this.clearAllBlockSlots;
 	}

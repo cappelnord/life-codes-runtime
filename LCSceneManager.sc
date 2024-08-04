@@ -143,7 +143,7 @@ LCSceneManager {
 
 		// call final func
 		currentScene.isNil.not.if {
-			currentScene.final.value(this, lc.gui, lc);
+			currentScene.final.value(this, lc);
 		};
 
 		routine = nil;

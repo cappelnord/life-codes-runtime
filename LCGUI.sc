@@ -38,6 +38,10 @@ LCGUI {
 			"Received Scene Rush from OSC".postln;
 			lc.sceneManager.rush;
 		}, '/lc/sceneManager/rush', recvPort: receivePort);
+
+		OSCdef(\lcHeadRotation, {|msg, time, addr, recvPort|
+			lc.mixer.updateHeadRotation(msg[1]);
+		}, '/lc/headRotation', recvPort: receivePort);
 	}
 
 

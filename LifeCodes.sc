@@ -88,7 +88,6 @@ LifeCodes {
 				(x: 0.692, position: Point(2, -2.5)),
 				(x: 1.0, position: Point(-2, -2.5))
 			],
-			binauralElevation: 10.degrad,
 			audioOutputMode: \direct,
 			audioOutputDelay: 0,
 			assignGlobalVariables: true,

@@ -174,8 +174,7 @@ LCAudioMixer : LCAudioChain {
 
 					numChannels.do {|i|
 						var channel = FoaEncode.ar(sig[i] * 0.5, encoder);
-						ambi = ambi + FoaPush.ar(channel, pi/2, LCAudioMixer.channelAzimuths[i], LifeCodes.instance.options[\binauralElevation]);
-						// TODO: should the signal be focues or are plane waves OK?
+						ambi = ambi + FoaTransform.ar(channel, 'push', 0.5*pi, LCAudioMixer.channelAzimuths[i]);
 					};
 
 					ambi = FoaRotate.ar(ambi, listenerAzimuth);
@@ -219,6 +218,12 @@ LCAudioMixer : LCAudioChain {
 
 	clear {
 		group.free;
+	}
+
+	updateHeadRotation {|azimuth|
+		var listenerAzimuth = azimuth.degrad;
+		// listenerAzimuth.postln;
+		outputNode.set(\listenerAzimuth, listenerAzimuth);
 	}
 }
 

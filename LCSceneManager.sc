@@ -46,6 +46,10 @@ LCSceneManager {
 		^super.newCopyArgs(lc).init;
 	}
 
+	inHurry {
+		^(rushCurrentStep || rushCurrentScene);
+	}
+
 	rush {
 		rushCurrentStep = true;
 	}
@@ -118,7 +122,7 @@ LCSceneManager {
 
 	// basically busy-waits until condition is true
 	prStepOnCondition {|condition|
-		{condition.value.not && rushCurrentStep.not && rushCurrentScene.not}.while {
+		{condition.value.not && this.inHurry.not}.while {
 			(1/60.0).wait;
 		};
 		stepCounter = stepCounter + 1;
@@ -126,7 +130,7 @@ LCSceneManager {
 	}
 
 	prTransitionOnCondition {|sceneId, condition|
-		{condition.value.not && rushCurrentStep.not && rushCurrentScene.not}.while {
+		{condition.value.not && this.inHurry.not}.while {
 			(1/60.0).wait;
 		};
 		stepCounter = stepCounter + 1;

@@ -33,6 +33,11 @@ LCGUI {
 			"Block Specs requested via OSC ...".postln;
 			this.prSendSpecs;
 		}, '/lc/requestSpecs', recvPort: receivePort);
+
+		OSCdef(\lcSceneManagerRush, {|msg, time, addr, recvPort|
+			"Received Scene Rush from OSC".postln;
+			lc.sceneManager.rush;
+		}, '/lc/sceneManager/rush', recvPort: receivePort);
 	}
 
 
@@ -130,7 +135,11 @@ LCGUI {
 
 		slots.do {|slot|
 			blockSlotRegistry[id].add(this.addBlockSlot(*slot));
-			waitFunction.value;
+
+			// don't wait if we are in a hurry
+			(lc.sceneManager.inHurry.not).if {
+				waitFunction.value;
+			};
 		};
 	}
 

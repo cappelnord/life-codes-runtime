@@ -97,7 +97,7 @@ LCCommand {
 			doPerform.not.if ({
 				Pdef(key).stop;
 			}, {
-				Pdef(key).quant = ctx.family.quant;
+				Pdef(key).quant = ctx.quant;
 				Pdef(key, pattern).play;
 			});
 		};
@@ -139,7 +139,7 @@ LCCommand {
 		this.prTryPerform;
 
 		// see that all quant stuff is set and done
-		ctx.family.quant.isNil.not.if ({
+		ctx.quant.isNil.not.if ({
 			ctx.clock.schedAbs(ctx.quant.asQuant.nextTimeOnGrid(ctx.clock), quantFunc);
 		}, {
 			quantFunc.value;

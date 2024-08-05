@@ -210,7 +210,7 @@ LifeCodes {
 						var tokens = fileName.split($_);
 						(tokens.size > 2).if({
 							// take off file extension if needed
-							options[\ignoreDomains].includes(tokens[2].split($.)[0].asSymbol).not.if ({
+							options[\ignoreDomains].includes(tokens.last.split($.)[0].asSymbol).not.if ({
 								addScriptFile.value(phase.asSymbol, file);
 							}, {
 								addScriptFile.value(\ignored, file);

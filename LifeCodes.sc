@@ -73,6 +73,7 @@ LifeCodes {
 
 		var defaultOptions = (
 			server: Server.default,
+			loadSamples: true,
 			runDry: false,
 			numAudioChannels: 4,
 			// unit circle; forward is 1@0
@@ -357,9 +358,12 @@ LifeCodes {
 		});
 
 		"\n*** LOADING SAMPLES ***".postln;
-
-		recursiveLoadSamples.value(PathName(samplesPath), buffers, nil, "");
-		"... % samples loaded.".format(samplesLoaded).postln;
+		options[\loadSamples].if ({
+			recursiveLoadSamples.value(PathName(samplesPath), buffers, nil, "");
+			"... % samples loaded.".format(samplesLoaded).postln;
+		}, {
+			"... no samples loaded as loadSamples was set to false.".postln;
+	    });
 	}
 
 	prInitData {

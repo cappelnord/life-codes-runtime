@@ -225,6 +225,16 @@ LCAudioMixer : LCAudioChain {
 		// listenerAzimuth.postln;
 		outputNode.set(\listenerAzimuth, listenerAzimuth);
 	}
+
+	setInactivityAttenuation {|active|
+		active.if ({
+			duckNode.set(\lag, 3);
+			duckNode.set(\gain, 1);
+		}, {
+			duckNode.set(\lag, 10);
+			duckNode.set(\gain, LifeCodes.instance.options[\inactivityAudioAttenuation]);
+		});
+	}
 }
 
 LCContextAudioChain : LCAudioChain {

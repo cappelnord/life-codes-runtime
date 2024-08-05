@@ -106,6 +106,7 @@ LifeCodes {
 			guiReceivePort: 57150,
 			guiExecuteOnlyInitializedContexts: true,
 			reuseBuffers: false,
+			inactivityAudioAttenuation: -9.dbamp,
 			entryScene: nil
 		);
 

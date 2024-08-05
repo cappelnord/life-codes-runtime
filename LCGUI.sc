@@ -42,6 +42,16 @@ LCGUI {
 		OSCdef(\lcHeadRotation, {|msg, time, addr, recvPort|
 			lc.mixer.updateHeadRotation(msg[1]);
 		}, '/lc/headRotation', recvPort: receivePort);
+
+		OSCdef(\lcUsersActive, {|msg, time, addr, recvPort|
+			lc.mixer.setInactivityAttenuation(msg[1] == 1);
+
+			(msg[1] == 1).if ({
+				"Users got active".postln;
+			}, {
+				"Users are inactive".postln;
+			})
+		}, '/lc/usersActive', recvPort: receivePort);
 	}
 
 

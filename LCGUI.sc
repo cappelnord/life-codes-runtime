@@ -153,9 +153,14 @@ LCGUI {
 		^ret;
 	}
 
-	despawnBlockSlotsFromRegistry {|id|
+	despawnBlockSlotsFromRegistry {|id, options, waitFunction|
 		this.popRegistry(id).do {|slotRef|
-			this.despawnBlockSlot(slotRef.id);
+			this.despawnBlockSlot(slotRef.id, options);
+
+			// don't wait if we are in a hurry
+			(lc.sceneManager.inHurry.not).if {
+				waitFunction.value;
+			};
 		};
 	}
 

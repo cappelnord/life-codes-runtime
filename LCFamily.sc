@@ -258,7 +258,12 @@ LCFamily {
 		var candidates = List();
 
 		table[\inheritsFrom].do {|key|
-			candidates.add(runtime.families[key]);
+			var family = runtime.families[key];
+			family.isNil.not.if ({
+				candidates.add(family);
+			}, {
+				"Could not find family to inherit from: %".format(key).warn;
+			});
 		};
 
 		candidates.addAll(extensionFamilies);

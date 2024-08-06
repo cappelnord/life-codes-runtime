@@ -8,6 +8,11 @@ LCBlockSpec {
 	var <display;
 	var <parameters;
 
+	var <setsValues;
+	var <modifiesValues;
+	var <mutes;
+
+
 	*identifier {|name, family|
 		^(family ++ ":" ++ name).asSymbol;
 	}
@@ -27,6 +32,10 @@ LCBlockSpec {
 		entry[\parameters].do {|parameterEntry|
 			parameters = parameters.add(LCParameterSpec(parameterEntry));
 		};
+
+		setsValues = entry[\setsValues];
+		modifiesValues = entry[\modifiesValues];
+		mutes = entry[\mutes];
 	}
 }
 

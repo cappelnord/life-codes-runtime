@@ -68,7 +68,10 @@ LCJSONExport {
 			\display_string: blockSpec.display,
 			\type: blockSpec.type,
 			\family: blockSpec.family,
-			\parameters: parameters
+			\parameters: parameters,
+			\setsValues: blockSpec.setsValues,
+			\modifiesValues: blockSpec.modifiesValues,
+			\mutes: blockSpec.mutes
 		)
 	}
 }

@@ -55,12 +55,15 @@ LCFamily {
 
 	var <data;
 
+	var cache;
+
 	prInitData {
 		domainFunctions = ();
 		matches = List();
 		lookup = List();
 		extensionFamilies = List();
 		data = ();
+		cache = ();
     }
 
 	init {|familyId|
@@ -82,7 +85,7 @@ LCFamily {
 				dst[key].isNil.if {
 					dst[key] = List();
 				};
-				dst[key].add(LCBlockFunctionReference(src[key], key, currentLoadDomain, this, blockId));
+				dst[key].add(LCFunctionReference(src[key], key, currentLoadDomain, this, blockId));
 			}, {
 				// check if we override something to warn
 				dst[key].isNil.not.if {
@@ -155,8 +158,18 @@ LCFamily {
 		^table[phase];
 	}
 
+	// added a memo cache here not to traverse/build function lists
+	// all the time ...
+
 	getBlockFunctionReferences {|name, phase|
-		var ret = List();
+		var ret;
+
+		var cacheKey = "block-%-%".format(name, phase).asSymbol;
+		cache[cacheKey].isNil.not.if {
+			^cache[cacheKey];
+		};
+
+		ret = List();
 
 		// TODO: Here we can add a way for blocks to break inheritance
 
@@ -166,6 +179,8 @@ LCFamily {
 				ret.addAll(blockTable[phase]);
 			};
 		};
+
+		cache[cacheKey] = ret;
 		^ret;
 	}
 

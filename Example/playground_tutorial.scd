@@ -181,3 +181,95 @@ LCdef(\test2, [\inheritance, \act])
 LCdef(\test2, [\inheritance, \act, \mod])
 
 
+
+
+// ###
+// Attaching functions directly to a context (anonymous functions?)
+// ###
+
+LCdef(\test, [\pling, \play])
+
+// Let's define a on_pattern_finish function for \test domain.
+
+(
+LCdef(\test).define((
+	on_pattern_finish: {|event, cmd, ctx|
+		"pling".postln;
+    }
+), \domain);
+)
+
+// Let's also define a on_perform function for the \play block in this context.
+// We can ommit the domain and it will default to \context.
+
+// Context functions are always executed after the regular family functions
+
+(
+LCdef(\test).defineBlock(\play, (
+	on_perform: {|block, cmd, ctx|
+		"PERFORM".postln;
+	}
+));
+)
+
+// For most behaviours a new command must be executed for the context functions
+// to be taken into account ...
+
+LCdef(\test, [\pling, \play, \faster])
+
+
+// We can redefine functions at any time
+
+(
+LCdef(\test).defineBlock(\play, (
+	on_perform: {|block, cmd, ctx|
+		"PERFORM".scramble.postln;
+	}
+));
+)
+
+// Attach extra behaviour:
+(
+LCdef(\test).defineBlock(\play, Pbind(
+	\degree, Pseq([0, 1, 2, 3], inf)
+))
+)
+
+// And also access all arguments
+
+(
+LCdef(\test).defineBlock(\ring, (
+	on_perform: {|block, cmd, ctx|
+		"Frequency: %".format(block.args[\freq]).postln;
+	}
+));
+)
+
+
+// We can remove it by setting the function to an empty function ...
+// Make sure to use the right domain though!
+
+(
+LCdef(\test).define((
+	on_pattern_finish: {}
+), \domain);
+)
+
+
+LCdef(\test, [\pling, \play, [\ring, 1000.rand]])
+LCdef(\test, [\pling, \play, \faster, [\ring, 1000.rand]])
+LCdef(\test, [\pling, \play, [\ring, 1000.rand]])
+
+
+// Please note that this functionality will not be present in other LCdefs
+LCdef(\test, [\pling])
+LCdef(\test2, [\pling, \play])
+
+// ... alternatively we can also remove all extra functionality.
+
+LCdef(\test).clearFunctionTable
+
+LCdef(\test, [\pling, \play])
+
+LCdef(\test).clear
+LCdef(\test2).clear

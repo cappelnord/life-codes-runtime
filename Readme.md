@@ -40,6 +40,8 @@ A command is active until it is replaced by another command (e.g. it can still r
 
 A (execution) context (represented by `LCContext` and accessed via `LCdef`) executes a command and keeps track of the execution of blocks. Contexts can be used to keep state inbetween commands via `.data`. Data can also be set from outside through the `.updateData` method which will trigger `on_ctx_data_update` function calls. Contexts will count how often a certain block was used within the context and therefore allow the scene manager to progress when certain blocks were used or allow the use of `XXX_once` life cycle functions, which are only executed for the first time a block is active.
 
+You can define your own (block) life cycle functions for each context instance in order to attach extra functionality.
+
 ### Scenes and Scene Manager
 
 Scenes are defined by `LCSceneDef` and managed by `LCSceneManager`. A scene is a function that can be divided into multiple steps. At a step the scene manager will wait until a certain condition is met. For development purposes we can step forward using `l.sceneManager.rush`. Transitions to a next scene are also conditional. We can rush to a next scene using `l.sceneManager.rushScene`. Acts are not directly represented and are just regular scenes.
@@ -261,6 +263,7 @@ Full documentation would be great but there is no time for that currently I fear
 * You can access the current command and the last command via `.cmd` and `.lastCmd`.
 * You can add modifiers to always be automatically added either at the end of the modifier chain or at the beginning (e.g. `LCdef(\test).appendModifiers = [\reverb, [\faster, 2]]` or `LCdef(\test).prependModifiers = [[\euclid, 3, 8]]`.
 * `.audioChain` can be used to add effect nodes or to do other manipulations to the audio chain.
+* You can use `define(table, domain)` and `defineBlock(blockId, table, domain)` to attach functionality on a per-context-basis.
 
 ### LCCommand
 * Theyr are mostly manipulated by lifecycle functions (look above for more infos)
@@ -316,7 +319,7 @@ Full documentation would be great but there is no time for that currently I fear
 ### LCExecutionQueue
 * Executes all the lifecycle functions. Currently this is not very spectacular but if/when temporal functions are introduced this will make more sense to have it.
 
-### LCBlockFunctionReference
+### LCFunctionReference
 * Function with reference to its family and domain.
 
 ### LCExecutionUnit

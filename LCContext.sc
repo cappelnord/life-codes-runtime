@@ -80,6 +80,8 @@ LCContext {
 	var <executedBlockHistory;
 	var <performedBlockHistory;
 
+	var functionTable;
+
 	*new {|id, family|
 		^super.newCopyArgs(id, family).init;
 	}
@@ -87,6 +89,7 @@ LCContext {
 	init {
 		executedBlockHistory = ();
 		performedBlockHistory = ();
+		this.clearFunctionTable;
 
 		executionQueue = LCExecutionQueue("CTX:%".format(id));
 		data = ();
@@ -106,9 +109,21 @@ LCContext {
 	executeLifecyclePhase {|phase|
 		"Executing Context Lifecycle Phase for %: %/%".format(id, family.id, phase).postln;
 		executionQueue.executeList(
-			family.getLifecycleFunctionReferences(phase)
+			this.getLifecycleFunctionReferences(phase)
 			.collect {|f| f.bind(this, family)}
 		);
+	}
+
+	getLifecycleFunctionReferences {|phase|
+		^(family.getLifecycleFunctionReferences(phase) ++ functionTable[phase]);
+	}
+
+	getBlockFunctionReferences {|blockId, phase|
+		var contextFunctions = nil;
+		functionTable[\blocks][blockId].isNil.not.if {
+			contextFunctions = functionTable[\blocks][blockId][phase];
+		};
+		^(family.getBlockFunctionReferences(blockId, phase) ++ contextFunctions);
 	}
 
 	// called by execute or manually
@@ -124,7 +139,7 @@ LCContext {
 		executeFunctions.if {
 			// context update function
 			executionQueue.executeList(
-				family.getLifecycleFunctionReferences(\on_ctx_data_update)
+				this.getLifecycleFunctionReferences(\on_ctx_data_update)
 				.collect {|f| f.bind(data, this, family)},
 				LifeCodes.instance.options[\alsoTraceRapidFunctions].not
 			);
@@ -219,5 +234,52 @@ LCContext {
 			};
 			dict[blockInstance.name] = dict[blockInstance.name] + 1;
 		};
+	}
+
+
+	// this probably duplicates some functionality, but ... it is also fine.
+
+	clearFunctionTable {
+		functionTable = (blocks: ());
+	}
+
+	prPopulateFunctionTable {|table, functionTable, domain, blockId|
+		table.keys.do {|key|
+			functionTable[key].isNil.if {
+				functionTable[key] = ();
+			};
+			functionTable[key] = LCFunctionReference(table[key], key, domain, nil, blockId);
+		}
+	}
+
+	define {|table, domain=\context|
+		LifeCodes.instance.domainActive(domain).not.if {^nil;};
+		this.prPopulateFunctionTable(table, functionTable, domain, nil);
+	}
+
+	defineBlock {|blockId, table, domain=\context|
+		LifeCodes.instance.domainActive(domain).not.if {^nil;};
+
+		(table.class == Pbind).if {
+			var pbind = table;
+			table = (
+				on_execute: {|block, cmd, ctx, family|
+					cmd.pattern.extend(pbind);
+				}
+			);
+		};
+
+		(table.class == Function).if {
+			var function = table;
+			table = (
+				on_execute: function
+			);
+		};
+
+		functionTable[\blocks][blockId].isNil.if {
+			functionTable[\blocks][blockId] = ();
+		};
+
+		this.prPopulateFunctionTable(table, functionTable[\blocks][blockId], domain, blockId);
 	}
 }

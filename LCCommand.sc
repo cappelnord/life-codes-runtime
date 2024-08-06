@@ -73,7 +73,7 @@ LCCommand {
 	prFinalize {
 		ctx.family.isPatternType.if {
 			// add the finish func
-			var functionReferences = ctx.family.getLifecycleFunctionReferences(\on_pattern_finish);
+			var functionReferences = ctx.getLifecycleFunctionReferences(\on_pattern_finish);
 			var patternFinishFunc = {|event|
 				functionReferences.do {|ref|
 					ref.function.value(event, this, ctx, ctx.family)
@@ -148,7 +148,7 @@ LCCommand {
 
 	notifyCtxDataUpdate {|data|
 		blockList.do {|blockInstance|
-			var functionReferences = ctx.family.getBlockFunctionReferences(blockInstance.name, \on_ctx_data_update);
+			var functionReferences = ctx.getBlockFunctionReferences(blockInstance.name, \on_ctx_data_update);
 			executionQueue.executeList(
 				functionReferences.collect {|ref| ref.bind(data, blockInstance, this, this.ctx, this.ctx.family)},
 				LifeCodes.instance.options[\alsoTraceRapidFunctions].not
@@ -189,7 +189,7 @@ LCCommand {
 		var ret = List();
 		instanceList = instanceList ? blockList;
 		instanceList.do {|blockInstance|
-			var functionReferences = ctx.family.getBlockFunctionReferences(blockInstance.name, phase);
+			var functionReferences = ctx.getBlockFunctionReferences(blockInstance.name, phase);
 			ret.addAll(functionReferences.collect {|ref| ref.bind(blockInstance, this, this.ctx, this.ctx.family)});
 		};
 		^ret;

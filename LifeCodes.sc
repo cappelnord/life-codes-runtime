@@ -520,6 +520,10 @@ LifeCodes {
 		};
 	}
 
+	domainActive {|domain|
+		^options[\ignoreDomains].includes(domain).not;
+	}
+
 	*randomId {
 		^((2**31).rand.asInteger.asHexString ++ (2**31).rand.asInteger.asHexString).asSymbol;
 	}

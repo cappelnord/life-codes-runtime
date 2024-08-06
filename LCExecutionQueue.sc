@@ -40,15 +40,17 @@ LCExecutionUnit {
 	}
 
 	asString {
+		var familyString = ref.family.isNil.if("anonymous", {ref.family.id});
+
 		ref.blockId.isNil.if({
-			^"% - %/%".format(ref.key, ref.family.id, ref.domain);
+			^"% - %/%".format(ref.key, familyString, ref.domain);
 		}, {
-			^"% - % - %/%".format(ref.key, ref.blockId, ref.family.id, ref.domain);
+			^"% - % - %/%".format(ref.key, ref.blockId, familyString, ref.domain);
 		});
 	}
 }
 
-LCBlockFunctionReference {
+LCFunctionReference {
 	var <function;
 	var <key;
 	var <domain;

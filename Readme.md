@@ -179,8 +179,8 @@ Is called when a execution context (e.g. an `LCdef`) is cleared.
 #### *`on_cmd_finish: {|cmd, ctx, family| ...}`*
 *Not yet implmeneted.* Called aftert all blocks are evaluated - right before the command is performed.
 
-#### *`on_cmd_perform: {|cmd, ctx, family| ...}`*
-*Not yet implmeneted.* Called when a command is performed.
+#### `on_cmd_perform: {|cmd, ctx, family| ...}`
+Called when a command is performed (currently set after `on_perform` of all the blocks.)
 
 #### *`on_cmd_leave: {|cmd, ctx, family| ...}`*
 *Not yet implmeneted.* Called when a command retires (is replaced by a new command).

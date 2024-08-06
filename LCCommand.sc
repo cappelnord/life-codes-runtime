@@ -117,6 +117,7 @@ LCCommand {
 				doPerform.if {
 					executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_perform_once, ctx.getOnceCandidates(blockList, true)));
 					executionQueue.executeList(this.prGetBlockLifecycleExecutionUnits(\on_perform));
+					executionQueue.executeList(this.prGetLifecycleExecutionUnits(\on_cmd_perform));
 					ctx.markBlockHistory(blockList, true);
 				}
 			};
@@ -193,6 +194,13 @@ LCCommand {
 			ret.addAll(functionReferences.collect {|ref| ref.bind(blockInstance, this, this.ctx, this.ctx.family)});
 		};
 		^ret;
+	}
+
+	prGetLifecycleExecutionUnits {|phase|
+		var list = ctx.getLifecycleFunctionReferences(phase);
+		^(list.collect {|ref|
+			ref.bind(this, this.ctx, this.ctx.family);
+		});
 	}
 
 	clear {

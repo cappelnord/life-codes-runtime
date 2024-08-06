@@ -115,15 +115,25 @@ LCContext {
 	}
 
 	getLifecycleFunctionReferences {|phase|
-		^(family.getLifecycleFunctionReferences(phase) ++ functionTable[phase]);
+		var familyReferences = family.getLifecycleFunctionReferences(phase);
+		var contextReferences = functionTable[phase];
+		familyReferences = familyReferences ? [];
+		contextReferences.isNil.not.if {
+			familyReferences = familyReferences ++ contextReferences.values;
+		};
+		^familyReferences;
 	}
 
 	getBlockFunctionReferences {|blockId, phase|
-		var contextFunctions = nil;
+		var familyReferences = family.getBlockFunctionReferences(blockId, phase);
+		var contextReferences = nil;
 		functionTable[\blocks][blockId].isNil.not.if {
-			contextFunctions = functionTable[\blocks][blockId][phase];
+			contextReferences = functionTable[\blocks][blockId][phase];
 		};
-		^(family.getBlockFunctionReferences(blockId, phase) ++ contextFunctions);
+		contextReferences.isNil.not.if {
+			familyReferences = familyReferences ++ contextReferences.values;
+		};
+		^familyReferences;
 	}
 
 	// called by execute or manually
@@ -248,7 +258,7 @@ LCContext {
 			functionTable[key].isNil.if {
 				functionTable[key] = ();
 			};
-			functionTable[key] = LCFunctionReference(table[key], key, domain, nil, blockId);
+			functionTable[key][domain] = LCFunctionReference(table[key], key, domain, nil, blockId);
 		}
 	}
 

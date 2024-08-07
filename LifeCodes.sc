@@ -46,6 +46,7 @@ LifeCodes {
 	var loadingTask = nil;
 
 	var <steadyClock;
+	var <baseEnvironment;
 
 	var cmdPeriodFunc;
 
@@ -394,6 +395,7 @@ LifeCodes {
 
 	init {
 		steadyClock = LifeCodes.assureSteadyClock;
+		baseEnvironment = currentEnvironment;
 
 		this.prInitData;
 

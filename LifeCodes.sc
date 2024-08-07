@@ -109,7 +109,7 @@ LifeCodes {
 			guiExecuteOnlyInitializedContexts: true,
 			reuseBuffers: false,
 			inactivityAudioAttenuation: -9.dbamp,
-			defaultContextAudioGain: -9.dbamp,
+			defaultContextAudioGain: -6.dbamp,
 			entryScene: nil
 		);
 

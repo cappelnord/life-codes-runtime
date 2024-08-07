@@ -72,7 +72,10 @@ LCAudioChain {
 		fxNodes.removeAt(id);
 	}
 
-	gain_ {|value, lag=0.5|
+	gain_ {|value, lag=0.5, mode=\absolute|
+		(mode == \relative).if {
+			value = gain * value;
+		};
 		gain = value;
 		gainNode.set(\lag, lag, \gain, gain);
 	}

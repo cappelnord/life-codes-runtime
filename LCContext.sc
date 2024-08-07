@@ -300,8 +300,8 @@ LCContext {
 		^audioChain.gain;
 	}
 
-	gain_ {|gain, lag=0.5|
-		audioChain.gain_(gain, lag);
+	gain_ {|gain, lag=0.5, mode=\absolute|
+		audioChain.gain_(gain, lag, mode);
 		^this;
 	}
 }

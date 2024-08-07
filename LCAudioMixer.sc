@@ -8,7 +8,7 @@ LCAudioChain {
 	var <bus;
 
 	var <gainNode;
-	var gain = 1.0;
+	var <gain;
 
 	var <fxNodes;
 
@@ -16,6 +16,7 @@ LCAudioChain {
 		mixer = mixer_;
 		parentGroup = parentGroup_;
 		fxNodes = ();
+		gain = this.defaultGain;
 	}
 
 	prInstantiateBaseNodes {
@@ -23,7 +24,7 @@ LCAudioChain {
 		group = Group(parentGroup, \addToHead);
 		fxGroup = Group(group, \addToHead);
 
-		gainNode = Synth(\lcam_gain, [\gain, 1.0, \bus, bus], group, \addToTail);
+		gainNode = Synth(\lcam_gain, [\gain, gain, \bus, bus], group, \addToTail);
 	}
 
 	prBaseClear {
@@ -74,6 +75,10 @@ LCAudioChain {
 	gain_ {|value, lag=0.5|
 		gain = value;
 		gainNode.set(\lag, lag, \gain, gain);
+	}
+
+	defaultGain {
+		^1.0;
 	}
 }
 
@@ -254,6 +259,10 @@ LCContextAudioChain : LCAudioChain {
 
 	clear {
 		this.prBaseClear;
+	}
+
+	defaultGain {
+		^LifeCodes.instance.options[\defaultContextAudioGain];
 	}
 }
 

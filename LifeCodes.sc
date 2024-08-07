@@ -41,6 +41,7 @@ LifeCodes {
 	var <scriptFiles;
 	var <buffers;
 	var <bufferLists;
+	var <bufferInfo;
 
 	var loadingTask = nil;
 
@@ -303,6 +304,16 @@ LifeCodes {
 		};
 	}
 
+	prBuildBufferInfo {
+		bufferInfo = ();
+		// iterate over lists - then store index and key in there
+		bufferLists.keys.do {|key|
+			bufferLists[key].do {|buffer, i|
+				bufferInfo[buffer] = (key: key, index: i);
+			};
+		};
+	}
+
 	prLoadSamples {
 		var samplesLoaded = 0;
 
@@ -472,6 +483,7 @@ LifeCodes {
 			mixer = LCAudioMixer();
 
 			this.prLoadSamples;
+			this.prBuildBufferInfo;
 			this.prExecuteScriptsForLifecyclePhase(\on_load);
 		};
 

@@ -292,4 +292,16 @@ LCContext {
 
 		this.prPopulateFunctionTable(table, functionTable[\blocks][blockId], domain, blockId);
 	}
+
+
+	// convenience function to set the gain of a context directly
+
+	gain {
+		^audioChain.gain;
+	}
+
+	gain_ {|gain, lag=0.5|
+		audioChain.gain_(gain, lag);
+		^this;
+	}
 }

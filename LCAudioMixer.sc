@@ -8,7 +8,7 @@ LCAudioChain {
 	var <bus;
 
 	var <gainNode;
-	var <gain = 1.0;
+	var gain = 1.0;
 
 	var <fxNodes;
 
@@ -71,9 +71,9 @@ LCAudioChain {
 		fxNodes.removeAt(id);
 	}
 
-	gain_ {|value|
-		gainNode.set(\gain, value);
+	gain_ {|value, lag=0.5|
 		gain = value;
+		gainNode.set(\lag, lag, \gain, gain);
 	}
 }
 

@@ -119,7 +119,7 @@ LCAudioMixer : LCAudioChain {
 
 		LifeCodes.instance.options[\detectAudioClipping].if {
 			OSCdef(\lcClipDetect, {|msg, time, addr, recvPort|
-				"Audio clipping detected on output channel: % !".format(msg[3].asInteger).warn;
+				"Audio peak went above -2 dB on output channel: % !".format(msg[3].asInteger).warn;
 			}, '/lc/audio/clipDetected');
 		};
 	}
@@ -194,7 +194,7 @@ LCAudioMixer : LCAudioChain {
 			var sig = In.ar(bus, numChannels);
 			numChannels.do {|i|
 				var channel = sig[i];
-				var clipTrigger = sig.abs > 1.0;
+				var clipTrigger = Trig.ar(sig.abs > -2.dbamp, 0.25);
 				SendReply.ar(clipTrigger, '/lc/audio/clipDetected', i);
 			};
 		}).add;
@@ -211,7 +211,7 @@ LCAudioMixer : LCAudioChain {
 					var ambi = Silent.ar(4);
 
 					numChannels.do {|i|
-						var channel = FoaEncode.ar(sig[i] * 0.5, encoder);
+						var channel = FoaEncode.ar(sig[i] * 0.45, encoder); // 0.45 a bit arbritrary chosen
 						ambi = ambi + FoaTransform.ar(channel, 'push', 0.5*pi, LCAudioMixer.channelAzimuths[i]);
 					};
 

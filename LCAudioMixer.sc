@@ -91,6 +91,8 @@ LCAudioMixer : LCAudioChain {
 	var <delayNode;
 	var <outputNode;
 
+	var clipDetectNode;
+
 	var <delay = 0.0;
 
 	var <numChannels;
@@ -106,6 +108,22 @@ LCAudioMixer : LCAudioChain {
 		^super.newCopyArgs().init;
 	}
 
+	prInitOSCListeners {
+		var receivePort = LifeCodes.instance.options[\guiReceivePort];
+
+		(outputMode == \binaural).if {
+			OSCdef(\lcHeadRotation, {|msg, time, addr, recvPort|
+				this.updateHeadRotation(msg[1]);
+			}, '/lc/headRotation', recvPort: receivePort);
+		};
+
+		LifeCodes.instance.options[\detectAudioClipping].if {
+			OSCdef(\lcClipDetect, {|msg, time, addr, recvPort|
+				"Audio clipping detected on output channel: % !".format(msg[3].asInteger).warn;
+			}, '/lc/audio/clipDetected');
+		};
+	}
+
 	init {
 		numChannels = LifeCodes.instance.options[\numAudioChannels];
 		server = LifeCodes.instance.options[\server];
@@ -116,12 +134,17 @@ LCAudioMixer : LCAudioChain {
 
 		this.prBaseInit(this, server.defaultGroup);
 		this.prInstantiateNodes;
+		this.prInitOSCListeners;
 	}
 
 	prInstantiateNodes {
 		server.sync;
 
 		this.prInstantiateBaseNodes;
+
+		LifeCodes.instance.options[\detectAudioClipping].if {
+			clipDetectNode = Synth(\lcam_clip_detect, [\bus, bus], this.gainNode, \addBefore);
+		};
 
 		duckNode = Synth(\lcam_gain, [\bus, bus, \gain, 1.0, \lag, 3], group, \addToTail);
 		delayNode = Synth(\lcam_delay, [\bus, bus, \delay, delay], group, \addToTail);
@@ -146,8 +169,6 @@ LCAudioMixer : LCAudioChain {
 			(position.y).atan2(position.x)
 		};
 
-		// TODO: Calculate channel Azimuths
-
 		SynthDef(\lcam_gain, {|bus=0, gain=1.0, lag=0.5|
 			var sig = In.ar(bus, numChannels);
 			gain = Lag2.kr(gain, lag);
@@ -167,6 +188,15 @@ LCAudioMixer : LCAudioChain {
 		SynthDef(\lcam_delay, {|bus=0, delay=0|
 			var sig = In.ar(bus, numChannels);
 			Out.ar(bus, DelayC.ar(sig, 2.0, delay));
+		}).add;
+
+		SynthDef(\lcam_clip_detect, {|bus=0|
+			var sig = In.ar(bus, numChannels);
+			numChannels.do {|i|
+				var channel = sig[i];
+				var clipTrigger = sig.abs > 1.0;
+				SendReply.ar(clipTrigger, '/lc/audio/clipDetected', i);
+			};
 		}).add;
 
 		(LifeCodes.instance.options[\audioOutputMode] == \binaural).if {

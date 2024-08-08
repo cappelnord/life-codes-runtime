@@ -39,10 +39,6 @@ LCGUI {
 			lc.sceneManager.rush;
 		}, '/lc/sceneManager/rush', recvPort: receivePort);
 
-		OSCdef(\lcHeadRotation, {|msg, time, addr, recvPort|
-			lc.mixer.updateHeadRotation(msg[1]);
-		}, '/lc/headRotation', recvPort: receivePort);
-
 		OSCdef(\lcUsersActive, {|msg, time, addr, recvPort|
 			lc.mixer.setInactivityAttenuation(msg[1] == 1);
 

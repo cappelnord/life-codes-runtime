@@ -110,7 +110,8 @@ LifeCodes {
 			reuseBuffers: false,
 			inactivityAudioAttenuation: -9.dbamp,
 			defaultContextAudioGain: -6.dbamp,
-			entryScene: nil
+			entryScene: nil,
+			detectAudioClipping: false
 		);
 
 		instance.isNil.not.if {

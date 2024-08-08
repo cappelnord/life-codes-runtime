@@ -51,7 +51,7 @@ LCPanAz {
 
 LCPanAz2 {
 	*ar {|in, pos=0.0, spread=0.78539816339745, level=1.0, width=2.0|
-		^(LCPanAz.ar(in[0], pos-spread, level, width) + LCPanAz.ar(in[1], pos+spread, level, width)) * 0.5;
+		^(LCPanAz.ar(in[0], pos-spread, level, width) + LCPanAz.ar(in[1], pos+spread, level, width));
 	}
 }
 

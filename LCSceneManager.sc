@@ -79,27 +79,33 @@ LCSceneManager {
 
 	waitForTime {|seconds|
 		var then = lc.steadyClock.beats + seconds;
+		"SceneManager: I will continue after % seconds.".format(seconds).postln;
 		this.prStepOnCondition({lc.steadyClock.beats >= then});
 	}
 
 	waitForCondition {|condition|
+		"SceneManager: I will continue once this condition is met:".format(condition.cs).postln;
 		this.prStepOnCondition(condition);
 	}
 
 	waitForBlock {|ctx, name, on_perform=false|
+		"SceneManager: I will continue once block '%' % in LCdef('%')".format(name, on_perform.if("got performed", "got executed"), ctx.id).postln;
 		this.prStepOnCondition(this.prBlockCondition(ctx, name, on_perform));
 	}
 
 	transitionAfterTime {|sceneId, seconds|
 		var then = lc.steadyClock.beats + seconds;
+		"SceneManager: I will transition to scene '%' after % seconds.".format(sceneId, seconds).postln;
 		this.prTransitionOnCondition(sceneId, {lc.steadyClock.beats >= then});
 	}
 
 	transitionOnCondition {|sceneId, condition|
+		"SceneManager: I will transition to scene '%' as this condition is met:".format(sceneId, condition.cs).postln;
 		this.prTransitionOnCondition(sceneId, condition);
 	}
 
 	transitionOnBlock {|sceneId, ctx, name, on_perform=false|
+		"SceneManager: I will transition to scene '%' as soon as block '%' % in LCdef('%')".format(sceneId, name, on_perform.if("got performed", "got executed"), ctx.id).postln;
 		this.prTransitionOnCondition(sceneId, this.prBlockCondition(ctx, name, on_perform));
 	}
 

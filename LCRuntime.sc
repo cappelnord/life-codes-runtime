@@ -95,6 +95,7 @@ LCRuntime {
 		contexts[context.id] = context;
 	}
 
+	// don't call manually - only call from context clearing
 	removeContext {|context, unloadFamily|
 		var family = context.family;
 		contexts.removeAt(context.id);
@@ -114,9 +115,13 @@ LCRuntime {
 		};
 	}
 
-	clear {
+	clearAllContexts {
 		contexts.do {|ctx|
 			ctx.clear;
 		};
+	}
+
+	clear {
+		this.clearAllContexts;
 	}
 }

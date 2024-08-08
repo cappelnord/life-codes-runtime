@@ -57,6 +57,10 @@ LCdef {
 
 		^context;
 	}
+
+	*clearAll {
+		LifeCodes.instance.runtime.clearAllContexts;
+	}
 }
 
 LCContext {

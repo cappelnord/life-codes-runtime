@@ -29,7 +29,7 @@ LCAudioChain {
 
 	prBaseClear {
 		bus.free;
-		group.free;
+		group.free();
 		fxNodes = ();
 	}
 
@@ -199,6 +199,16 @@ LCAudioMixer : LCAudioChain {
 			};
 		}).add;
 
+		SynthDef(\lcam_sentinel, {|bus=0|
+			var sig = In.ar(bus, numChannels);
+			var sum = DC.ar(0);
+			sig = LeakDC.ar(sig);
+			numChannels.do {|i|
+				sum = sum + sig[i].abs;
+			};
+			DetectSilence.ar(sum, time: 1, doneAction: Done.freeGroup);
+		}).add;
+
 		(LifeCodes.instance.options[\audioOutputMode] == \binaural).if {
 			(Class.allClasses.collect {|class| class.asSymbol}).includes(\Atk).if({
 				var decoder = FoaDecoderKernel.newCIPIC;
@@ -305,7 +315,6 @@ LCCommandAudioChain : LCAudioChain {
 	var <fadeNode;
 	var <sendNode;
 
-	var <audioTail = 3.0;
 	var <>fadeOutTime = 3.0;
 
 	var dismissed = false;
@@ -325,24 +334,20 @@ LCCommandAudioChain : LCAudioChain {
 	}
 
 	clear {
-		this.prBaseClear;
+		// not calling base_clear
+		bus.free;
+		group.free(sendFlag: false);
+		fxNodes = ();
 	}
 
-	dismiss {
+	dismiss {|minTailTime=120|
 		dismissed.not.if {
+			Synth(\lcam_sentinel, [\bus, bus], group, 'addToTail');
 			LifeCodes.instance.steadyClock.play(Routine({
-				audioTail.wait;
-				// TODO: FADE OUT
-				fadeOutTime.wait;
+				minTailTime.wait; // TODO: The sentinel should probably send a message back
 				mixer.clearCommandChain(id);
 			}));
 		};
 		dismissed = true;
-	}
-
-	setMinAudioTail {|value|
-		(value > audioTail).if {
-			audioTail = value;
-		};
 	}
 }

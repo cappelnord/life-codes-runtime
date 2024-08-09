@@ -75,11 +75,14 @@ LCCommand {
 			// add the finish func
 			var functionReferences = ctx.getLifecycleFunctionReferences(\on_pattern_finish);
 			var patternFinishFunc = {|event|
-				LifeCodes.instance.baseEnvironment.use({
-					functionReferences.do {|ref|
-						ref.function.value(event, this, ctx, ctx.family)
-					};
-				});
+				// don't execute if the context got cleared
+				ctx.cleared.not.if {
+					LifeCodes.instance.baseEnvironment.use({
+						functionReferences.do {|ref|
+							ref.function.value(event, this, ctx, ctx.family)
+						};
+					});
+				};
 			};
 
 			// we route into the right group and output channel and append the finish func
@@ -208,7 +211,7 @@ LCCommand {
 	clear {
 		active.if {
 			this.executeLeave;
-			(ctx.family.type == \pattern).if {
+			ctx.family.isPatternType.if {
 				Pdef(this.prPdefKey).clear;
 			};
 		};

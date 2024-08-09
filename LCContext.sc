@@ -86,6 +86,8 @@ LCContext {
 
 	var functionTable;
 
+	var <cleared = false;
+
 	*new {|id, family|
 		^super.newCopyArgs(id, family).init;
 	}
@@ -200,6 +202,7 @@ LCContext {
 	}
 
 	clear {|unloadFamily=true|
+		cleared = true;
 		runtime.removeContext(this, unloadFamily);
 		this.executeLifecyclePhase(\on_ctx_clear);
 

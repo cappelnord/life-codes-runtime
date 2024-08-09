@@ -511,7 +511,7 @@ LifeCodes {
 
 		runtime.families.keys.asArray.sort.do {|key|
 			var family = runtime.families[key];
-			family.executeLifecyclePhase(\on_init);
+			family.executeLifecyclePhase(\on_init, traverseLookupTable:false);
 		};
 	}
 

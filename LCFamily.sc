@@ -154,8 +154,31 @@ LCFamily {
 	}
 
 	// TODO: This should likely also aggregate from all related families
-	getLifecycleFunctionReferences {|phase|
-		^table[phase];
+	getLifecycleFunctionReferences {|phase, traverseLookupTable=true|
+		var ret;
+		var cacheKey;
+
+		traverseLookupTable.not.if({
+			^table[phase];
+		});
+
+
+		cacheKey = "lifecycle-%".format(phase).asSymbol;
+		cache[cacheKey].isNil.not.if {
+			^cache[cacheKey];
+		};
+
+		ret = List();
+
+		// TODO: Here we can add a way for blocks to break inheritance
+
+		lookup.reverse.do {|family|
+			ret.addAll(family.table[phase]);
+		};
+
+		cache[cacheKey] = ret;
+		^ret;
+
 	}
 
 	// added a memo cache here not to traverse/build function lists
@@ -184,14 +207,14 @@ LCFamily {
 		^ret;
 	}
 
-	getLifecycleExecutionUnits {|phase|
-		^this.getLifecycleFunctionReferences(phase).collect({|ref|
+	getLifecycleExecutionUnits {|phase, traverseLookupTable=true|
+		^this.getLifecycleFunctionReferences(phase, traverseLookupTable).collect({|ref|
 			ref.bind(this)
 		});
 	}
 
-	executeLifecyclePhase {|phase, executionQueue|
-		var list = this.getLifecycleExecutionUnits(phase);
+	executeLifecyclePhase {|phase, executionQueue, traverseLookupTable=true|
+		var list = this.getLifecycleExecutionUnits(phase, traverseLookupTable);
 		(list.size > 0).if {
 			// "Execute Family Lifecycle Phase: %/%".format(id, phase).postln;
 			executionQueue = executionQueue ? runtime.executionQueue;

@@ -12,6 +12,8 @@ LCAudioChain {
 
 	var <fxNodes;
 
+	var <generator;
+
 	prBaseInit {|mixer_, parentGroup_|
 		mixer = mixer_;
 		parentGroup = parentGroup_;
@@ -33,11 +35,35 @@ LCAudioChain {
 		fxNodes = ();
 	}
 
-	playEvent {|event|
+	prSetGenerator {|node|
+		generator.isNil.not.if {
+			"Generator node got replaced!".warn;
+		};
+		generator = node;
+	}
+
+	playEvent {|event, isGenerator=true|
+		var node;
 		event[\out] = bus.index + (event[\channel] ? 0);
 		event[\group] = group;
 		event[\addAction] = \addToHead;
-		^event.play;
+		event.play;
+		node = Synth.basicNew(event[\instrument], event[\server], event[\id]);
+		isGenerator.if {
+			this.prSetGenerator(node);
+		};
+		^node;
+	}
+
+	playSynth {|synthDef, args, isGenerator=true|
+		var node;
+		args = args ? ();
+		args[\out] = bus.index + (args[\channel] ? 0);
+		node = Synth(synthDef, args.getPairs, group, \addToHead);
+		isGenerator.if {
+			this.prSetGenerator(node);
+		};
+		^node;
 	}
 
 	// location is \head or \tail
@@ -72,12 +98,12 @@ LCAudioChain {
 		fxNodes.removeAt(id);
 	}
 
-	gain_ {|value, lag=0.5, mode=\absolute|
+	gain_ {|value, fadeTime=0.5, mode=\absolute|
 		(mode == \relative).if {
 			value = gain * value;
 		};
 		gain = value;
-		gainNode.set(\lag, lag, \gain, gain);
+		gainNode.set(\fadeTime, fadeTime, \gain, gain);
 	}
 
 	defaultGain {
@@ -102,6 +128,8 @@ LCAudioMixer : LCAudioChain {
 	var ctxChains;
 	var cmdChains;
 
+	var sentinelTable;
+
 	classvar <channelAzimuths;
 
 	*new {
@@ -122,6 +150,12 @@ LCAudioMixer : LCAudioChain {
 				"Audio peak went above -2 dB on output channel: % !".format(msg[3].asInteger).warn;
 			}, '/lc/audio/clipDetected');
 		};
+
+		OSCdef(\lcSentinel, {|msg, time, addr, recvPort|
+			var sentinelId = msg[3].asInteger;
+			sentinelTable[sentinelId].value;
+			sentinelTable[sentinelId] = nil;
+		}, '/lc/audio/sentinel');
 	}
 
 	init {
@@ -131,6 +165,7 @@ LCAudioMixer : LCAudioChain {
 		delay = LifeCodes.instance.options[\audioDelay];
 		ctxChains = ();
 		cmdChains = ();
+		sentinelTable = ();
 
 		this.prBaseInit(this, server.defaultGroup);
 		this.prInstantiateNodes;
@@ -146,7 +181,7 @@ LCAudioMixer : LCAudioChain {
 			clipDetectNode = Synth(\lcam_clip_detect, [\bus, bus], this.gainNode, \addBefore);
 		};
 
-		duckNode = Synth(\lcam_gain, [\bus, bus, \gain, 1.0, \lag, 3], group, \addToTail);
+		duckNode = Synth(\lcam_gain, [\bus, bus, \gain, 1.0, \fadeTime, 3], group, \addToTail);
 		delayNode = Synth(\lcam_delay, [\bus, bus, \delay, delay], group, \addToTail);
 
 		(outputMode == \splay).if {
@@ -169,9 +204,15 @@ LCAudioMixer : LCAudioChain {
 			(position.y).atan2(position.x)
 		};
 
-		SynthDef(\lcam_gain, {|bus=0, gain=1.0, lag=0.5|
+		SynthDef(\lcam_fade, {|bus=0, gain=1.0, fadeTime=3|
 			var sig = In.ar(bus, numChannels);
-			gain = Lag2.kr(gain, lag);
+			gain = VarLag.kr(gain, fadeTime);
+			ReplaceOut.ar(bus, sig * gain);
+		}).add;
+
+		SynthDef(\lcam_gain, {|bus=0, gain=1.0, fadeTime=0.5|
+			var sig = In.ar(bus, numChannels);
+			gain = Lag2.kr(gain, fadeTime);
 			ReplaceOut.ar(bus, sig * gain);
 		}).add;
 
@@ -199,14 +240,16 @@ LCAudioMixer : LCAudioChain {
 			};
 		}).add;
 
-		SynthDef(\lcam_sentinel, {|bus=0|
+		SynthDef(\lcam_sentinel, {|bus=0, time=1, sentinelId|
 			var sig = In.ar(bus, numChannels);
 			var sum = DC.ar(0);
+			var trigger;
 			sig = LeakDC.ar(sig);
 			numChannels.do {|i|
 				sum = sum + sig[i].abs;
 			};
-			DetectSilence.ar(sum, time: 1, doneAction: Done.freeGroup);
+			trigger = DetectSilence.ar(sum + Impulse.ar(0), time: time);
+			SendReply.ar(trigger, '/lc/audio/sentinel', [sentinelId]);
 		}).add;
 
 		(LifeCodes.instance.options[\audioOutputMode] == \binaural).if {
@@ -276,18 +319,26 @@ LCAudioMixer : LCAudioChain {
 
 	setInactivityAttenuation {|active|
 		active.if ({
-			duckNode.set(\lag, 3);
-			duckNode.set(\gain, 1);
+			duckNode.set(\fadeTime, 3, \gain, 1);
 		}, {
-			duckNode.set(\lag, 10);
-			duckNode.set(\gain, LifeCodes.instance.options[\inactivityAudioAttenuation]);
+			duckNode.set(\fadeTime, 10, \gain, LifeCodes.instance.options[\inactivityAudioAttenuation]);
 		});
+	}
+
+	startSentinel {|chain, function|
+		var time = (chain.class == LCContextAudioChain).if(5, 3);
+		var id = 500000.rand;
+		Synth(\lcam_sentinel, [\bus, chain.bus, \time, time, \sentinelId, id], chain.group, \addToTail);
+		sentinelTable[id] = function;
 	}
 }
 
 LCContextAudioChain : LCAudioChain {
 	var <id;
 	var <sendNode;
+	var <fadeNode;
+
+	var dismissed = false;
 
 	*new {|id, mixer|
 		^super.new.init(id, mixer);
@@ -297,6 +348,7 @@ LCContextAudioChain : LCAudioChain {
 		id = id_;
 		this.prBaseInit(mixer, mixer.group);
 		this.prInstantiateBaseNodes;
+		fadeNode = Synth(\lcam_fade, [\bus, bus], group, \addToTail);
 		sendNode = Synth(\lcam_send, [\bus, bus, \out, mixer.bus], group, \addToTail);
 	}
 
@@ -307,6 +359,28 @@ LCContextAudioChain : LCAudioChain {
 	defaultGain {
 		^LifeCodes.instance.options[\defaultContextAudioGain];
 	}
+
+	fadeOut {|fadeTime|
+		fadeNode.set(\fadeTime, fadeTime, \gain, 0);
+	}
+
+	fadeIn {|fadeTime|
+		fadeNode.set(\fadeTime, fadeTime, \gain, 1);
+	}
+
+	dismiss {|fadeTime|
+		fadeTime.isNil.not.if {
+			this.fadeOut(fadeTime);
+		};
+
+		dismissed.not.if {
+			mixer.startSentinel(this, {
+				mixer.clearContextChain(id);
+				"Cleared Context Chain: %".format(id).postln;
+			});
+		};
+		dismissed = true;
+	}
 }
 
 LCCommandAudioChain : LCAudioChain {
@@ -314,8 +388,6 @@ LCCommandAudioChain : LCAudioChain {
 	var <ctxChain;
 	var <fadeNode;
 	var <sendNode;
-
-	var <>fadeOutTime = 3.0;
 
 	var dismissed = false;
 
@@ -328,25 +400,24 @@ LCCommandAudioChain : LCAudioChain {
 		ctxChain = ctxChain_;
 		this.prBaseInit(mixer, ctxChain.group);
 		this.prInstantiateBaseNodes;
+		fadeNode = Synth(\lcam_fade, [\bus, bus], group, \addToTail);
 		sendNode = Synth(\lcam_send, [\bus, bus, \out, ctxChain.bus], group, \addToTail);
-
-		// TODO: FADE NODE
 	}
 
 	clear {
-		// not calling base_clear
-		bus.free;
-		group.free(sendFlag: false);
-		fxNodes = ();
+		this.prBaseClear;
 	}
 
-	dismiss {|minTailTime=120|
+	dismiss {|fadeTime|
 		dismissed.not.if {
-			Synth(\lcam_sentinel, [\bus, bus], group, 'addToTail');
-			LifeCodes.instance.steadyClock.play(Routine({
-				minTailTime.wait; // TODO: The sentinel should probably send a message back
+			fadeTime.isNil.not.if {
+				fadeNode.set(\fadeTime, fadeTime, \gain, 0);
+			};
+
+			mixer.startSentinel(this, {
 				mixer.clearCommandChain(id);
-			}));
+				"Cleared Command Chain: %".format(id).postln;
+			});
 		};
 		dismissed = true;
 	}

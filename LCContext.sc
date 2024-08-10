@@ -201,7 +201,7 @@ LCContext {
 		cmd.execute;
 	}
 
-	clear {|unloadFamily=true|
+	clear {|fadeTime, unloadFamily=true|
 		cleared = true;
 		runtime.removeContext(this, unloadFamily);
 		this.executeLifecyclePhase(\on_ctx_clear);
@@ -209,6 +209,7 @@ LCContext {
 		lastCmd.isNil.not.if {
 			lastCmd.clear;
 		};
+
 		cmd.isNil.not.if {
 			cmd.clear;
 		};
@@ -216,9 +217,26 @@ LCContext {
 		// should we also send the leave functions here?
 
 		audioChain.isNil.not.if {
-			// maybe this could be more graceful (to dismiss the chain, not to clear)
-			LifeCodes.instance.mixer.clearContextChain(id);
+			audioChain.dismiss(fadeTime);
 		}
+	}
+
+	fadeOut {|fadeTime=3|
+		audioChain.isNil.not.if {
+			audioChain.fadeOut(fadeTime);
+		};
+	}
+
+	fadeIn {|fadeTime=3|
+		audioChain.isNil.not.if {
+			audioChain.fadeIn(fadeTime);
+		};
+	}
+
+	fadeStartSilent {
+		audioChain.isNil.not.if {
+			audioChain.fadeOut(0);
+		};
 	}
 
 	blockHistory {|performed=false|

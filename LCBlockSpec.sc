@@ -43,10 +43,11 @@ LCParameterSpec {
 	var <id;
 	var <type;
 	var <default;
+	var <hide;
 
 	*new {|entry|
 		[\number, \integer, \string, \object].includes(entry[\type]).if ({
-			^super.newCopyArgs(entry[\id], entry[\type], entry[\default]);
+			^super.newCopyArgs(entry[\id], entry[\type], entry[\default], entry[\hide]);
 		}, {
 			// TODO: throw an error
 			"Invalid paremter definition: %".format(entry.cs).error;

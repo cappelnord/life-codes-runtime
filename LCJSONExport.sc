@@ -58,7 +58,8 @@ LCJSONExport {
 			parameters.add((
 				\id: parameter.id,
 				\type: parameter.type,
-				\default: parameter.default
+				\default: parameter.default,
+				\hide: parameter.hide
 			));
 		}
 

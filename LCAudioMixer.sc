@@ -129,6 +129,7 @@ LCAudioMixer : LCAudioChain {
 	var cmdChains;
 
 	var sentinelTable;
+	var audioDataUpdates;
 
 	classvar <channelAzimuths;
 
@@ -156,6 +157,13 @@ LCAudioMixer : LCAudioChain {
 			sentinelTable[sentinelId].value;
 			sentinelTable[sentinelId] = nil;
 		}, '/lc/audio/sentinel');
+
+		OSCdef(\lcAudioCtxDataUpdate, {|msg, time, addr, recvPort|
+			var dataUpdateId = msg[3].asInteger;
+			var values = msg[4..];
+			// msg.postln;
+			audioDataUpdates[dataUpdateId].value(values);
+		}, '/lc/audio/updateCtxData');
 	}
 
 	init {
@@ -166,10 +174,27 @@ LCAudioMixer : LCAudioChain {
 		ctxChains = ();
 		cmdChains = ();
 		sentinelTable = ();
+		audioDataUpdates = ();
 
 		this.prBaseInit(this, server.defaultGroup);
 		this.prInstantiateNodes;
 		this.prInitOSCListeners;
+	}
+
+	registerAudioDataUpdate {|ctx, keys|
+		var id = 5000000.rand;
+		audioDataUpdates[id] = {|values|
+			var data = ();
+			values.do {|value, i|
+				data[keys[i]] = value;
+			};
+			ctx.updateData(data);
+		};
+		^id;
+	}
+
+	unregisterAudioDataUpdate {|id|
+		audioDataUpdates[id] = nil;
 	}
 
 	prInstantiateNodes {
@@ -327,7 +352,7 @@ LCAudioMixer : LCAudioChain {
 
 	startSentinel {|chain, function|
 		var time = (chain.class == LCContextAudioChain).if(5, 3);
-		var id = 500000.rand;
+		var id = 5000000.rand;
 		Synth(\lcam_sentinel, [\bus, chain.bus, \time, time, \sentinelId, id], chain.group, \addToTail);
 		sentinelTable[id] = function;
 	}

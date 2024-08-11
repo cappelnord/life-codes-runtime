@@ -52,6 +52,13 @@ LCCommand {
 				};
 			}
 		};
+
+		didPrependModifiers.not.if {
+			prependModifiers.do {|prependBlockSource|
+				blockList.add(LCBlockInstance(prependBlockSource, this));
+			};
+		};
+
 		appendModifiers.do {|appendBlockSource|
 			blockList.add(LCBlockInstance(appendBlockSource, this));
 		};
@@ -61,7 +68,8 @@ LCCommand {
 		ctx.family.isPatternType.if {
 			pattern = Pbind(
 				\clock, ctx.clock,
-				\channel, 0
+				\channel, 0,
+				\amp, 1
 			);
 		};
 

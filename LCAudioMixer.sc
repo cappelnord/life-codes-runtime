@@ -289,7 +289,7 @@ LCAudioMixer : LCAudioChain {
 					var ambi = Silent.ar(4);
 
 					numChannels.do {|i|
-						var channel = FoaEncode.ar(sig[i] * 0.45, encoder); // 0.45 a bit arbritrary chosen
+						var channel = FoaEncode.ar(sig[i] * 0.33333, encoder); // 0.33333 a bit arbritrary chosen
 						ambi = ambi + FoaTransform.ar(channel, 'push', 0.5*pi, LCAudioMixer.channelAzimuths[i]);
 					};
 

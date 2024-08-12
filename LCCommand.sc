@@ -43,13 +43,13 @@ LCCommand {
 		blockSourceList.do {|blockSource|
 			var blockInstance = LCBlockInstance(blockSource, this);
 			blockInstance.valid.if {
-				blockList.add(blockInstance);
 				((blockInstance.spec.type == \modifier) && didPrependModifiers.not).if {
 					prependModifiers.do {|prependBlockSource|
 						blockList.add(LCBlockInstance(prependBlockSource, this));
 						didPrependModifiers = true;
 					};
 				};
+				blockList.add(blockInstance);
 			}
 		};
 

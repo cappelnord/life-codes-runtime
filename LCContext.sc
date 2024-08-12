@@ -221,6 +221,9 @@ LCContext {
 		}
 	}
 
+	// duplicate methods to make things more concise in the
+	// scene scripts
+
 	fadeOut {|fadeTime=3|
 		audioChain.isNil.not.if {
 			audioChain.fadeOut(fadeTime);
@@ -236,6 +239,12 @@ LCContext {
 	fadeStartSilent {
 		audioChain.isNil.not.if {
 			audioChain.fadeOut(0);
+		};
+	}
+
+	routeAudio {|chain|
+		audioChain.isNil.not.if {
+			audioChain.routeAudio(chain);
 		};
 	}
 

@@ -125,8 +125,11 @@ LCAudioMixer : LCAudioChain {
 	var <server;
 	var <outputMode;
 
+	var <submixGroup;
+
 	var ctxChains;
 	var cmdChains;
+	var submixChains;
 
 	var sentinelTable;
 	var audioDataUpdates;
@@ -173,12 +176,15 @@ LCAudioMixer : LCAudioChain {
 		delay = LifeCodes.instance.options[\audioDelay];
 		ctxChains = ();
 		cmdChains = ();
+		submixChains = ();
 		sentinelTable = ();
 		audioDataUpdates = ();
 
 		this.prBaseInit(this, server.defaultGroup);
 		this.prInstantiateNodes;
 		this.prInitOSCListeners;
+
+		submixGroup = Group(group, \addAfter);
 	}
 
 	registerAudioDataUpdate {|ctx, keys|
@@ -304,18 +310,11 @@ LCAudioMixer : LCAudioChain {
 		}
 	}
 
-	getContextChain {|id|
-		ctxChains[id].isNil.if {
-			ctxChains[id] = LCContextAudioChain(id, this);
+	getSubmixChain {|id|
+		submixChains[id].isNil.if {
+			submixChains[id] = LCSubmixAudioChain(id, this);
 		};
-		^ctxChains[id];
-	}
-
-	clearContextChain {|id|
-		ctxChains[id].isNil.not.if {
-			ctxChains[id].clear;
-			ctxChains.removeAt(id);
-		};
+		^submixChains[id];
 	}
 
 	getCommandChain {|id, ctxId|
@@ -323,6 +322,29 @@ LCAudioMixer : LCAudioChain {
 			cmdChains[id] = LCCommandAudioChain(id, this.getContextChain(ctxId), this);
 		};
 		^cmdChains[id];
+	}
+
+	getContextChain {|id|
+		ctxChains[id].isNil.if {
+			ctxChains[id] = LCContextAudioChain(id, this);
+		};
+		^ctxChains[id];
+	}
+
+	// probably best not to call these clear methods manually
+
+	clearSubmixChain {|id|
+		submixChains[id].isNil.not.if {
+			submixChains[id].clear;
+			submixChains.removeAt(id);
+		};
+	}
+
+	clearContextChain {|id|
+		ctxChains[id].isNil.not.if {
+			ctxChains[id].clear;
+			ctxChains.removeAt(id);
+		};
 	}
 
 	clearCommandChain {|id|
@@ -351,38 +373,24 @@ LCAudioMixer : LCAudioChain {
 	}
 
 	startSentinel {|chain, function|
-		var time = (chain.class == LCContextAudioChain).if(5, 3);
+		var time = (chain.class == LCCommandAudioChain).if(3, 5);
 		var id = 5000000.rand;
 		Synth(\lcam_sentinel, [\bus, chain.bus, \time, time, \sentinelId, id], chain.group, \addToTail);
 		sentinelTable[id] = function;
 	}
 }
 
-LCContextAudioChain : LCAudioChain {
+LCFadeableAudioChain : LCAudioChain {
 	var <id;
 	var <sendNode;
 	var <fadeNode;
 
 	var dismissed = false;
 
-	*new {|id, mixer|
-		^super.new.init(id, mixer);
-	}
 
-	init {|id_, mixer|
-		id = id_;
-		this.prBaseInit(mixer, mixer.group);
-		this.prInstantiateBaseNodes;
+	prInstantiateFaderNodes {|targetBus|
 		fadeNode = Synth(\lcam_fade, [\bus, bus], group, \addToTail);
 		sendNode = Synth(\lcam_send, [\bus, bus, \out, mixer.bus], group, \addToTail);
-	}
-
-	clear {
-		this.prBaseClear;
-	}
-
-	defaultGain {
-		^LifeCodes.instance.options[\defaultContextAudioGain];
 	}
 
 	fadeOut {|fadeTime|
@@ -400,50 +408,83 @@ LCContextAudioChain : LCAudioChain {
 
 		dismissed.not.if {
 			mixer.startSentinel(this, {
-				mixer.clearContextChain(id);
-				"Cleared Context Chain: %".format(id).postln;
+				this.mixerClearChain(id);
+				"Cleared %: %".format(this.class, id).postln;
 			});
 		};
 		dismissed = true;
-	}
-}
-
-LCCommandAudioChain : LCAudioChain {
-	var <id;
-	var <ctxChain;
-	var <fadeNode;
-	var <sendNode;
-
-	var dismissed = false;
-
-	*new {|id, ctxChain, mixer|
-		^super.new.init(id, ctxChain, mixer);
-	}
-
-	init {|id_, ctxChain_, mixer|
-		id = id_;
-		ctxChain = ctxChain_;
-		this.prBaseInit(mixer, ctxChain.group);
-		this.prInstantiateBaseNodes;
-		fadeNode = Synth(\lcam_fade, [\bus, bus], group, \addToTail);
-		sendNode = Synth(\lcam_send, [\bus, bus, \out, ctxChain.bus], group, \addToTail);
 	}
 
 	clear {
 		this.prBaseClear;
 	}
 
-	dismiss {|fadeTime|
-		dismissed.not.if {
-			fadeTime.isNil.not.if {
-				fadeNode.set(\fadeTime, fadeTime, \gain, 0);
-			};
+	routeAudio {|chain|
+		sendNode.set(\out, chain.bus);
+	}
 
-			mixer.startSentinel(this, {
-				mixer.clearCommandChain(id);
-				"Cleared Command Chain: %".format(id).postln;
-			});
-		};
-		dismissed = true;
+	mixerClearChain {|chain|
+
+	}
+}
+
+// this is also used for submixes
+LCSubmixAudioChain : LCFadeableAudioChain {
+
+	*new {|id, mixer|
+		^super.new.init(id, mixer);
+	}
+
+	init {|id_, mixer|
+		id = id_;
+		this.prBaseInit(mixer, mixer.submixGroup);
+		this.prInstantiateBaseNodes;
+		this.prInstantiateFaderNodes(mixer.bus);
+	}
+
+	mixerClearChain {|id|
+		mixer.clearSubmixChain(id);
+	}
+}
+
+LCContextAudioChain : LCFadeableAudioChain {
+	*new {|id, mixer|
+		^super.new.initContextChain(id, mixer);
+	}
+
+	initContextChain {|id_, mixer|
+		id = id_;
+		this.prBaseInit(mixer, mixer.group);
+		this.prInstantiateBaseNodes;
+		this.prInstantiateFaderNodes(mixer.bus);
+	}
+
+	defaultGain {
+		^LifeCodes.instance.options[\defaultContextAudioGain];
+	}
+
+	mixerClearChain {|id|
+		mixer.clearContextChain(id);
+	}
+}
+
+LCCommandAudioChain : LCFadeableAudioChain {
+	var <id;
+	var <ctxChain;
+
+	*new {|id, ctxChain, mixer|
+		^super.new.initCommandChain(id, ctxChain, mixer);
+	}
+
+	initCommandChain {|id_, ctxChain_, mixer|
+		id = id_;
+		ctxChain = ctxChain_;
+		this.prBaseInit(mixer, ctxChain.group);
+		this.prInstantiateBaseNodes;
+		this.prInstantiateFaderNodes(ctxChain.bus);
+	}
+
+	mixerClearChain {|id|
+		mixer.clearCommandChain(id);
 	}
 }

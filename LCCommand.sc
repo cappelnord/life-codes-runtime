@@ -10,6 +10,7 @@ LCCommand {
 	var <blockList;
 
 	var <pattern;
+	var <event;
 	var <audioChain;
 
 	var <>doPerform = false;
@@ -223,5 +224,10 @@ LCCommand {
 				Pdef(this.prPdefKey).clear;
 			};
 		};
+	}
+
+	playEvent {|event_, isGenerator=true|
+		event = event_;
+		audioChain.playEvent(event_, isGenerator);
 	}
 }

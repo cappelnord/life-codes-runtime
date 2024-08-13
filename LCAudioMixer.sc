@@ -390,7 +390,7 @@ LCFadeableAudioChain : LCAudioChain {
 
 	prInstantiateFaderNodes {|targetBus|
 		fadeNode = Synth(\lcam_fade, [\bus, bus], group, \addToTail);
-		sendNode = Synth(\lcam_send, [\bus, bus, \out, mixer.bus], group, \addToTail);
+		sendNode = Synth(\lcam_send, [\bus, bus, \out, targetBus], group, \addToTail);
 	}
 
 	fadeOut {|fadeTime|

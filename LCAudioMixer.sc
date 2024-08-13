@@ -184,7 +184,7 @@ LCAudioMixer : LCAudioChain {
 		this.prInstantiateNodes;
 		this.prInitOSCListeners;
 
-		submixGroup = Group(group, \addAfter);
+		submixGroup = Group(fxGroup, \addBefore);
 	}
 
 	registerAudioDataUpdate {|ctx, keys|

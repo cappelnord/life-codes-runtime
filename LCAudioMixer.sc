@@ -98,12 +98,12 @@ LCAudioChain {
 		fxNodes.removeAt(id);
 	}
 
-	gain_ {|value, fadeTime=0.5, mode=\absolute|
+	gain_ {|value, lag=0.5, mode=\absolute|
 		(mode == \relative).if {
 			value = gain * value;
 		};
 		gain = value;
-		gainNode.set(\fadeTime, fadeTime, \gain, gain);
+		gainNode.set(\lag, lag, \gain, gain);
 	}
 
 	defaultGain {
@@ -241,9 +241,9 @@ LCAudioMixer : LCAudioChain {
 			ReplaceOut.ar(bus, sig * gain);
 		}).add;
 
-		SynthDef(\lcam_gain, {|bus=0, gain=1.0, fadeTime=0.5|
+		SynthDef(\lcam_gain, {|bus=0, gain=1.0, lag=0.5|
 			var sig = In.ar(bus, numChannels);
-			gain = Lag2.kr(gain, fadeTime);
+			gain = Lag2.kr(gain, lag);
 			ReplaceOut.ar(bus, sig * gain);
 		}).add;
 
@@ -366,9 +366,9 @@ LCAudioMixer : LCAudioChain {
 
 	setInactivityAttenuation {|active|
 		active.if ({
-			duckNode.set(\fadeTime, 3, \gain, 1);
+			duckNode.set(\lag, 3, \gain, 1);
 		}, {
-			duckNode.set(\fadeTime, 10, \gain, LifeCodes.instance.options[\inactivityAudioAttenuation]);
+			duckNode.set(\lag, 10, \gain, LifeCodes.instance.options[\inactivityAudioAttenuation]);
 		});
 	}
 

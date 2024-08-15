@@ -73,6 +73,7 @@ LCContext {
 	var <executionQueue;
 	var <>clock;
 	var <>quant;
+	var <>patternQuant;
 
 	var <audioChain;
 
@@ -103,6 +104,7 @@ LCContext {
 		appendModifiers = [];
 		runtime = LifeCodes.instance.runtime;
 		quant = family.quant;
+		patternQuant = family.patternQuant;
 		clock = LifeCodes.instance.options[\clock] ? TempoClock.default;
 
 		family.hasAudio.if {

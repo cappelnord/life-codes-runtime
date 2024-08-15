@@ -42,6 +42,7 @@ LCFamily {
 
 	var <type;
 	var <quant;
+	var <patternQuant;
 
 
 	var extensionFamilies;
@@ -279,6 +280,7 @@ LCFamily {
 
 		type = table[\type];
 		quant = table[\quant];
+		patternQuant = table[\patternQuant] ? quant;
 	}
 
 	buildMatches {

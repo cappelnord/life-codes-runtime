@@ -111,7 +111,7 @@ LCCommand {
 			doPerform.not.if ({
 				Pdef(key).stop;
 			}, {
-				Pdef(key).quant = ctx.quant;
+				Pdef(key).quant = ctx.patternQuant;
 				Pdef(key, pattern).play;
 			});
 		};

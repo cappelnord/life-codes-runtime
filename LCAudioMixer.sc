@@ -67,14 +67,14 @@ LCAudioChain {
 	}
 
 	// location is \head or \tail
-	addFxNode {|synthDef, args, id, addAction=\tail|
+	prAddNode {|synthDef, args, id, addAction, group, collection|
 		var node;
 		args = args ? ();
 
 		id.isNil.not.if {
-			fxNodes[id].isNil.not.if {
-				fxNodes[id].free;
-				fxNodes[id] = nil;
+			collection[id].isNil.not.if {
+				collection[id].free;
+				collection[id] = nil;
 			};
 		};
 
@@ -85,12 +85,16 @@ LCAudioChain {
 			addAction = \addToTail;
 		});
 
-		node = Synth(synthDef, args.getPairs, fxGroup, addAction);
+		node = Synth(synthDef, args.getPairs, group, addAction);
 
 		id.isNil.not.if {
-			fxNodes[id] = node;
+			collection[id] = node;
 		}
 		^node;
+	}
+
+	addFxNode {|synthDef, args, id, addAction=\tail|
+		^this.prAddNode(synthDef, args, id, addAction, fxGroup, fxNodes);
 	}
 
 	freeFxNode {|id|
@@ -247,9 +251,9 @@ LCAudioMixer : LCAudioChain {
 			ReplaceOut.ar(bus, sig * gain);
 		}).add;
 
-		SynthDef(\lcam_send, {|bus=0, out=0|
+		SynthDef(\lcam_send, {|bus=0, out=0, gain=1|
 			var sig = In.ar(bus, numChannels);
-			Out.ar(out, sig);
+			Out.ar(out, sig * gain);
 		}).add;
 
 		SynthDef(\lcam_splay, {|bus=0, out=0|
@@ -384,13 +388,21 @@ LCFadeableAudioChain : LCAudioChain {
 	var <id;
 	var <sendNode;
 	var <fadeNode;
+	var <postFaderGroup;
+	var <postFaderNodes;
 
 	var dismissed = false;
 
+	addPostFaderNode {|synthDef, args, id, addAction=\tail|
+		^this.prAddNode(synthDef, args, id, addAction, postFaderGroup, postFaderNodes);
+	}
 
 	prInstantiateFaderNodes {|targetBus|
 		fadeNode = Synth(\lcam_fade, [\bus, bus], group, \addToTail);
 		sendNode = Synth(\lcam_send, [\bus, bus, \out, targetBus], group, \addToTail);
+		postFaderGroup = Group(sendNode, \addAfter);
+
+		postFaderNodes = ();
 	}
 
 	fadeOut {|fadeTime|

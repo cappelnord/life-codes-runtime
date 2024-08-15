@@ -159,6 +159,12 @@ LCGUI {
 		^ret;
 	}
 
+	registrySetProperties {|id, options|
+		blockSlotRegistry[id].do {|slotRef|
+			this.setBlockSlotProperties(slotRef.id, options);
+		}
+	}
+
 	despawnBlockSlotsFromRegistry {|id, options, waitFunction|
 		this.popRegistry(id).do {|slotRef|
 			this.despawnBlockSlot(slotRef.id, options);

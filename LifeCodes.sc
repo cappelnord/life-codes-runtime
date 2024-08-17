@@ -111,7 +111,9 @@ LifeCodes {
 			inactivityAudioAttenuation: -9.dbamp,
 			defaultContextAudioGain: -6.dbamp,
 			entryScene: nil,
-			detectAudioClipping: false
+			detectAudioClipping: false,
+			automatedCodeExecution: false,
+			skipSceneConditionTime: nil
 		);
 
 		instance.isNil.not.if {

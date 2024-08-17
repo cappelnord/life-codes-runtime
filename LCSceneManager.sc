@@ -126,8 +126,25 @@ LCSceneManager {
 		^condition;
 	}
 
+	prAttachSkipTime {|condition|
+		lc.options[\skipSceneConditionTime].isNil.not.if {
+			var then = lc.steadyClock.beats + lc.options[\skipSceneConditionTime];
+			var originalCondition = condition;
+			condition = {
+				var doSkip = lc.steadyClock.beats >= then;
+				doSkip.if {
+					"SceneManager: Skipped condition due to skipSceneConditionTime=% in Life Codes options".format(lc.options[\skipSceneConditionTime]).postln;
+				};
+				doSkip || originalCondition.value;
+			};
+		};
+		^condition;
+	}
+
 	// basically busy-waits until condition is true
 	prStepOnCondition {|condition|
+		condition = this.prAttachSkipTime(condition);
+
 		{condition.value.not && this.inHurry.not}.while {
 			(1/60.0).wait;
 		};
@@ -136,6 +153,8 @@ LCSceneManager {
 	}
 
 	prTransitionOnCondition {|sceneId, condition|
+		condition = this.prAttachSkipTime(condition);
+
 		{condition.value.not && this.inHurry.not}.while {
 			(1/60.0).wait;
 		};

@@ -1,11 +1,12 @@
 /*
 Block Creation/Despawning test for memory leaks.
 
-Result: Currently blocks do leak memory (but not in a critical way for running the installation for 1 day)
+Result: Initial memory leak seems to be fixed.
+
 */
 
 (
-var blocks = [\clock, \play, \mute, [\faster, 2]];
+var blocks = [\pling, \play, \mute, [\faster, 2]];
 
 {
 	inf.do {
@@ -23,6 +24,7 @@ var blocks = [\clock, \play, \mute, [\faster, 2]];
 Do OSC messages leak memory?
 
 Result: Inconclusive - it at least does not seem to be critical.
+
 */
 
 (

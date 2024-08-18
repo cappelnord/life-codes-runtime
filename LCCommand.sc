@@ -119,7 +119,7 @@ LCCommand {
 	}
 
 	prPdefKey {
-		^("lc_" + ctx.id).asSymbol;
+		^("lc_" ++ ctx.id).asSymbol;
 	}
 
 
@@ -222,7 +222,7 @@ LCCommand {
 		active.if {
 			this.executeLeave;
 			ctx.family.isPatternType.if {
-				Pdef(this.prPdefKey).clear;
+				Pdef(this.prPdefKey).stop.clear;
 			};
 		};
 	}

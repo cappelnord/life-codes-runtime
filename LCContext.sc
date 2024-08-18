@@ -285,12 +285,22 @@ LCContext {
 
 	// this probably duplicates some functionality, but ... it is also fine.
 
+
+	// weird implementation but we need to keep references to these tables
+	// as they are bound in closures ...
+
 	clearFunctionTable {
+		var blockTable;
+
 		functionTable.isNil.if {
 			functionTable = ();
+			functionTable[\blocks] = ();
 		};
+
+		blockTable = functionTable[\blocks];
 		functionTable.clear;
-		functionTable[\blocks] = ();
+		blockTable.clear;
+		functionTable[\blocks] = blockTable;
 	}
 
 	prPopulateFunctionTable {|table, functionTable, domain, blockId|

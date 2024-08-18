@@ -87,12 +87,14 @@ LifeCodes {
 			],
 			guiXTranslation: [
 				(x: 0.0, position: Point(-2, 2.5)),
-				(x: 0.307, position: Point(2, 2.5)),
-				(x: 0.692, position: Point(2, -2.5)),
+				(x: 0.3333, position: Point(2, 2.5)),
+				(x: 0.6666, position: Point(2, -2.5)),
 				(x: 1.0, position: Point(-2, -2.5))
 			],
+			frontChannels: [1, 2],
 			audioOutputMode: \direct,
 			audioOutputDelay: 0,
+			audioOutputGain: -6.dbamp,
 			assignGlobalVariables: true,
 			outDevice: nil,
 			sampleRate: 48000,

@@ -227,6 +227,10 @@ LCAudioMixer : LCAudioChain {
 			outputNode = Synth(\lcam_binaural, [\bus, bus, \out, 0], group, \addToTail);
 		};
 
+		(outputNode == \front).if {
+			outputNode = Synth(\lcam_front, [\bus, bus, \out, 0], group, \addToTail);
+		};
+
 		// kind of the catch-all case
 		(outputNode == nil).if {
 			outputNode = Synth(\lcam_send, [\bus, bus, \out, 0], group, \addToTail);
@@ -235,6 +239,7 @@ LCAudioMixer : LCAudioChain {
 
 	*buildSynthDefs {
 		var numChannels = LifeCodes.instance.options[\numAudioChannels];
+		var frontChannels = LifeCodes.instance.options[\frontChannels];
 		channelAzimuths = LifeCodes.instance.options[\speakerPositions].collect {|position|
 			(position.y).atan2(position.x)
 		};
@@ -260,6 +265,12 @@ LCAudioMixer : LCAudioChain {
 			var sig = In.ar(bus, numChannels);
 			Out.ar(out, Splay.ar(sig));
 		}).add;
+
+		SynthDef(\lcam_front, {|bus=0, out=0|
+			var sig = In.ar(bus, numChannels);
+			Out.ar(out, [sig[frontChannels[0]], sig[frontChannels[1]]]);
+		}).add;
+
 
 		SynthDef(\lcam_delay, {|bus=0, delay=0|
 			var sig = In.ar(bus, numChannels);
@@ -381,6 +392,10 @@ LCAudioMixer : LCAudioChain {
 		var id = 5000000.rand;
 		Synth(\lcam_sentinel, [\bus, chain.bus, \time, time, \sentinelId, id], chain.group, \addToTail);
 		sentinelTable[id] = function;
+	}
+
+	defaultGain {
+		^LifeCodes.instance.options[\audioOutputGain];
 	}
 }
 

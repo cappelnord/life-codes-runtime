@@ -9,7 +9,7 @@ LCCommand {
 
 	var <blockList;
 
-	var <pattern;
+	var <>pattern;
 	var <event;
 	var <audioChain;
 
@@ -66,22 +66,11 @@ LCCommand {
 	}
 
 	prPrepare {
-		ctx.family.isPatternType.if {
-			pattern = Pbind(
-				\clock, ctx.clock,
-				\channel, 0,
-				\amp, 1
-			);
-		};
-
 		ctx.family.hasAudio.if {
 			audioChain = ctx.audioChain.mixer.getCommandChain(id, ctx.id);
 		};
-	}
 
-	prFinalize {
 		ctx.family.isPatternType.if {
-			// add the finish func
 			var functionReferences = ctx.getLifecycleFunctionReferences(\on_pattern_finish);
 			var patternFinishFunc = {|event|
 				// don't execute if the context got cleared
@@ -94,13 +83,25 @@ LCCommand {
 				};
 			};
 
-			// we route into the right group and output channel and append the finish func
-			pattern.extend(Pbind(
-				\finish, patternFinishFunc,
+			pattern = Pbind(
+				\clock, ctx.clock,
 				\group, audioChain.group,
-				\out, pattern[\channel] + audioChain.bus.index
-			));
+				\finish, patternFinishFunc,
+				\channel, 0,
+				\out, audioChain.bus.index,
+				\amp, 1
+			);
+		};
+	}
 
+	prFinalize {
+		ctx.family.isPatternType.if {
+			// only works if we have still a Pbind here ...
+			(pattern.class == Pbind).if {
+				pattern.extend(Pbind(
+					\out, pattern[\channel] + audioChain.bus.index
+				));
+			};
 		};
 	}
 

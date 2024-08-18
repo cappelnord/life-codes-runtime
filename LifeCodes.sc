@@ -119,7 +119,7 @@ LifeCodes {
 		);
 
 		instance.isNil.not.if {
-			"LifeCodes instance already exists.\nPlease clear the instance forst before creating a new one.".warn;
+			"LifeCodes instance already exists.\nPlease clear the instance first before creating a new one.".warn;
 			^instance;
 		};
 

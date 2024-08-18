@@ -286,15 +286,37 @@ LCContext {
 	// this probably duplicates some functionality, but ... it is also fine.
 
 	clearFunctionTable {
-		functionTable = (blocks: ());
+		functionTable.isNil.if {
+			functionTable = ();
+		};
+		functionTable.clear;
+		functionTable[\blocks] = ();
 	}
 
 	prPopulateFunctionTable {|table, functionTable, domain, blockId|
 		table.keys.do {|key|
+			var proxy;
+			var implKey = ("impl_" ++ key).asSymbol;
+
 			functionTable[key].isNil.if {
 				functionTable[key] = ();
+				functionTable[implKey] = ();
 			};
-			functionTable[key][domain] = LCFunctionReference(table[key], key, domain, nil, blockId);
+
+			functionTable[implKey][domain] = table[key];
+
+			// a bit a hack ... probably the function lookup for
+			// context functions should overall be indirect
+
+			proxy = {|...args|
+				functionTable[implKey].isNil.not.if {
+					functionTable[implKey][domain].isNil.not.if {
+						functionTable[implKey][domain].value(*args);
+					}
+				}
+			};
+
+			functionTable[key][domain] = LCFunctionReference(proxy, key, domain, nil, blockId);
 		}
 	}
 
@@ -328,7 +350,6 @@ LCContext {
 
 		this.prPopulateFunctionTable(table, functionTable[\blocks][blockId], domain, blockId);
 	}
-
 
 	// convenience function to set the gain of a context directly
 

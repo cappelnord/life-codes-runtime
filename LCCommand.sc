@@ -138,11 +138,6 @@ LCCommand {
 			};
 		};
 
-		// early exit in case this context is actually cleared
-		ctx.cleared.if {
-			^nil;
-		};
-
 		this.prPrepare;
 
 		this.prExecuteLifecycleComplement(\on_enter, ctx.lastCmd.isNil.not.if({ctx.lastCmd.blockList}, nil));

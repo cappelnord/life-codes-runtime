@@ -170,6 +170,12 @@ LCContext {
 
 	execute {|blockSourceList, cmdData, cmdId|
 		var newCmd;
+
+		// if this context is cleared then we should not execute the command anymore
+		cleared.if {
+			^nil;
+		};
+
 		// this is just to ensure that the family is loaded
 		this.load;
 

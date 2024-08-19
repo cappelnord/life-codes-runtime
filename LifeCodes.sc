@@ -525,6 +525,12 @@ LifeCodes {
 		server.options.sampleRate = options[\sampleRate];
 		server.latency = options[\serverLatency];
 
+		server.options.numInputBusChannels = 0;
+
+		(options[\audioOutputMode] == \direct).if {
+			server.options.numOutputBusChannels = options[\numAudioChannels];
+	    };
+
 		// let's increase some internal server options to not run into issues ...
 		server.options.numBuffers = 1024 * 8;
 		server.options.numWireBufs = 128;

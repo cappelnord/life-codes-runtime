@@ -10,12 +10,12 @@ var blocks = [\pling, \play, \mute, [\faster, 2]];
 
 {
 	inf.do {
-		var num = 500;
+		var num = 250;
 		var collection = num.collect {[blocks.choose, Point(1.0.rand, 1.0.rand)]};
 		l.gui.registerBlockSlots(\ok, collection, (), {0.01.wait});
-		1.wait;
+		30.wait;
 		l.gui.despawnBlockSlotsFromRegistry(\ok, (), {0.01.wait});
-		1.wait;
+		2.wait;
 	};
 }.fork;
 )

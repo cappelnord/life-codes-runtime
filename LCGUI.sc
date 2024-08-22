@@ -97,12 +97,16 @@ LCGUI {
 		net.sendMsg("/lc/blocks/despawnSlot", slotId, options.jsonString);
 	}
 
-	setConnectionHints {|hints|
-		net.sendMsg("/lc/blocks/hints", (hints: hints).jsonString);
+	setConnectionHints {|hints, interval=(-1)|
+		net.sendMsg("/lc/blocks/hints", (interval: interval, hints: hints).jsonString);
 	}
 
 	clearConnectionHints {
 		net.sendMsg("/lc/blocks/clearHints");
+	}
+
+	triggerConnectionHints {
+		net.sendMsg("/lc/blocks/triggerHints");
 	}
 
 	addBlockSlot {|spec, startPosition, options|
@@ -129,8 +133,8 @@ LCGUI {
 			};
 		};
 
-		id = options[\blockId] ? LifeCodes.randomId;
-		options.removeAt(\blockId);
+		id = options[\id] ? LifeCodes.randomId;
+		options.removeAt(\id);
 
 		object = (
 			\spec: spec,

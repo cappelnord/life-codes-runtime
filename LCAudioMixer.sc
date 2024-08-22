@@ -9,6 +9,7 @@ LCAudioChain {
 
 	var <gainNode;
 	var <gain;
+	var <eqNode;
 
 	var <fxNodes;
 
@@ -27,6 +28,25 @@ LCAudioChain {
 		fxGroup = Group(group, \addToHead);
 
 		gainNode = Synth(\lcam_gain, [\gain, gain, \bus, bus], group, \addToTail);
+
+		mixer.eqParameters(this).isNil.not.if {
+			this.prInitEQNode(mixer.eqParameters(this));
+		};
+	}
+
+	prInitEQNode {|eqParameters|
+		eqNode = Synth(\lcam_eq, [\bus, bus], gainNode, \addBefore);
+		eqNode.set(*eqParameters.asArgsArray);
+	}
+
+	equi {
+		var eqParameters = mixer.eqParameters(this, true);
+		var window = Window(this.typedId, EQui.sizeHint);
+		eqNode.isNil.if {
+			this.prInitEQNode(eqParameters);
+		};
+		EQui(parent: window, target: eqNode, params: eqParameters);
+		window.front;
 	}
 
 	prBaseClear {
@@ -134,6 +154,7 @@ LCAudioMixer : LCAudioChain {
 	var ctxChains;
 	var cmdChains;
 	var submixChains;
+	var eqParameters;
 
 	var sentinelTable;
 	var audioDataUpdates;
@@ -184,11 +205,51 @@ LCAudioMixer : LCAudioChain {
 		sentinelTable = ();
 		audioDataUpdates = ();
 
+		this.loadEQSettings;
+
 		this.prBaseInit(this, server.defaultGroup);
 		this.prInstantiateNodes;
 		this.prInitOSCListeners;
 
 		submixGroup = Group(fxGroup, \addBefore);
+	}
+
+	eqParameters {|chain, create=false|
+		var typedId = chain.typedId;
+		var parameters = eqParameters[typedId];
+		(parameters.isNil && create).if {
+			parameters = EQuiParams();
+			eqParameters[typedId] = parameters;
+		};
+		^parameters;
+	}
+
+	loadEQSettings {
+		var path = LifeCodes.instance.options[\eqSettingsPath];
+		eqParameters = ();
+		path.isNil.not.if {
+			PathName(path).isFile.if {
+				eqParameters = thisProcess.interpreter.compileFile(path).value;
+			};
+		};
+	}
+
+	storeEQSettings {
+		var path = LifeCodes.instance.options[\eqSettingsPath];
+		var file;
+		path.isNil.if {
+			"Cannot store EQ parameters - \eqSettingsPath not set.".error;
+			^nil;
+		};
+		file = File.open(path, "w");
+		file << "(\n";
+		eqParameters.keys.do {|key|
+			file << "'" << key << "': ";
+			eqParameters[key].storeOn(file);
+			file << ",\n";
+		};
+		file << ");";
+		file.close();
 	}
 
 	registerAudioDataUpdate {|ctx, keys|
@@ -284,6 +345,11 @@ LCAudioMixer : LCAudioChain {
 				var clipTrigger = Trig.ar(sig.abs > -2.dbamp, 0.25);
 				SendReply.ar(clipTrigger, '/lc/audio/clipDetected', i);
 			};
+		}).add;
+
+		SynthDef(\lcam_eq, {|bus=0|
+			var sig = In.ar(bus, numChannels);
+			ReplaceOut.ar(bus, sig.equi(EQuiParams()));
 		}).add;
 
 		SynthDef(\lcam_sentinel, {|bus=0, time=1, sentinelId|
@@ -397,6 +463,10 @@ LCAudioMixer : LCAudioChain {
 	defaultGain {
 		^LifeCodes.instance.options[\audioOutputGain];
 	}
+
+	typedId {
+		^\LCAudioMixer;
+	}
 }
 
 LCFadeableAudioChain : LCAudioChain {
@@ -452,6 +522,10 @@ LCFadeableAudioChain : LCAudioChain {
 
 	mixerClearChain {|chain|
 
+	}
+
+	typedId {
+		^(id ++ "_" ++ this.class.asString).asSymbol;
 	}
 }
 

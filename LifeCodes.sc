@@ -103,6 +103,7 @@ LifeCodes {
 			quitOnFatalError: false,
 			ignoreDomains: [],
 			exportPath: nil,
+			eqSettingsPath: nil,
 			traceExecutionQueues: false,
 			alsoTraceRapidFunctions: false,
 			clock: TempoClock.default,

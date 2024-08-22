@@ -377,4 +377,8 @@ LCContext {
 		audioChain.gain_(gain, lag, mode);
 		^this;
 	}
+
+	equi {
+		audioChain.equi;
+	}
 }

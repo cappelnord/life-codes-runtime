@@ -116,6 +116,7 @@ LifeCodes {
 			entryScene: nil,
 			detectAudioClipping: false,
 			automatedCodeExecution: false,
+			ignoreDisplayNames: false,
 			skipSceneConditionTime: nil
 		);
 

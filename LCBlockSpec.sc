@@ -24,7 +24,8 @@ LCBlockSpec {
 	init {
 
 		id = LCBlockSpec.identifier(name, family);
-		display = entry[\display] ? name;
+
+		display = LifeCodes.instance.options[\ignoreDisplayNames].if({name}, {entry[\display] ? name});
 		type = entry[\type];
 
 		parameters = [];

@@ -317,7 +317,7 @@ LifeCodes {
 		// iterate over lists - then store index and key in there
 		bufferLists.keys.do {|key|
 			bufferLists[key].do {|buffer, i|
-				bufferInfo[buffer] = (key: key, index: i);
+				bufferInfo[buffer.bufnum] = (key: key, index: i);
 			};
 		};
 	}

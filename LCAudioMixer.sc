@@ -442,6 +442,10 @@ LCAudioMixer : LCAudioChain {
 			ctxChain.fadeOut(1);
 		};
 
+		submixChains.do {|submixChain|
+			submixChain.dismiss(1);
+		};
+
 		fork {
 			20.wait;
 			this.prBaseClear;

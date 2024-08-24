@@ -223,6 +223,9 @@ LCCommand {
 			ctx.family.isPatternType.if {
 				Pdef(this.prPdefKey).stop.clear;
 			};
+			this.audioChain.isNil.not.if {
+				audioChain.dismiss(1);
+			};
 		};
 	}
 

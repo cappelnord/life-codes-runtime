@@ -75,7 +75,7 @@ LCCommand {
 			var patternFinishFunc = {|event|
 				// don't execute if the context got cleared
 				ctx.cleared.not.if {
-					LifeCodes.instance.baseEnvironment.use({
+					LifeCodes.baseEnvironment.use({
 						functionReferences.do {|ref|
 							ref.function.value(event, this, ctx, ctx.family)
 						};

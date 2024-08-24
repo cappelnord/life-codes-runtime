@@ -46,7 +46,7 @@ LifeCodes {
 	var loadingTask = nil;
 
 	var <steadyClock;
-	var <baseEnvironment;
+	classvar <baseEnvironment;
 
 	var cmdPeriodFunc;
 

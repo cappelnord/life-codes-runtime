@@ -436,7 +436,16 @@ LCAudioMixer : LCAudioChain {
 	}
 
 	clear {
-		group.free;
+		this.gain_(0, 0.001);
+
+		ctxChains.do {|ctxChain|
+			ctxChain.fadeOut(1);
+		};
+
+		fork {
+			20.wait;
+			this.prBaseClear;
+		}
 	}
 
 	updateHeadRotation {|azimuth|

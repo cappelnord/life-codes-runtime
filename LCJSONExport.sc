@@ -72,7 +72,9 @@ LCJSONExport {
 			\parameters: parameters,
 			\setsValues: blockSpec.setsValues,
 			\modifiesValues: blockSpec.modifiesValues,
-			\mutes: blockSpec.mutes
+			\mutes: blockSpec.mutes,
+			\dontDecorate: blockSpec.dontDecorate,
+			\invertTextColor: blockSpec.invertTextColor
 		)
 	}
 }

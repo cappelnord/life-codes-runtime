@@ -11,6 +11,8 @@ LCBlockSpec {
 	var <setsValues;
 	var <modifiesValues;
 	var <mutes;
+	var <dontDecorate;
+	var <invertTextColor;
 
 
 	*identifier {|name, family|
@@ -37,6 +39,8 @@ LCBlockSpec {
 		setsValues = entry[\setsValues];
 		modifiesValues = entry[\modifiesValues];
 		mutes = entry[\mutes];
+		dontDecorate = entry[\dontDecorate];
+		invertTextColor  = entry[\invertTextColor];
 	}
 }
 

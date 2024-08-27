@@ -41,14 +41,10 @@ LCdef {
 			};
 
 			runtime.contexts[contextId].isNil.if {
-				runtime.addContext(LCContext(contextId, family));
+				runtime.addContext(LCContext(contextId, family, data));
 			};
 
 			context = runtime.contexts[contextId];
-		};
-
-		data.isNil.not.if {
-			context.updateData(data, false);
 		};
 
 		contentIsBlockSourceList.if {
@@ -89,8 +85,9 @@ LCContext {
 
 	var <cleared = false;
 
-	*new {|id, family|
-		^super.newCopyArgs(id, family).init;
+	*new {|id, family, data|
+		data = data ? ();
+		^super.newCopyArgs(id, family, data).init;
 	}
 
 	init {
@@ -99,7 +96,6 @@ LCContext {
 		this.clearFunctionTable;
 
 		executionQueue = LCExecutionQueue("CTX:%".format(id));
-		data = ();
 		prependModifiers = [];
 		appendModifiers = [];
 		runtime = LifeCodes.instance.runtime;

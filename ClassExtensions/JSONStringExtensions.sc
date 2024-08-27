@@ -68,3 +68,9 @@
 		^(ret ++ "}");
 	}
 }
+
++ Function {
+	jsonString {|indent=1|
+		^this.value.jsonString(indent);
+	}
+}

@@ -54,7 +54,7 @@ LCGUI {
 		OSCdef(\lcUsersLongInactive, {|msg, time, addr, recvPort|
 			"Received Long Inactivity Message from OSC".postln;
 			longInactivityAction.value;
-		}, '/lc/usersLongInactive', recvPort: receivePort);
+		}, '/lc/usersInactiveLong', recvPort: receivePort);
 	}
 
 

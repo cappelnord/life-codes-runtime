@@ -7,7 +7,7 @@ LCGUI {
 	var blockSlotRegistry;
 
 	var <>longInactivityAction = nil;
-
+	var <>cursorSpawnedAction = nil;
 
 	*new {|lc|
 		^super.newCopyArgs(lc).init;
@@ -55,6 +55,11 @@ LCGUI {
 			"Received Long Inactivity Message from OSC".postln;
 			longInactivityAction.value;
 		}, '/lc/usersInactiveLong', recvPort: receivePort);
+
+		OSCdef(\lcCursorSpawned, {|msg, time, addr, recvPort|
+			"Cursor spawned".postln;
+			cursorSpawnedAction.value(msg[1].asSymbol);
+		}, '/lc/cursorSpawned', recvPort: receivePort);
 	}
 
 

@@ -164,15 +164,17 @@ LCSceneManager {
 		{this.runScene(sceneId);}.defer;
 	}
 
-	runScene {|sceneId|
+	runScene {|sceneId, runFinal=true|
 		// always start with a fresh routine
 		routine.isPlaying.if {
 			routine.stop;
 		};
 
 		// call final func
-		currentScene.isNil.not.if {
-			currentScene.final.value(this, lc);
+		runFinal.if {
+			currentScene.isNil.not.if {
+				currentScene.final.value(this, lc);
+			};
 		};
 
 		routine = nil;

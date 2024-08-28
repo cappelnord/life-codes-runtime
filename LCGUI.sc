@@ -6,6 +6,8 @@ LCGUI {
 
 	var blockSlotRegistry;
 
+	var <>longInactivityAction = nil;
+
 
 	*new {|lc|
 		^super.newCopyArgs(lc).init;
@@ -48,6 +50,11 @@ LCGUI {
 				"Users are inactive".postln;
 			})
 		}, '/lc/usersActive', recvPort: receivePort);
+
+		OSCdef(\lcUsersLongInactive, {|msg, time, addr, recvPort|
+			"Received Long Inactivity Message from OSC".postln;
+			longInactivityAction.value;
+		}, '/lc/usersLongInactive', recvPort: receivePort);
 	}
 
 
@@ -150,6 +157,10 @@ LCGUI {
 			"Could not find spec identifier: %".format(spec).error;
 			^nil;
 		});
+	}
+
+	allRegistryKeys {
+		^blockSlotRegistry.keys;
 	}
 
 	registerBlockSlots {|id, slots, waitFunction|

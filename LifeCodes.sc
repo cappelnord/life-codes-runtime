@@ -114,6 +114,7 @@ LifeCodes {
 			inactivityAudioAttenuation: -9.dbamp,
 			defaultContextAudioGain: -6.dbamp,
 			entryScene: nil,
+			resetScene: nil,
 			detectAudioClipping: false,
 			automatedCodeExecution: false,
 			ignoreDisplayNames: false,

@@ -212,6 +212,8 @@ LCAudioMixer : LCAudioChain {
 		this.prInitOSCListeners;
 
 		submixGroup = Group(fxGroup, \addBefore);
+
+		this.setInactivityAttenuation(false);
 	}
 
 	eqParameters {|chain, create=false|

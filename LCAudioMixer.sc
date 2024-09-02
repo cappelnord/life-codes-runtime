@@ -137,8 +137,9 @@ LCAudioChain {
 
 
 LCAudioMixer : LCAudioChain {
-	var <duckNode;
+	var <inactivityGainNode;
 	var <delayNode;
+	var <outputGainNode;
 	var <outputNode;
 
 	var clipDetectNode;
@@ -279,8 +280,11 @@ LCAudioMixer : LCAudioChain {
 			clipDetectNode = Synth(\lcam_clip_detect, [\bus, bus], this.gainNode, \addBefore);
 		};
 
-		duckNode = Synth(\lcam_gain, [\bus, bus, \gain, 1.0, \fadeTime, 3], group, \addToTail);
+		inactivityGainNode = Synth(\lcam_gain, [\bus, bus, \gain, 1.0, \fadeTime, 3], group, \addToTail);
+
 		delayNode = Synth(\lcam_delay, [\bus, bus, \delay, delay], group, \addToTail);
+
+		outputGainNode = Synth(\lcam_gain, [\bus, bus, \gain, LifeCodes.instance.options[\audioOutputGain]], group, \addToTail);
 
 		(outputMode == \splay).if {
 			outputNode = Synth(\lcam_splay, [\bus, bus, \out, 0], group, \addToTail);
@@ -462,9 +466,9 @@ LCAudioMixer : LCAudioChain {
 
 	setInactivityAttenuation {|active|
 		active.if ({
-			duckNode.set(\lag, 3, \gain, 1);
+			inactivityGainNode.set(\lag, 3, \gain, 1);
 		}, {
-			duckNode.set(\lag, 10, \gain, LifeCodes.instance.options[\inactivityAudioAttenuation]);
+			inactivityGainNode.set(\lag, 10, \gain, LifeCodes.instance.options[\inactivityAudioAttenuation]);
 		});
 	}
 
@@ -476,7 +480,7 @@ LCAudioMixer : LCAudioChain {
 	}
 
 	defaultGain {
-		^LifeCodes.instance.options[\audioOutputGain];
+		^1.0;
 	}
 
 	typedId {

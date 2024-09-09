@@ -375,7 +375,7 @@ LCAudioMixer : LCAudioChain {
 				var decoder = FoaDecoderKernel.newCIPIC;
 				var encoder = FoaEncoderMatrix.newOmni;
 				// bit stupid but most likely needed
-				1.wait;
+				2.wait;
 
 				SynthDef(\lcam_binaural, {|bus=0, out=0, listenerAzimuth=0|
 					var sig = In.ar(bus, numChannels);

@@ -118,7 +118,8 @@ LifeCodes {
 			detectAudioClipping: false,
 			automatedCodeExecution: false,
 			ignoreDisplayNames: false,
-			skipSceneConditionTime: nil
+			skipSceneConditionTime: nil,
+			assertBufferListsChannelsMatch: true
 		);
 
 		instance.isNil.not.if {
@@ -386,6 +387,18 @@ LifeCodes {
 		}, {
 			"... no samples loaded as loadSamples was set to false.".postln;
 	    });
+
+		options[\assertBufferListsChannelsMatch].if {
+			bufferLists.keys.do {|key|
+				var list = bufferLists[key];
+				var targetChannels = list[0].numChannels;
+				list.do {|buffer|
+					(buffer.numChannels != targetChannels).if {
+						"Channel mismatch in %: %".format(key, buffer.path).throw;
+					};
+				};
+			}
+		};
 	}
 
 	prInitData {

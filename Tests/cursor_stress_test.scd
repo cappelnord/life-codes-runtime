@@ -9,7 +9,7 @@ fork {
 		var numFrames = 1000 + 1000.rand;
 		var id = (i % 500).asString;
 		var pressed = false;
-		var startPosition = [5000.rand, 1000.rand];
+		var startPosition = [5000.0.rand, 1000.0.rand];
 		net.sendMsg("/lc/cursor/move", id, startPosition[0], startPosition[1]);
 		{
 			numFrames.do {

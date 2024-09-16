@@ -7,7 +7,7 @@ var pressReleaseProbability = 0.05;
 fork {
 	inf.do {
 		fork {
-			100.do {|i|
+			40.do {|i|
 				var numFrames = 1000 + 1000.rand;
 				var id = (i % 500).asString;
 				var pressed = false;
@@ -28,7 +28,7 @@ fork {
 						(1/fps).wait;
 					};
 				}.fork;
-				(0.2 + 0.4.rand * 0.2).wait;
+				(0.2 + 0.8.rand * 0.2).wait;
 			};
 		};
 	100.wait;

@@ -1,7 +1,7 @@
 
 # Life Codes Runtime
 
-This set of SuperCollider classes (later destined to be a Quark) is the runtime environment of Alexandra Cardenas installation Life Codes, produced by EPFL Pavilions for the installation *Musica ex Machina*.
+This set of SuperCollider classes (later destined to be a Quark) is the runtime environment for Alexandra Cárdenas' installation *Life Codes*, produced by EPFL Pavilions for the installation *Musica ex Machina*.
 
 ## !! Documentation Outdated !!
 

@@ -1,9 +1,14 @@
 
-# Life Codes Quick Manual
+# Life Codes Runtime
+
+This set of SuperCollider classes (later destined to be a Quark) is the runtime environment of Alexandra Cardenas installation Life Codes, produced by EPFL Pavilions for the installation *Musica ex Machina*.
+
+## !! Documentation Outdated !!
+
+Please note, that the documentation here does not anymore reflect the software state. Updated and more structured documentation will be produced soon.
 
 ## Known Issues
 * Life Codes is currently not yet resilient to "Command/Ctrl ." - in case you used it you currently need to run the LifeCodes startup code again.
-* After clearing an LCdef "Node not found" messages might appear. This is just an cosmetic issue.
 
 ## Prerequisites
 ### Binaural Room Simulation
@@ -329,3 +334,9 @@ Full documentation would be great but there is no time for that currently I fear
 
 ### LCRuntime
 * Manages contexts, blocks and whatnot.
+
+## Acknowledgements
+
+This software was written in the scope of developing Alexandra Cárdenas's *Life Codes*.
+
+*Life Codes* was produced by EPFL Pavilions in Lausanne for the exhibition *Musica ex Machina*, where the installation is presented from 20.09.2024 to 29.06.2025. 

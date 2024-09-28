@@ -5,7 +5,7 @@ This set of SuperCollider classes (later destined to be a Quark) is the runtime 
 
 ## !! Documentation Outdated !!
 
-Please note, that the documentation here does not anymore reflect the software state. Updated and more structured documentation will be produced soon. I hope to also refactor parts of the code in the same process.
+Please note, that the documentation here does not anymore reflect the software state. Updated and more structured documentation will be produced soon. I hope to also refactor parts of the code in the same process, do cleanup and convert to a Quark to fit better the SuperCollider ecosystem.
 
 ## Known Issues
 * Life Codes is currently not yet resilient to "Command/Ctrl ." - in case you used it you currently need to run the LifeCodes startup code again.
